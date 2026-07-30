@@ -22,6 +22,12 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Crave ITSM - Enterprise IT Project Management",
   description: "Platform B2B modern untuk mengelola proyek IT, dari negosiasi kontrak hingga penyerahan hasil akhir dengan aman dan transparan.",
+  icons: {
+    icon: [
+      { url: '/light-mode-logo.png', media: '(prefers-color-scheme: light)' },
+      { url: '/dark-mode-logo.png', media: '(prefers-color-scheme: dark)' }
+    ]
+  }
 };
 
 export default async function RootLayout({

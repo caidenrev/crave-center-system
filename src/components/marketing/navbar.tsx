@@ -27,11 +27,9 @@ export function Navbar() {
         {/* Top Bar */}
         <div className="flex items-center justify-between w-full px-6 py-3">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-3 group">
-            <div className="w-9 h-9 bg-primary dark:bg-primary rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 shadow-inner">
-              <span className="text-white font-bold text-lg leading-none">C</span>
-            </div>
-            <span className="font-extrabold tracking-tight text-xl text-zinc-900 dark:text-white">Crave</span>
+          <Link href="/" className="flex items-center group">
+            <img src="/light-mode-logo.png" alt="Crave" className="h-8 w-auto dark:hidden transition-transform group-hover:scale-105" />
+            <img src="/dark-mode-logo.png" alt="Crave" className="h-8 w-auto hidden dark:block transition-transform group-hover:scale-105" />
           </Link>
 
           {/* Desktop Nav Links */}

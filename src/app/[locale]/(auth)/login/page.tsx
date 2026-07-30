@@ -34,14 +34,22 @@ export default function LoginPage() {
     >
       <Card className="border-0 ring-0 shadow-none bg-transparent md:ring-1 md:shadow-2xl md:bg-white/80 md:backdrop-blur-xl md:dark:bg-zinc-900/80">
         <CardHeader className="space-y-2 text-center pb-6">
-          <motion.div
+          <motion.img
+            src="/light-mode-logo.png"
+            alt="Crave"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="w-12 h-12 bg-zinc-900 dark:bg-white rounded-xl mx-auto mb-4 flex items-center justify-center"
-          >
-            <span className="text-white dark:text-zinc-900 font-bold text-xl">C</span>
-          </motion.div>
+            className="h-10 w-auto mx-auto mb-4 dark:hidden"
+          />
+          <motion.img
+            src="/dark-mode-logo.png"
+            alt="Crave"
+            initial={{ scale: 0.8 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: "spring" }}
+            className="h-10 w-auto mx-auto mb-4 hidden dark:block"
+          />
           <CardTitle className="text-2xl font-bold tracking-tight">{t("title")}</CardTitle>
           <CardDescription className="text-zinc-500">
             {t("subtitle")}

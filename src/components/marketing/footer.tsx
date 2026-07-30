@@ -8,10 +8,9 @@ export function Footer() {
       <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
           <div className="md:col-span-2 space-y-6">
-            <Link href="/" className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-zinc-900 dark:bg-white rounded-xl flex items-center justify-center">
-                <span className="text-white dark:text-zinc-900 font-bold text-xl leading-none">C</span>
-              </div>
+            <Link href="/" className="flex items-center gap-3 group">
+              <img src="/light-mode-logo.png" alt="Crave Logo" className="h-10 w-auto dark:hidden transition-transform group-hover:scale-105" />
+              <img src="/dark-mode-logo.png" alt="Crave Logo" className="h-10 w-auto hidden dark:block transition-transform group-hover:scale-105" />
               <span className="font-bold tracking-tight text-2xl text-zinc-900 dark:text-white">Crave</span>
             </Link>
             <p className="text-base max-w-sm leading-relaxed">
