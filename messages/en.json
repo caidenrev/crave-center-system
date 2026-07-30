@@ -1,0 +1,186 @@
+{
+  "Navbar": {
+    "products": "Products",
+    "solutions": "Solutions",
+    "pricing": "Pricing",
+    "company": "Company",
+    "about": "About Us",
+    "aboutDesc": "Our mission and enterprise story",
+    "resources": "Resources",
+    "resourcesDesc": "Guides, case studies, and docs",
+    "contact": "Contact",
+    "contactDesc": "Get in touch with our sales team",
+    "signIn": "Sign In",
+    "getStarted": "Get Started"
+  },
+  "Hero": {
+    "badge": "Crave ITSM Enterprise 1.0",
+    "title1": "Redefining",
+    "title2": "IT Project Delivery",
+    "subtitle": "The enterprise-grade platform for B2B IT Service Management. Streamline requests, enforce contracts, and deliver projects with absolute transparency.",
+    "cta1": "Start Free Trial",
+    "cta2": "Talk to Sales"
+  },
+  "HomePage": {
+    "trustedBy": "Trusted by Industry Leaders",
+    "featuresTitle": "Engineered for Scale",
+    "featuresSubtitle": "Everything your agency needs to manage complex IT deliveries and maintain client trust.",
+    "cmdCenterTitle": "Command Center",
+    "cmdCenterDesc": "Real-time visibility into every project. Track SLA compliance, milestone progress, and financial health from a single, unified dashboard.",
+    "cmdCenterLink": "Explore Dashboard",
+    "securityTitle": "Bank-Grade Security",
+    "securityDesc": "Granular RBAC powered by Supabase. Your intellectual property and client data remain strictly segregated.",
+    "gatekeeperTitle": "Smart Gatekeeper",
+    "gatekeeperDesc": "Automated delivery locks. Source code and final assets are automatically withheld until invoice settlement.",
+    "workflowTitle": "Automated Workflows",
+    "workflowDesc": "Transform incoming requests into active projects instantly. Auto-generate contracts, trigger milestone invoices, and notify stakeholders automatically.",
+    "ctaTitle1": "Ready to standardize your",
+    "ctaTitle2": "IT operations?",
+    "ctaBtn": "Deploy Crave ITSM"
+  },
+  "LoginPage": {
+    "title": "Welcome Back",
+    "subtitle": "Sign in to Crave ITSM using your Google account",
+    "googleBtn": "Continue with Google",
+    "googleLoading": "Redirecting...",
+    "orEmail": "Or use email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "name@company.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot password?",
+    "signInBtn": "Sign in (Coming Soon)",
+    "noAccount": "Don't have an account?",
+    "register": "Register now",
+    "googleError": "Failed to connect with Google"
+  },
+  "AboutPage": {
+    "title": "Our",
+    "titleHighlight": "Story",
+    "subtitle": "We are building the trust layer for the B2B IT service industry.",
+    "problemTitle": "The Problem with IT Services",
+    "problem1": "For too long, IT agencies and software houses have struggled with delayed payments, scope creep, and chaotic client communication. Clients, on the other hand, worry about missing deadlines and vaporware.",
+    "problem2": "Traditional project management tools tell you what needs to be done, but they do nothing to enforce the agreement between the buyer and the seller.",
+    "enterTitle": "Enter Crave ITSM",
+    "enter1": "We created Crave to bridge this gap. By tightly coupling project management with milestone-based escrow locks, we ensure that agencies get paid for their hard work, and clients get exactly what they paid for.",
+    "missionTitle": "Our Mission",
+    "missionDesc": "To eradicate unpaid IT invoices and restore trust in digital service delivery worldwide.",
+    "visionTitle": "Our Vision",
+    "visionDesc": "A future where every B2B digital contract is self-enforcing, transparent, and fair for all parties involved."
+  },
+  "ResourcesPage": {
+    "title": "Knowledge",
+    "titleHighlight": "Base",
+    "subtitle": "Everything you need to master Crave ITSM and scale your agency's operations.",
+    "readMore": "Read more →",
+    "items": {
+      "gettingStarted": "Getting Started with Crave ITSM",
+      "gettingStartedTag": "Guide",
+      "caseStudy": "How Globex Reduced Unpaid Invoices by 98%",
+      "caseStudyTag": "Case Study",
+      "video": "Setting Up Automated Escrow Workflows",
+      "videoTag": "Video",
+      "whitepaper": "Best Practices for Agency SLA Management",
+      "whitepaperTag": "Whitepaper"
+    }
+  },
+  "PricingPage": {
+    "title": "Simple,",
+    "titleHighlight": "Transparent Pricing",
+    "subtitle": "No hidden fees. Choose the plan that best fits your agency's operational scale.",
+    "mostPopular": "Most Popular",
+    "plans": {
+      "starter": {
+        "name": "Starter",
+        "desc": "Perfect for freelancers and small teams.",
+        "cta": "Get Started",
+        "f1": "Up to 3 active projects",
+        "f2": "Basic client portal",
+        "f3": "Standard support",
+        "f4": "Manual invoicing"
+      },
+      "pro": {
+        "name": "Professional",
+        "desc": "Everything you need for a growing agency.",
+        "cta": "Start Free Trial",
+        "f1": "Unlimited projects",
+        "f2": "Advanced client portal",
+        "f3": "Priority support",
+        "f4": "Automated invoicing & escrow",
+        "f5": "Advanced RBAC"
+      },
+      "enterprise": {
+        "name": "Enterprise",
+        "desc": "Tailored solutions for large organizations.",
+        "cta": "Contact Sales",
+        "f1": "Unlimited everything",
+        "f2": "Dedicated account manager",
+        "f3": "24/7 phone support",
+        "f4": "Custom domains",
+        "f5": "On-premise deployment options"
+      }
+    },
+    "missing": {
+      "rbac": "Advanced RBAC",
+      "escrow": "Automated escrow gatekeeper",
+      "domain": "Custom domains"
+    }
+  },
+  "ProductsPage": {
+    "title": "Our Core",
+    "titleHighlight": "Products",
+    "subtitle": "Discover the powerful features that make Crave ITSM the ultimate choice for managing enterprise IT deliveries.",
+    "f1Title": "Command Center",
+    "f1Desc": "Real-time visibility into every active project. Monitor SLAs, track milestone completion, and get an instant overview of financial health—all in one unified interface.",
+    "f1Preview": "Dashboard Preview",
+    "f2Title": "Gatekeeper Escrow",
+    "f2Desc": "Securely hold intellectual property, source codes, and deployment assets until client invoices are fully settled. Absolute protection for your agency.",
+    "f2Preview": "Security Vault Preview"
+  },
+  "SolutionsPage": {
+    "title": "Built for",
+    "titleHighlight": "Every Scale",
+    "subtitle": "Whether you are a solo developer or an enterprise software house, Crave adapts to your operational needs.",
+    "s1Title": "For IT Agencies",
+    "s1Desc": "Scale your agency with standardized workflows. Manage multiple clients, automate invoicing based on milestones, and ensure consistent delivery quality.",
+    "s2Title": "For Software Houses",
+    "s2Desc": "Keep your development team focused. Integrate your CI/CD pipelines to automatically update project status and release final builds securely.",
+    "s3Title": "For Independent Contractors",
+    "s3Desc": "Protect your freelance work. Ensure you get paid for every milestone delivered with our automated escrow and contract enforcement tools."
+  },
+  "ContactPage": {
+    "title": "Contact Us",
+    "subtitle": "Have questions about Crave ITSM? Need enterprise customization? Our team is ready to help.",
+    "infoTitle": "Contact Information",
+    "email": "Email",
+    "emailDesc": "We will respond within 24 hours.",
+    "hq": "Headquarters",
+    "phone": "Phone",
+    "phoneDesc": "Monday - Friday, 09:00 - 17:00 WIB",
+    "formTitle": "Send a Message",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "emailLabel": "Email Address",
+    "messageLabel": "Your Message",
+    "messagePlaceholder": "Write your questions or needs here...",
+    "submit": "Send Message",
+    "success": "Message sent (Demo MVP)"
+  },
+  "RegisterPage": {
+    "title": "Get Started with Crave",
+    "subtitle": "Create an account to start managing your IT projects.",
+    "googleBtn": "Register with Google",
+    "orEmail": "Or register with email",
+    "nameLabel": "Full Name",
+    "namePlaceholder": "Eka Revandi",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@company.com",
+    "phoneLabel": "Phone Number / WhatsApp",
+    "phonePlaceholder": "+62 812-3456-7890",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "••••••••",
+    "registerBtn": "Create Account (Coming Soon)",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign In",
+    "terms": "By registering, you agree to our Terms of Service and Privacy Policy."
+  }
+}

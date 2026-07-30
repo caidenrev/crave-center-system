@@ -1,0 +1,186 @@
+{
+  "Navbar": {
+    "products": "Produk",
+    "solutions": "Solusi",
+    "pricing": "Harga",
+    "company": "Perusahaan",
+    "about": "Tentang Kami",
+    "aboutDesc": "Misi dan kisah perusahaan kami",
+    "resources": "Sumber Daya",
+    "resourcesDesc": "Panduan, studi kasus, dan dokumen",
+    "contact": "Kontak",
+    "contactDesc": "Hubungi tim penjualan kami",
+    "signIn": "Masuk",
+    "getStarted": "Mulai"
+  },
+  "Hero": {
+    "badge": "Crave ITSM Enterprise 1.0",
+    "title1": "Mendefinisikan Ulang",
+    "title2": "Pengiriman Proyek IT",
+    "subtitle": "Platform skala enterprise untuk Manajemen Layanan IT B2B. Sederhanakan permintaan, tegakkan kontrak, dan berikan hasil proyek dengan transparansi mutlak.",
+    "cta1": "Mulai Coba Gratis",
+    "cta2": "Hubungi Sales"
+  },
+  "HomePage": {
+    "trustedBy": "Dipercaya oleh Pemimpin Industri",
+    "featuresTitle": "Dirancang untuk Skala Besar",
+    "featuresSubtitle": "Segala yang dibutuhkan agensi Anda untuk mengelola pengiriman IT yang kompleks dan menjaga kepercayaan klien.",
+    "cmdCenterTitle": "Pusat Komando",
+    "cmdCenterDesc": "Visibilitas real-time untuk setiap proyek. Pantau kepatuhan SLA, kemajuan pencapaian, dan kesehatan finansial dari satu dasbor terpadu.",
+    "cmdCenterLink": "Jelajahi Dasbor",
+    "securityTitle": "Keamanan Tingkat Bank",
+    "securityDesc": "RBAC granular yang ditenagai oleh Supabase. Kekayaan intelektual dan data klien Anda tetap terpisah secara ketat.",
+    "gatekeeperTitle": "Penjaga Gerbang Pintar",
+    "gatekeeperDesc": "Kunci pengiriman otomatis. Kode sumber dan aset akhir secara otomatis ditahan hingga penyelesaian faktur.",
+    "workflowTitle": "Alur Kerja Otomatis",
+    "workflowDesc": "Ubah permintaan masuk menjadi proyek aktif secara instan. Buat kontrak secara otomatis, picu faktur pencapaian, dan beritahu pemangku kepentingan secara otomatis.",
+    "ctaTitle1": "Siap menstandarkan",
+    "ctaTitle2": "operasi IT Anda?",
+    "ctaBtn": "Terapkan Crave ITSM"
+  },
+  "LoginPage": {
+    "title": "Selamat Datang Kembali",
+    "subtitle": "Masuk ke Crave ITSM menggunakan akun Google Anda",
+    "googleBtn": "Lanjutkan dengan Google",
+    "googleLoading": "Mengalihkan...",
+    "orEmail": "Atau gunakan email",
+    "emailLabel": "Email",
+    "emailPlaceholder": "nama@perusahaan.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Lupa password?",
+    "signInBtn": "Masuk (Segera Hadir)",
+    "noAccount": "Belum punya akun?",
+    "register": "Daftar sekarang",
+    "googleError": "Gagal terhubung dengan Google"
+  },
+  "AboutPage": {
+    "title": "Kisah",
+    "titleHighlight": "Kami",
+    "subtitle": "Kami membangun lapisan kepercayaan untuk industri layanan TI B2B.",
+    "problemTitle": "Masalah dalam Layanan TI",
+    "problem1": "Sudah terlalu lama, agensi TI dan rumah perangkat lunak berjuang dengan keterlambatan pembayaran, pembengkakan ruang lingkup, dan komunikasi klien yang kacau. Di sisi lain, klien khawatir tentang tenggat waktu yang terlewat dan vaporware.",
+    "problem2": "Alat manajemen proyek tradisional memberi tahu Anda apa yang harus dilakukan, tetapi tidak melakukan apa pun untuk menegakkan kesepakatan antara pembeli dan penjual.",
+    "enterTitle": "Hadirnya Crave ITSM",
+    "enter1": "Kami menciptakan Crave untuk menjembatani kesenjangan ini. Dengan menggabungkan manajemen proyek secara ketat dengan kunci escrow berbasis pencapaian, kami memastikan agensi dibayar atas kerja keras mereka, dan klien mendapatkan persis seperti yang mereka bayar.",
+    "missionTitle": "Misi Kami",
+    "missionDesc": "Untuk memberantas faktur TI yang belum dibayar dan memulihkan kepercayaan dalam pengiriman layanan digital di seluruh dunia.",
+    "visionTitle": "Visi Kami",
+    "visionDesc": "Masa depan di mana setiap kontrak digital B2B berlaku otomatis, transparan, dan adil bagi semua pihak yang terlibat."
+  },
+  "ResourcesPage": {
+    "title": "Pusat",
+    "titleHighlight": "Pengetahuan",
+    "subtitle": "Segala yang Anda butuhkan untuk menguasai Crave ITSM dan meningkatkan operasi agensi Anda.",
+    "readMore": "Baca selengkapnya →",
+    "items": {
+      "gettingStarted": "Memulai dengan Crave ITSM",
+      "gettingStartedTag": "Panduan",
+      "caseStudy": "Bagaimana Globex Mengurangi Faktur Belum Dibayar Sebesar 98%",
+      "caseStudyTag": "Studi Kasus",
+      "video": "Menyiapkan Alur Kerja Escrow Otomatis",
+      "videoTag": "Video",
+      "whitepaper": "Praktik Terbaik untuk Manajemen SLA Agensi",
+      "whitepaperTag": "Laporan Resmi"
+    }
+  },
+  "PricingPage": {
+    "title": "Harga yang Sederhana,",
+    "titleHighlight": "Transparan",
+    "subtitle": "Tanpa biaya tersembunyi. Pilih paket yang paling sesuai dengan skala operasi agensi Anda.",
+    "mostPopular": "Paling Populer",
+    "plans": {
+      "starter": {
+        "name": "Pemula",
+        "desc": "Sempurna untuk pekerja lepas dan tim kecil.",
+        "cta": "Mulai",
+        "f1": "Hingga 3 proyek aktif",
+        "f2": "Portal klien dasar",
+        "f3": "Dukungan standar",
+        "f4": "Faktur manual"
+      },
+      "pro": {
+        "name": "Profesional",
+        "desc": "Segala yang Anda butuhkan untuk agensi yang berkembang.",
+        "cta": "Mulai Uji Coba Gratis",
+        "f1": "Proyek tak terbatas",
+        "f2": "Portal klien lanjutan",
+        "f3": "Dukungan prioritas",
+        "f4": "Faktur & escrow otomatis",
+        "f5": "RBAC Lanjutan"
+      },
+      "enterprise": {
+        "name": "Perusahaan",
+        "desc": "Solusi yang disesuaikan untuk organisasi besar.",
+        "cta": "Hubungi Penjualan",
+        "f1": "Semuanya tak terbatas",
+        "f2": "Manajer akun khusus",
+        "f3": "Dukungan telepon 24/7",
+        "f4": "Domain kustom",
+        "f5": "Opsi penyebaran on-premise"
+      }
+    },
+    "missing": {
+      "rbac": "RBAC Lanjutan",
+      "escrow": "Penjaga gerbang escrow otomatis",
+      "domain": "Domain kustom"
+    }
+  },
+  "ProductsPage": {
+    "title": "Produk",
+    "titleHighlight": "Utama Kami",
+    "subtitle": "Temukan fitur canggih yang menjadikan Crave ITSM pilihan utama untuk mengelola pengiriman TI perusahaan.",
+    "f1Title": "Pusat Komando",
+    "f1Desc": "Visibilitas real-time ke setiap proyek aktif. Pantau SLA, lacak penyelesaian pencapaian, dan dapatkan gambaran instan kesehatan keuangan—semuanya dalam satu antarmuka terpadu.",
+    "f1Preview": "Pratinjau Dasbor",
+    "f2Title": "Escrow Penjaga Gerbang",
+    "f2Desc": "Tahan kekayaan intelektual, kode sumber, dan aset penerapan dengan aman hingga faktur klien diselesaikan sepenuhnya. Perlindungan mutlak untuk agensi Anda.",
+    "f2Preview": "Pratinjau Brankas Keamanan"
+  },
+  "SolutionsPage": {
+    "title": "Dibangun untuk",
+    "titleHighlight": "Setiap Skala",
+    "subtitle": "Baik Anda pengembang tunggal atau rumah perangkat lunak perusahaan, Crave beradaptasi dengan kebutuhan operasional Anda.",
+    "s1Title": "Untuk Agensi TI",
+    "s1Desc": "Kembangkan agensi Anda dengan alur kerja terstandar. Kelola banyak klien, otomatiskan faktur berdasarkan pencapaian, dan pastikan kualitas pengiriman yang konsisten.",
+    "s2Title": "Untuk Rumah Perangkat Lunak",
+    "s2Desc": "Pertahankan fokus tim pengembangan Anda. Integrasikan alur CI/CD Anda untuk memperbarui status proyek secara otomatis dan merilis build akhir dengan aman.",
+    "s3Title": "Untuk Kontraktor Independen",
+    "s3Desc": "Lindungi pekerjaan lepas Anda. Pastikan Anda dibayar untuk setiap pencapaian yang dikirim dengan escrow otomatis dan alat penegakan kontrak kami."
+  },
+  "ContactPage": {
+    "title": "Hubungi Kami",
+    "subtitle": "Ada pertanyaan tentang Crave ITSM? Butuh kustomisasi enterprise? Tim kami siap membantu Anda.",
+    "infoTitle": "Informasi Kontak",
+    "email": "Email",
+    "emailDesc": "Kami akan merespon dalam 1x24 jam.",
+    "hq": "Kantor Pusat",
+    "phone": "Telepon",
+    "phoneDesc": "Senin - Jumat, 09:00 - 17:00 WIB",
+    "formTitle": "Kirim Pesan",
+    "firstName": "Nama Depan",
+    "lastName": "Nama Belakang",
+    "emailLabel": "Alamat Email",
+    "messageLabel": "Pesan Anda",
+    "messagePlaceholder": "Tuliskan pertanyaan atau kebutuhan Anda di sini...",
+    "submit": "Kirim Pesan",
+    "success": "Pesan terkirim (Demo MVP)"
+  },
+  "RegisterPage": {
+    "title": "Mulai Bersama Crave",
+    "subtitle": "Buat akun untuk mulai mengelola proyek TI Anda.",
+    "googleBtn": "Daftar dengan Google",
+    "orEmail": "Atau daftar dengan email",
+    "nameLabel": "Nama Lengkap",
+    "namePlaceholder": "Eka Revandi",
+    "emailLabel": "Alamat Email",
+    "emailPlaceholder": "nama@perusahaan.com",
+    "phoneLabel": "Nomor Telepon / WhatsApp",
+    "phonePlaceholder": "+62 812-3456-7890",
+    "passwordLabel": "Kata Sandi",
+    "passwordPlaceholder": "••••••••",
+    "registerBtn": "Buat Akun (Segera Hadir)",
+    "hasAccount": "Sudah punya akun?",
+    "signIn": "Masuk",
+    "terms": "Dengan mendaftar, Anda menyetujui Syarat Ketentuan dan Kebijakan Privasi kami."
+  }
+}

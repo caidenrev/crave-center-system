@@ -1,0 +1,208 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ----------------------------------------------------
+// ENUMERATIONS
+// ----------------------------------------------------
+
+enum Role {
+  CLIENT
+  ADMIN
+  TEAM_MEMBER
+}
+
+enum ProjectStatus {
+  REQUESTED
+  IN_PROGRESS
+  ON_HOLD
+  IN_WARRANTY
+  COMPLETED
+  CANCELLED
+}
+
+enum TermsStatus {
+  DRAFT
+  REVISED
+  APPROVED
+}
+
+enum PaymentType {
+  DP
+  MILESTONE
+  PELUNASAN
+  FULL_PAYMENT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+enum TaskStatus {
+  TO_DO
+  IN_PROGRESS
+  REVIEW
+  DONE
+}
+
+enum DeliverableStatus {
+  PENDING_REVIEW
+  APPROVED
+  REVISED
+}
+
+enum MessageVisibility {
+  INTERNAL
+  CLIENT
+}
+
+// ----------------------------------------------------
+// MODELS
+// ----------------------------------------------------
+
+model User {
+  id            String   @id @default(uuid())
+  name          String
+  email         String   @unique
+  phone         String?
+  role          Role     @default(CLIENT)
+
+  // Relasi
+  projects      Project[]     @relation("ClientProjects")
+  tasks         Task[]        @relation("AssignedTasks")
+  deliverables  Deliverable[] @relation("UploadedDeliverables")
+  messages      Message[]     @relation("SentMessages")
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Project {
+  id                   String        @id @default(uuid())
+  clientId             String
+  title                String
+  description          String
+  budgetRange          String?
+  status               ProjectStatus @default(REQUESTED)
+  estimatedDuration    Int?          // Dalam hari
+  targetDeliveryDate   DateTime?
+
+  // Relasi
+  client               User          @relation("ClientProjects", fields: [clientId], references: [id])
+  terms                Terms?
+  contracts            Contract[]
+  payments             Payment[]
+  tasks                Task[]
+  deliverables         Deliverable[]
+  messages             Message[]
+
+  createdAt            DateTime      @default(now())
+  updatedAt            DateTime      @updatedAt
+}
+
+model Terms {
+  id               String      @id @default(uuid())
+  projectId        String      @unique
+  scope            String      @db.Text
+  priceFinal       Decimal     @db.Decimal(10, 2)
+  milestones       Json?       // Disimpan sebagai array JSON
+  status           TermsStatus @default(DRAFT)
+  approvedByClient Boolean     @default(false)
+
+  // Relasi
+  project          Project     @relation(fields: [projectId], references: [id])
+  contracts        Contract[]
+
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model Contract {
+  id                  String   @id @default(uuid())
+  projectId           String
+  termsId             String
+  contractDocumentUrl String?
+  signedAt            DateTime?
+
+  // Relasi
+  project             Project  @relation(fields: [projectId], references: [id])
+  terms               Terms    @relation(fields: [termsId], references: [id])
+
+  createdAt           DateTime @default(now())
+}
+
+model Payment {
+  id             String        @id @default(uuid())
+  projectId      String
+  amount         Decimal       @db.Decimal(10, 2)
+  type           PaymentType
+  status         PaymentStatus @default(PENDING)
+  paymentMethod  String?
+  paidAt         DateTime?
+
+  // Relasi
+  project        Project       @relation(fields: [projectId], references: [id])
+
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Task {
+  id             String     @id @default(uuid())
+  projectId      String
+  assigneeId     String?
+  title          String
+  description    String?    @db.Text
+  estimatedTime  Int?       // Dalam jam
+  actualTime     Int?       // Dalam jam
+  status         TaskStatus @default(TO_DO)
+  deadline       DateTime?
+  completedAt    DateTime?
+
+  // Relasi
+  project        Project    @relation(fields: [projectId], references: [id])
+  assignee       User?      @relation("AssignedTasks", fields: [assigneeId], references: [id])
+
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+}
+
+model Deliverable {
+  id             String            @id @default(uuid())
+  projectId      String
+  uploadedById   String
+  fileUrl        String
+  description    String?           @db.Text
+  status         DeliverableStatus @default(PENDING_REVIEW)
+
+  // Relasi
+  project        Project           @relation(fields: [projectId], references: [id])
+  uploadedBy     User              @relation("UploadedDeliverables", fields: [uploadedById], references: [id])
+
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+}
+
+model Message {
+  id             String            @id @default(uuid())
+  projectId      String
+  senderId       String
+  content        String            @db.Text
+  visibility     MessageVisibility @default(CLIENT)
+
+  // Relasi
+  project        Project           @relation(fields: [projectId], references: [id])
+  sender         User              @relation("SentMessages", fields: [senderId], references: [id])
+
+  createdAt      DateTime          @default(now())
+}
