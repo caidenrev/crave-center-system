@@ -14,6 +14,7 @@ export default async function ClientLayout(props: {
   const { data: { user } } = await supabase.auth.getUser();
   
   const topbarUser = user ? {
+    id: user.id,
     name: user.user_metadata?.full_name || user.user_metadata?.name || null,
     email: user.email || null,
     image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null

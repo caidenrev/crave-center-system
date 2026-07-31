@@ -1,10 +1,12 @@
 'use client'
 
-import { Bell, Search } from 'lucide-react'
+import { Search } from 'lucide-react'
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
+import { NotificationBell } from './notification-bell'
 
 type UserProps = {
+  id?: string;
   name?: string | null;
   email?: string | null;
   image?: string | null;
@@ -30,9 +32,7 @@ export function ClientTopbar({ user }: { user?: UserProps | null }) {
       <div className="flex items-center gap-2 md:gap-4">
         <LanguageSwitcher />
         <ThemeToggle />
-        <button className="w-10 h-10 flex items-center justify-center rounded-full border border-slate-200 dark:border-slate-700 text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
-          <Bell className="w-5 h-5" />
-        </button>
+        {user?.id && <NotificationBell userId={user.id} />}
         <div className="flex items-center gap-3 ml-2 border-l border-slate-200 dark:border-slate-700 pl-4">
           <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
             {user?.image ? (

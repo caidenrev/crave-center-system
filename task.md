@@ -70,3 +70,5 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Halaman *Active Projects*, *Contracts & Terms*, dan *Payment History* di dasbor klien.
 - [x] Pembuatan sistem *update profile* (*Settings*) untuk Klien.
 - [x] Integrasi dan fiksasi fungsi *Logout* terpusat.
+- [x] Sistem Pendaftaran Pekerja (*Worker Application*) dengan form *apply* dan dasbor *approval* Admin.
+- [x] Implementasi sistem Notifikasi *Real-time* berbasis Supabase WebSocket untuk Client, Worker, dan Admin.

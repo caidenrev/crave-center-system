@@ -51,6 +51,15 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url)
   }
 
+  // If user is already authenticated and trying to access auth pages, redirect to dashboard
+  const isAuthRoute = pathWithoutLocale.startsWith("/login") || pathWithoutLocale.startsWith("/register")
+  if (user && isAuthRoute) {
+    const url = request.nextUrl.clone()
+    const locale = pathname.match(/^\/(en|id)/)?.[1] || defaultLocale
+    url.pathname = `/${locale}/dashboard`
+    return NextResponse.redirect(url)
+  }
+
   return response
 }
 

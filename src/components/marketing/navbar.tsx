@@ -4,17 +4,34 @@ import * as React from "react"
 import { useState } from "react"
 import Link from "next/link"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X, ChevronDown, Info, BookOpen, PhoneCall } from "lucide-react"
+import { Menu, X, ChevronDown, Info, BookOpen, PhoneCall, Briefcase } from "lucide-react"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { useTranslations } from "next-intl"
 import { Button } from "@/components/ui/button"
+import { createClient } from "@/utils/supabase/client"
 
 export function Navbar() {
   const t = useTranslations("Navbar")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false)
   const [isMobileCompanyOpen, setIsMobileCompanyOpen] = useState(false)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isLoadingAuth, setIsLoadingAuth] = useState(true)
+
+  React.useEffect(() => {
+    const supabase = createClient()
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session)
+      setIsLoadingAuth(false)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session)
+    })
+
+    return () => subscription.unsubscribe()
+  }, [])
 
   return (
     <motion.header 
@@ -77,6 +94,16 @@ export function Navbar() {
                           <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t("aboutDesc")}</div>
                         </div>
                       </Link>
+
+                      <Link href="/careers" className="flex items-start gap-3 p-3 text-left hover:bg-primary/5 dark:hover:bg-primary/10 rounded-xl transition-colors group/item">
+                        <div className="bg-primary/10 dark:bg-primary/20 text-primary p-2 rounded-lg mt-0.5 group-hover/item:bg-primary group-hover/item:text-white transition-colors">
+                          <Briefcase className="w-4 h-4" />
+                        </div>
+                        <div>
+                          <div className="text-sm font-bold text-zinc-900 dark:text-zinc-100 mb-0.5 group-hover/item:text-primary transition-colors">{t("careers")}</div>
+                          <div className="text-xs font-medium text-zinc-500 dark:text-zinc-400">{t("careersDesc")}</div>
+                        </div>
+                      </Link>
                       
                       <Link href="/resources" className="flex items-start gap-3 p-3 text-left hover:bg-primary/5 dark:hover:bg-primary/10 rounded-xl transition-colors group/item">
                         <div className="bg-primary/10 dark:bg-primary/20 text-primary p-2 rounded-lg mt-0.5 group-hover/item:bg-primary group-hover/item:text-white transition-colors">
@@ -109,14 +136,26 @@ export function Navbar() {
             <LanguageSwitcher />
             <ThemeToggle />
             <div className="hidden md:flex items-center gap-3">
-              <Link href="/login" className="text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
-                {t("signIn")}
-              </Link>
-              <Link href="/request">
-                <Button className="rounded-full h-9 px-5 bg-primary hover:bg-blue-700 text-white transition-all hover:scale-105 active:scale-95 shadow-md font-bold">
-                  {t("getStarted")}
-                </Button>
-              </Link>
+              {!isLoadingAuth && (
+                isAuthenticated ? (
+                  <Link href="/dashboard">
+                    <Button className="rounded-full h-9 px-5 bg-primary hover:bg-blue-700 text-white transition-all hover:scale-105 active:scale-95 shadow-md font-bold">
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/login" className="text-sm font-semibold text-zinc-600 hover:text-zinc-900 dark:text-zinc-300 dark:hover:text-white transition-colors">
+                      {t("signIn")}
+                    </Link>
+                    <Link href="/request">
+                      <Button className="rounded-full h-9 px-5 bg-primary hover:bg-blue-700 text-white transition-all hover:scale-105 active:scale-95 shadow-md font-bold">
+                        {t("getStarted")}
+                      </Button>
+                    </Link>
+                  </>
+                )
+              )}
             </div>
             <button 
               className="md:hidden p-2 text-zinc-600 dark:text-zinc-300"
@@ -161,6 +200,7 @@ export function Navbar() {
                         className="flex flex-col gap-4 overflow-hidden pl-4 ml-2 border-l-2 border-zinc-200 dark:border-zinc-800"
                       >
                         <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("about")}</Link>
+                        <Link href="/careers" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("careers")}</Link>
                         <Link href="/resources" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("resources")}</Link>
                         <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("contact")}</Link>
                       </motion.div>
@@ -171,16 +211,28 @@ export function Navbar() {
                 <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800 my-2" />
                 
                 <div className="flex flex-col gap-3">
-                  <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="outline" className="w-full h-12 rounded-xl text-base font-bold border-zinc-300 dark:border-zinc-700 bg-transparent">
-                      {t("signIn")}
-                    </Button>
-                  </Link>
-                  <Link href="/request" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button className="w-full h-12 rounded-xl text-base bg-primary hover:bg-blue-700 text-white font-bold">
-                      {t("getStarted")}
-                    </Button>
-                  </Link>
+                  {!isLoadingAuth && (
+                    isAuthenticated ? (
+                      <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                        <Button className="w-full h-12 rounded-xl text-base bg-primary hover:bg-blue-700 text-white font-bold">
+                          Dashboard
+                        </Button>
+                      </Link>
+                    ) : (
+                      <>
+                        <Link href="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button variant="outline" className="w-full h-12 rounded-xl text-base font-bold border-zinc-300 dark:border-zinc-700 bg-transparent">
+                            {t("signIn")}
+                          </Button>
+                        </Link>
+                        <Link href="/request" onClick={() => setIsMobileMenuOpen(false)}>
+                          <Button className="w-full h-12 rounded-xl text-base bg-primary hover:bg-blue-700 text-white font-bold">
+                            {t("getStarted")}
+                          </Button>
+                        </Link>
+                      </>
+                    )
+                  )}
                 </div>
               </nav>
             </motion.div>

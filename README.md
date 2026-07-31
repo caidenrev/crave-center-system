@@ -120,3 +120,19 @@ MIDTRANS_CLIENT_KEY="your-client-key"
 - Automated client onboarding checklists.
 - Revision tracking and limitation mechanics.
 - Exportable PDF progress reports for clients.
+
+## Test Accounts
+
+For testing the different dashboards, you can use the following pre-configured accounts:
+
+### Admin Account
+- **Email:** `admin@crave.com`
+- **Password:** `password123`
+- **Access:** Admin Dashboard (`/admin/applications`)
+
+### Worker Account
+- **Email:** `worker@crave.com`
+- **Password:** `password123`
+- **Access:** Worker Dashboard (`/worker-dashboard`)
+
+*(Note: You can log in via the regular Login page using the Email & Password form).*

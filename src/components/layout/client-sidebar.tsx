@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { LayoutDashboard, FileText, CheckSquare, MessageSquare, Settings, LogOut, Package, DollarSign } from 'lucide-react'
+import { LayoutDashboard, FileText, CheckSquare, MessageSquare, Settings, LogOut, Package, DollarSign, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function ClientSidebar({ locale }: { locale: string }) {
@@ -15,6 +15,7 @@ export function ClientSidebar({ locale }: { locale: string }) {
       title: t('menu'),
       items: [
         { name: t('dashboard'), href: `/${locale}/client`, icon: LayoutDashboard },
+        { name: "Website", href: `/`, icon: Globe },
         { name: t('requests'), href: `/${locale}/client/request`, icon: FileText },
         { name: t('projects'), href: `/${locale}/client/projects`, icon: CheckSquare },
         { name: t('contracts'), href: `/${locale}/client/contracts`, icon: FileText },

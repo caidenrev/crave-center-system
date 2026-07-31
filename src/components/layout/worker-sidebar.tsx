@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTranslations } from 'next-intl'
-import { LayoutDashboard, CheckSquare, DollarSign, LogOut } from 'lucide-react'
+import { LayoutDashboard, CheckSquare, DollarSign, LogOut, Globe } from 'lucide-react'
 import { cn } from '@/lib/utils'
 
 export function WorkerSidebar({ locale }: { locale: string }) {
@@ -15,6 +15,11 @@ export function WorkerSidebar({ locale }: { locale: string }) {
       name: t('dashboard'),
       href: `/${locale}/worker`,
       icon: LayoutDashboard,
+    },
+    {
+      name: "Website",
+      href: `/`,
+      icon: Globe,
     },
     {
       name: t('tasks'),

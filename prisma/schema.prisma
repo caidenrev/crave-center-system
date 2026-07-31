@@ -68,6 +68,12 @@ enum MessageVisibility {
   CLIENT
 }
 
+enum ApplicationStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 // ----------------------------------------------------
 // MODELS
 // ----------------------------------------------------
@@ -91,9 +97,33 @@ model User {
   tasks         Task[]        @relation("AssignedTasks")
   deliverables  Deliverable[] @relation("UploadedDeliverables")
   messages      Message[]     @relation("SentMessages")
+  applications  WorkerApplication[]
+  notifications Notification[]
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+}
+
+model WorkerApplication {
+  id              String            @id @default(uuid())
+  userId          String
+  category        String            // "IT" or "NON_IT"
+  skills          String[]          // e.g., ["Next.js", "Figma"]
+  githubUrl       String?
+  portfolioUrl    String?
+  linkedinUrl     String?
+  instagramUrl    String?
+  tiktokUrl       String?
+  reason          String    @db.Text
+  whatsapp        String
+  email           String
+  status          ApplicationStatus @default(PENDING)
+
+  // Relasi
+  user            User              @relation(fields: [userId], references: [id])
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
 }
 
 model Project {
@@ -222,4 +252,27 @@ model Message {
   sender         User              @relation("SentMessages", fields: [senderId], references: [id])
 
   createdAt      DateTime          @default(now())
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  title     String
+  message   String           @db.Text
+  type      NotificationType @default(INFO)
+  isRead    Boolean          @default(false)
+  link      String?
+  
+  // Relasi
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
 }
