@@ -22,7 +22,7 @@ export function Navbar() {
       transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       className="fixed top-6 inset-x-0 mx-auto z-50 flex justify-center px-4"
     >
-      <div className="flex flex-col items-center justify-between w-full max-w-5xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800/60 shadow-[0_8px_32px_rgba(0,0,0,0.06)] rounded-3xl transition-all duration-300">
+      <div className="flex flex-col items-center justify-between w-full max-w-5xl bg-white/80 dark:bg-zinc-900/80 backdrop-blur-xl border border-white/40 dark:border-zinc-800/60 shadow-[0_12px_48px_rgba(0,0,0,0.15)] rounded-3xl transition-all duration-300">
         
         {/* Top Bar */}
         <div className="flex items-center justify-between w-full px-6 py-3">
@@ -39,6 +39,9 @@ export function Navbar() {
             </Link>
             <Link href="/solutions" className="text-sm font-semibold text-zinc-600 hover:text-primary dark:text-zinc-300 dark:hover:text-primary transition-colors">
               {t("solutions")}
+            </Link>
+            <Link href="/services" className="text-sm font-semibold text-zinc-600 hover:text-primary dark:text-zinc-300 dark:hover:text-primary transition-colors">
+              {t("services")}
             </Link>
             <Link href="/pricing" className="text-sm font-semibold text-zinc-600 hover:text-primary dark:text-zinc-300 dark:hover:text-primary transition-colors">
               {t("pricing")}
@@ -136,6 +139,7 @@ export function Navbar() {
               <nav className="flex flex-col p-6 gap-6 bg-white/50 dark:bg-zinc-900/50">
                 <Link href="/products" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("products")}</Link>
                 <Link href="/solutions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("solutions")}</Link>
+                <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("services")}</Link>
                 <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("pricing")}</Link>
                 <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("about")}</Link>
                 <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("contact")}</Link>

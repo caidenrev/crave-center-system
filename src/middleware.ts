@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const pathWithoutLocale = pathname.replace(/^\/(en|id)/, '') || '/'
   
-  const publicRoutes = ["/", "/products", "/solutions", "/pricing", "/about", "/resources", "/contact"]
+  const publicRoutes = ["/", "/products", "/solutions", "/services", "/pricing", "/about", "/resources", "/contact"]
   const isPublicRoute = publicRoutes.includes(pathWithoutLocale) || 
                         pathWithoutLocale.startsWith("/resources/") || 
                         pathWithoutLocale.startsWith("/login") || 

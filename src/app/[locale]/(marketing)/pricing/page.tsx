@@ -64,8 +64,9 @@ export default function PricingPage() {
         </motion.div>
       </section>
 
-      {/* Pricing Grid */}
-      <section className="relative z-10 w-full max-w-6xl px-6 grid grid-cols-1 md:grid-cols-3 gap-8 items-center">
+      {/* Pricing Grid / Slider on Mobile */}
+      <section className="relative z-10 w-full max-w-6xl mx-auto px-4 md:px-6">
+        <div className="flex md:grid md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-8 md:pb-0 items-center [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
         {plans.map((plan, i) => (
           <motion.div
             key={i}
@@ -73,7 +74,7 @@ export default function PricingPage() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: i * 0.1 }}
-            className={`flex flex-col p-8 rounded-3xl ${plan.highlight ? 'bg-secondary text-white shadow-2xl scale-105 border-none' : 'bg-card border border-border shadow-xl'}`}
+            className={`shrink-0 w-full md:w-auto snap-center flex flex-col p-8 rounded-3xl ${plan.highlight ? 'bg-secondary text-white shadow-none md:shadow-2xl md:scale-105 border-none' : 'bg-card border border-border shadow-none md:shadow-xl'}`}
           >
             {plan.highlight && (
               <div className="text-xs font-bold uppercase tracking-widest text-accent mb-4">{t("mostPopular")}</div>
@@ -109,6 +110,7 @@ export default function PricingPage() {
             </Button>
           </motion.div>
         ))}
+        </div>
       </section>
     </div>
   )
