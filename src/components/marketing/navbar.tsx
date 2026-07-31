@@ -14,6 +14,7 @@ export function Navbar() {
   const t = useTranslations("Navbar")
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isCompanyDropdownOpen, setIsCompanyDropdownOpen] = useState(false)
+  const [isMobileCompanyOpen, setIsMobileCompanyOpen] = useState(false)
 
   return (
     <motion.header 
@@ -141,8 +142,31 @@ export function Navbar() {
                 <Link href="/solutions" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("solutions")}</Link>
                 <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("services")}</Link>
                 <Link href="/pricing" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("pricing")}</Link>
-                <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("about")}</Link>
-                <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-lg font-bold text-zinc-900 dark:text-white">{t("contact")}</Link>
+                
+                <div className="flex flex-col gap-4">
+                  <button 
+                    onClick={() => setIsMobileCompanyOpen(!isMobileCompanyOpen)} 
+                    className="flex items-center justify-between text-lg font-bold text-zinc-900 dark:text-white w-full text-left"
+                  >
+                    {t("company")}
+                    <ChevronDown className={`w-5 h-5 transition-transform duration-200 ${isMobileCompanyOpen ? 'rotate-180' : ''}`} />
+                  </button>
+                  <AnimatePresence>
+                    {isMobileCompanyOpen && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="flex flex-col gap-4 overflow-hidden pl-4 ml-2 border-l-2 border-zinc-200 dark:border-zinc-800"
+                      >
+                        <Link href="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("about")}</Link>
+                        <Link href="/resources" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("resources")}</Link>
+                        <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-base font-semibold text-zinc-600 dark:text-zinc-400 hover:text-primary dark:hover:text-primary">{t("contact")}</Link>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
                 
                 <div className="h-px w-full bg-zinc-200 dark:bg-zinc-800 my-2" />
                 

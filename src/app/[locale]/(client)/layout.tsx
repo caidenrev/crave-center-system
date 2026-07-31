@@ -1,26 +1,35 @@
 import { requireRole } from "@/lib/auth";
-import Link from "next/link";
+import { ClientSidebar } from "@/components/layout/client-sidebar";
+import { ClientTopbar } from "@/components/layout/client-topbar";
+import { createClient } from "@/utils/supabase/server";
 
-export default async function ClientLayout({
-  children,
-}: {
+export default async function ClientLayout(props: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
   await requireRole(["CLIENT"]);
+  const { locale } = await props.params;
+  
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  const topbarUser = user ? {
+    name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+    email: user.email || null,
+    image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+  } : null;
 
   return (
-    <div className="min-h-screen flex flex-col bg-zinc-50 dark:bg-zinc-950">
-      <header className="h-16 border-b border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 flex items-center justify-between px-6">
-        <h2 className="font-bold text-lg tracking-tight text-zinc-900 dark:text-white">Crave Client Portal</h2>
-        <nav className="flex space-x-4">
-          <Link href="/client-dashboard" className="text-sm font-medium hover:text-blue-600 transition-colors">Beranda</Link>
-          <Link href="/orders" className="text-sm font-medium hover:text-blue-600 transition-colors">Pesanan Saya</Link>
-          <Link href="/request" className="text-sm font-medium hover:text-blue-600 transition-colors">Buat Request</Link>
-        </nav>
-      </header>
-      <main className="flex-1 p-6 md:p-8 max-w-7xl mx-auto w-full">
-        {children}
-      </main>
+    <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans">
+      <ClientSidebar locale={locale} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <ClientTopbar user={topbarUser} />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
+          <div className="mx-auto w-full max-w-6xl">
+            {props.children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

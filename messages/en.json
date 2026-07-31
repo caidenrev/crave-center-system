@@ -284,5 +284,78 @@
 
     "ctaTitle": "Need a specific custom service?",
     "ctaBtn": "Discuss Your Needs"
+},
+  "ClientSidebar": {
+    "menu": "MENU",
+    "dashboard": "Dashboard",
+    "requests": "My Requests",
+    "projects": "Active Projects",
+    "contracts": "Contracts & Terms",
+    "paymentHistory": "Payment History",
+    "general": "GENERAL",
+    "settings": "Settings",
+    "logout": "Log out",
+    "ctaTitle": "Need a Custom App?",
+    "ctaDesc": "Submit your new IT requirements now.",
+    "ctaBtn": "Start Request"
+  },
+  "ClientDashboard": {
+    "title": "Dashboard",
+    "subtitle": "Plan, prioritize, and accomplish your tasks with ease.",
+    "addProject": "Add Project",
+    "totalProjects": "Total Projects",
+    "endedProjects": "Ended Projects",
+    "runningProjects": "Running Projects",
+    "pendingProjects": "Pending Project",
+    "increased": "Increased from last month",
+    "onDiscuss": "On Discuss",
+    "recentProjects": "Recent Projects",
+    "viewAll": "View All",
+    "inProgress": "In Progress",
+    "completed": "Completed",
+    "pending": "Pending",
+    "reminders": "Reminders",
+    "dueDate": "Due date:",
+    "progress": "Progress"
+  },
+  "JobRequestForm": {
+    "title": "Start New Project Request",
+    "step1": "Select Category",
+    "step2": "Choose Worker",
+    "step3": "Project Details",
+    "it": "IT & Programming",
+    "itDesc": "Websites, apps, APIs, data science, etc.",
+    "nonIt": "Creative & Academic",
+    "nonItDesc": "Design, writing, research, media, etc.",
+    "continue": "Continue",
+    "back": "Back",
+    "submit": "Submit Request",
+    "selectWorker": "Select",
+    "projectTitle": "Project Title",
+    "projectDesc": "Description / Brief",
+    "uploadBrief": "Upload Brief (PDF)",
+    "deadline": "Target Deadline",
+    "submitting": "Submitting...",
+    "success": "Request submitted successfully!"
+  },
+  "WorkerSidebar": {
+    "dashboard": "Dashboard",
+    "tasks": "My Tasks",
+    "earnings": "Earnings"
+  },
+  "WorkerDashboard": {
+    "title": "Worker Dashboard",
+    "subtitle": "Manage your requests and tasks.",
+    "newRequests": "New Job Requests",
+    "noRequests": "No new requests at the moment.",
+    "respondBtn": "Respond & Quote",
+    "projectDetails": "Project Details",
+    "client": "Client:",
+    "deadline": "Requested Deadline:",
+    "downloadBrief": "Download Brief",
+    "quoteTitle": "Submit Your Quote",
+    "price": "Price (IDR)",
+    "duration": "Estimated Duration (Days)",
+    "submitQuote": "Send Quote"
   }
 }

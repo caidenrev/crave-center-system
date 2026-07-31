@@ -284,5 +284,78 @@
 
     "ctaTitle": "Butuh layanan spesifik lainnya?",
     "ctaBtn": "Diskusikan Kebutuhan Anda"
+  },
+  "ClientSidebar": {
+    "menu": "MENU",
+    "dashboard": "Beranda",
+    "requests": "Request Saya",
+    "projects": "Proyek Aktif",
+    "contracts": "Kontrak & Terms",
+    "paymentHistory": "Riwayat Pembayaran",
+    "general": "UMUM",
+    "settings": "Pengaturan",
+    "logout": "Keluar",
+    "ctaTitle": "Butuh Aplikasi Kustom?",
+    "ctaDesc": "Ajukan kebutuhan IT baru Anda sekarang.",
+    "ctaBtn": "Buat Request"
+  },
+  "ClientDashboard": {
+    "title": "Dasbor Klien",
+    "subtitle": "Rencanakan, prioritaskan, dan selesaikan tugas Anda dengan mudah.",
+    "addProject": "Buat Proyek",
+    "totalProjects": "Total Proyek",
+    "endedProjects": "Proyek Selesai",
+    "runningProjects": "Proyek Berjalan",
+    "pendingProjects": "Proyek Tertunda",
+    "increased": "Meningkat dari bulan lalu",
+    "onDiscuss": "Sedang Diskusi",
+    "recentProjects": "Proyek Terbaru",
+    "viewAll": "Lihat Semua",
+    "inProgress": "Berjalan",
+    "completed": "Selesai",
+    "pending": "Tertunda",
+    "reminders": "Pengingat",
+    "dueDate": "Tenggat waktu:",
+    "progress": "Progres"
+  },
+  "JobRequestForm": {
+    "title": "Buat Request Proyek Baru",
+    "step1": "Pilih Kategori",
+    "step2": "Pilih Pekerja",
+    "step3": "Detail Proyek",
+    "it": "IT & Pemrograman",
+    "itDesc": "Website, aplikasi, API, data science, dll.",
+    "nonIt": "Kreatif & Akademik",
+    "nonItDesc": "Desain, penulisan, riset, media, dll.",
+    "continue": "Lanjut",
+    "back": "Kembali",
+    "submit": "Kirim Request",
+    "selectWorker": "Pilih",
+    "projectTitle": "Judul Proyek",
+    "projectDesc": "Deskripsi / Brief",
+    "uploadBrief": "Unggah Brief (PDF)",
+    "deadline": "Target Deadline",
+    "submitting": "Mengirim...",
+    "success": "Request berhasil dikirim!"
+  },
+  "WorkerSidebar": {
+    "dashboard": "Beranda",
+    "tasks": "Tugas Saya",
+    "earnings": "Pendapatan"
+  },
+  "WorkerDashboard": {
+    "title": "Dasbor Pekerja",
+    "subtitle": "Kelola request dan tugas Anda.",
+    "newRequests": "Request Proyek Baru",
+    "noRequests": "Belum ada request baru saat ini.",
+    "respondBtn": "Merespon & Beri Harga",
+    "projectDetails": "Detail Proyek",
+    "client": "Klien:",
+    "deadline": "Target Klien:",
+    "downloadBrief": "Unduh Brief",
+    "quoteTitle": "Kirim Penawaran",
+    "price": "Harga (Rp)",
+    "duration": "Estimasi Waktu (Hari)",
+    "submitQuote": "Kirim Penawaran"
   }
 }

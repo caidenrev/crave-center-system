@@ -48,14 +48,14 @@ export default function ContactPage() {
                     <p className="text-sm text-zinc-500 mt-1">{t("emailDesc")}</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center shrink-0">
                     <MapPin className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
                   <div>
                     <h4 className="font-semibold text-zinc-900 dark:text-white">{t("hq")}</h4>
-                    <p className="text-zinc-600 dark:text-zinc-400 mt-1">Jl. Inovasi Teknologi No. 88<br/>Jakarta Selatan, Indonesia 12345</p>
+                    <p className="text-zinc-600 dark:text-zinc-400 mt-1">Jl. Inovasi Teknologi No. 88<br />Jakarta Selatan, Indonesia 12345</p>
                   </div>
                 </div>
 
@@ -81,28 +81,28 @@ export default function ContactPage() {
           >
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl">
               <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">{t("formTitle")}</h3>
-              <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert(t("success"))}}>
+              <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert(t("success")) }}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">{t("firstName")}</Label>
-                    <Input id="firstName" placeholder="John" className="h-12 rounded-xl" required />
+                    <Input id="firstName" placeholder="Eka" className="h-12 rounded-xl" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="lastName">{t("lastName")}</Label>
-                    <Input id="lastName" placeholder="Doe" className="h-12 rounded-xl" />
+                    <Input id="lastName" placeholder="Revandi" className="h-12 rounded-xl" />
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="email">{t("emailLabel")}</Label>
-                  <Input id="email" type="email" placeholder="john@perusahaan.com" className="h-12 rounded-xl" required />
+                  <Input id="email" type="email" placeholder="Eka@perusahaan.com" className="h-12 rounded-xl" required />
                 </div>
-                
+
                 <div className="space-y-2">
                   <Label htmlFor="message">{t("messageLabel")}</Label>
                   <Textarea id="message" placeholder={t("messagePlaceholder")} className="min-h-[150px] resize-y rounded-xl" required />
                 </div>
-                
+
                 <Button type="submit" className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
                   {t("submit")}
                 </Button>

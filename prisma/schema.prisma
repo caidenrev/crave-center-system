@@ -22,6 +22,8 @@ enum Role {
 
 enum ProjectStatus {
   REQUESTED
+  WORKER_REVIEW
+  PENDING_DP
   IN_PROGRESS
   ON_HOLD
   IN_WARRANTY
@@ -77,8 +79,15 @@ model User {
   phone         String?
   role          Role     @default(CLIENT)
 
+  // Worker Profile Info
+  category      String?  // e.g., "IT", "NON_IT"
+  skills        String[] // array of skills e.g., ["Next.js", "Figma"]
+  rating        Float    @default(0)
+  totalReviews  Int      @default(0)
+
   // Relasi
   projects      Project[]     @relation("ClientProjects")
+  workerProjects Project[]    @relation("WorkerProjects")
   tasks         Task[]        @relation("AssignedTasks")
   deliverables  Deliverable[] @relation("UploadedDeliverables")
   messages      Message[]     @relation("SentMessages")
@@ -90,15 +99,23 @@ model User {
 model Project {
   id                   String        @id @default(uuid())
   clientId             String
+  workerId             String?
   title                String
   description          String
+  category             String?       // "IT" or "NON_IT"
   budgetRange          String?
+  briefFileUrl         String?       // Supabase storage URL
+  offeredPrice         Decimal?      @db.Decimal(10, 2)
+  offeredDuration      Int?          // Days estimated by worker
   status               ProjectStatus @default(REQUESTED)
   estimatedDuration    Int?          // Dalam hari
   targetDeliveryDate   DateTime?
+  clientFeedback       String?       @db.Text
+  clientRating         Float?
 
   // Relasi
   client               User          @relation("ClientProjects", fields: [clientId], references: [id])
+  worker               User?         @relation("WorkerProjects", fields: [workerId], references: [id])
   terms                Terms?
   contracts            Contract[]
   payments             Payment[]

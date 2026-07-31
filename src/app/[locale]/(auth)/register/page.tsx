@@ -6,20 +6,42 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { loginWithGoogle } from "@/app/actions/auth"
+import { loginWithGoogle, registerWithEmail } from "@/app/actions/auth"
+import { toast } from "sonner"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
 
 export default function RegisterPage() {
   const t = useTranslations("RegisterPage")
   const [isLoading, setIsLoading] = useState(false)
+  const [isEmailLoading, setIsEmailLoading] = useState(false)
 
   const handleGoogleRegister = async () => {
     setIsLoading(true)
     try {
-      await loginWithGoogle()
+      const result = await loginWithGoogle()
+      if (result?.error) {
+        toast.error(result.error)
+        setIsLoading(false)
+      } else if (result?.url) {
+        window.location.href = result.url
+      }
     } catch (error) {
+      toast.error(t("googleError") || "Error")
       setIsLoading(false)
+    }
+  }
+
+  const handleEmailRegister = async (formData: FormData) => {
+    setIsEmailLoading(true)
+    const result = await registerWithEmail(formData)
+    
+    if (result?.error) {
+      toast.error(result.error)
+      setIsEmailLoading(false)
+    } else if (result?.success) {
+      toast.success("Registration successful! Please check your email to verify.")
+      setIsEmailLoading(false)
     }
   }
 
@@ -31,14 +53,14 @@ export default function RegisterPage() {
       className="w-full"
     >
       <Card className="border-0 ring-0 shadow-none bg-transparent md:ring-1 md:shadow-2xl md:bg-white/80 md:backdrop-blur-xl md:dark:bg-zinc-900/80">
-        <CardHeader className="space-y-2 text-center pb-6">
+        <CardHeader className="space-y-1 md:space-y-2 text-center p-4 pb-2 md:p-6 md:pb-6">
           <motion.img
             src="/light-mode-logo.png"
             alt="Crave"
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="h-10 w-auto mx-auto mb-4 dark:hidden"
+            className="h-8 md:h-10 w-auto mx-auto mb-2 md:mb-4 dark:hidden"
           />
           <motion.img
             src="/dark-mode-logo.png"
@@ -46,17 +68,17 @@ export default function RegisterPage() {
             initial={{ scale: 0.8 }}
             animate={{ scale: 1 }}
             transition={{ delay: 0.2, type: "spring" }}
-            className="h-10 w-auto mx-auto mb-4 hidden dark:block"
+            className="h-8 md:h-10 w-auto mx-auto mb-2 md:mb-4 hidden dark:block"
           />
           <CardTitle className="text-2xl font-bold tracking-tight">{t("title")}</CardTitle>
           <CardDescription className="text-zinc-500">
             {t("subtitle")}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 md:space-y-4 p-4 pt-0 md:p-6 md:pt-0">
           <Button 
             variant="outline" 
-            className="w-full h-11 relative overflow-hidden group border-zinc-200 dark:border-zinc-800" 
+            className="w-full h-10 md:h-11 relative overflow-hidden group border-zinc-200 dark:border-zinc-800" 
             onClick={handleGoogleRegister}
             disabled={isLoading}
           >
@@ -83,29 +105,31 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="name">{t("nameLabel")}</Label>
-              <Input id="name" type="text" placeholder={t("namePlaceholder")} className="h-11" disabled />
+          <form action={handleEmailRegister} className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+            <div className="space-y-1 md:space-y-2">
+              <Label htmlFor="name" className="text-xs md:text-sm">{t("nameLabel")}</Label>
+              <Input id="name" name="name" type="text" placeholder={t("namePlaceholder")} className="h-9 md:h-11 text-xs md:text-sm px-2" required disabled={isEmailLoading || isLoading} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("emailLabel")}</Label>
-              <Input id="email" type="email" placeholder={t("emailPlaceholder")} className="h-11" disabled />
+            <div className="space-y-1 md:space-y-2">
+              <Label htmlFor="email" className="text-xs md:text-sm">{t("emailLabel")}</Label>
+              <Input id="email" name="email" type="email" placeholder={t("emailPlaceholder")} className="h-9 md:h-11 text-xs md:text-sm px-2" required disabled={isEmailLoading || isLoading} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="phone">{t("phoneLabel")}</Label>
-              <Input id="phone" type="tel" placeholder={t("phonePlaceholder")} className="h-11" disabled />
+            <div className="space-y-1 md:space-y-2">
+              <Label htmlFor="phone" className="text-xs md:text-sm">{t("phoneLabel")}</Label>
+              <Input id="phone" name="phone" type="tel" placeholder={t("phonePlaceholder")} className="h-9 md:h-11 text-xs md:text-sm px-2" required disabled={isEmailLoading || isLoading} />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("passwordLabel")}</Label>
-              <Input id="password" type="password" placeholder={t("passwordPlaceholder")} className="h-11" disabled />
+            <div className="space-y-1 md:space-y-2">
+              <Label htmlFor="password" className="text-xs md:text-sm">{t("passwordLabel")}</Label>
+              <Input id="password" name="password" type="password" placeholder={t("passwordPlaceholder")} className="h-9 md:h-11 text-xs md:text-sm px-2" required disabled={isEmailLoading || isLoading} />
             </div>
-            <Button className="w-full h-11" disabled>
-              {t("registerBtn")}
-            </Button>
-          </div>
+            <div className="col-span-1 md:col-span-2 pt-2">
+              <Button type="submit" className="w-full h-9 md:h-11 text-xs md:text-sm" disabled={isEmailLoading || isLoading}>
+                {isEmailLoading ? "Loading..." : t("registerBtn")}
+              </Button>
+            </div>
+          </form>
         </CardContent>
-        <CardFooter className="flex flex-col gap-4 text-center">
+        <CardFooter className="flex flex-col gap-3 md:gap-4 text-center p-4 pt-0 md:p-6 md:pt-0">
           <div className="text-sm text-zinc-500">
             {t("hasAccount")}{" "}
             <Link href="/login" className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">

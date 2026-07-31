@@ -56,3 +56,9 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Implementasi terjemahan dwibahasa (EN/ID) pada semua halaman Marketing dan Auth.
 - [x] Perbaikan form Login/Register (tambahan field lengkap & layout seamless di mobile).
 - [x] Penyesuaian layout *Trusted By* (siap untuk slider full-width) dan styling angka komponen *Resources*.
+- [x] Optimalisasi responsivitas *form* registrasi (pemangkasan *padding* & grid horizontal di desktop).
+- [x] Implementasi animasi Flip Card 3D pada profil tim (halaman *About*).
+- [x] Perbaikan efek bayangan (*shadow*) pada Navbar dan *card Pricing* khusus mobile.
+- [x] Optimalisasi slider harga (*pricing*) di mobile agar *card* selanjutnya tertutup sempurna.
+- [x] Konversi bendera *language switcher* menggunakan gambar SVG dari CDN.
+- [x] Implementasi animasi *Marquee* yang berjalan otomatis tanpa batas pada bagian logo klien.

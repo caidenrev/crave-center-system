@@ -6,22 +6,44 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { loginWithGoogle } from "@/app/actions/auth"
+import { loginWithGoogle, loginWithEmail } from "@/app/actions/auth"
 import { toast } from "sonner"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const t = useTranslations("LoginPage")
+  const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
+  const [isEmailLoading, setIsEmailLoading] = useState(false)
 
   const handleGoogleLogin = async () => {
     setIsLoading(true)
     try {
-      await loginWithGoogle()
+      const result = await loginWithGoogle()
+      if (result?.error) {
+        toast.error(result.error)
+        setIsLoading(false)
+      } else if (result?.url) {
+        window.location.href = result.url
+      }
     } catch (error) {
-      toast.error(t("googleError"))
+      toast.error(t("googleError") || "Error")
       setIsLoading(false)
+    }
+  }
+
+  const handleEmailLogin = async (formData: FormData) => {
+    setIsEmailLoading(true)
+    const result = await loginWithEmail(formData)
+    
+    if (result?.error) {
+      toast.error(result.error)
+      setIsEmailLoading(false)
+    } else if (result?.success) {
+      toast.success("Login successful!")
+      router.push("/auth/callback") // Use callback to handle RBAC redirect
     }
   }
 
@@ -85,10 +107,10 @@ export default function LoginPage() {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <form action={handleEmailLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">{t("emailLabel")}</Label>
-              <Input id="email" type="email" placeholder={t("emailPlaceholder")} className="h-11" disabled />
+              <Input id="email" name="email" type="email" placeholder={t("emailPlaceholder")} className="h-11" required disabled={isEmailLoading || isLoading} />
             </div>
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -97,12 +119,12 @@ export default function LoginPage() {
                   {t("forgotPassword")}
                 </Link>
               </div>
-              <Input id="password" type="password" placeholder="••••••••" className="h-11" disabled />
+              <Input id="password" name="password" type="password" placeholder="••••••••" className="h-11" required disabled={isEmailLoading || isLoading} />
             </div>
-            <Button className="w-full h-11" disabled>
-              {t("signInBtn")}
+            <Button type="submit" className="w-full h-11" disabled={isEmailLoading || isLoading}>
+              {isEmailLoading ? "Loading..." : t("signInBtn")}
             </Button>
-          </div>
+          </form>
         </CardContent>
         <CardFooter className="flex flex-col gap-4 text-center">
           <div className="text-sm text-zinc-500">
