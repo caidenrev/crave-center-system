@@ -6,13 +6,12 @@ import { prisma } from '@/lib/db'
 
 import { createClient } from "@/utils/supabase/server"
 
-export default async function WorkerLayout({
-  children,
-  params: { locale }
-}: {
+export default async function WorkerLayout(props: {
   children: ReactNode,
-  params: { locale: string }
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await props.params
+  const { children } = props
   await requireRole(["TEAM_MEMBER"])
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
