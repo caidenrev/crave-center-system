@@ -35,6 +35,12 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
     runningProjects = projects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING_DP').length
     endedProjects = projects.filter(p => p.status === 'COMPLETED').length
   }
+
+  const progressPercentage = totalProjects > 0 ? Math.round((endedProjects / totalProjects) * 100) : 0;
+  const activeProjects = projects.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');
+  const upcomingProject = activeProjects.length > 0 
+    ? activeProjects.sort((a, b) => new Date(a.targetDeliveryDate).getTime() - new Date(b.targetDeliveryDate).getTime())[0]
+    : null;
   
   return (
     <div className="flex flex-col gap-8 pb-10">
@@ -151,13 +157,21 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
           {/* Reminder Card */}
           <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4">{t('reminders')}</h3>
-            <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 leading-tight">Meeting with Development Team</h4>
-            <div className="flex items-center gap-2 mt-3 text-sm text-slate-500 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 rounded-xl w-fit">
-              <Clock className="w-4 h-4" /> 02.00 pm - 04.00 pm
-            </div>
-            <button className="w-full mt-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-md">
-              Start Meeting
-            </button>
+            {upcomingProject ? (
+              <>
+                <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">Deadline: {upcomingProject.title}</h4>
+                <div className="flex items-center gap-2 mt-3 text-sm text-slate-500 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 rounded-xl w-fit">
+                  <Clock className="w-4 h-4" /> {t('dueDate')} {new Date(upcomingProject.targetDeliveryDate).toLocaleDateString()}
+                </div>
+                <Link href={`/${locale}/client/projects`} className="w-full mt-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-md flex justify-center items-center">
+                  View Project
+                </Link>
+              </>
+            ) : (
+              <div className="text-slate-500 dark:text-slate-400 mt-4">
+                No upcoming deadlines.
+              </div>
+            )}
           </div>
 
           {/* Mini Progress Card */}
@@ -165,7 +179,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
              <h3 className="font-bold text-lg text-slate-900 dark:text-white absolute top-6 left-6">{t('progress')}</h3>
              <div className="w-36 h-36 rounded-full border-[10px] border-primary/20 flex items-center justify-center mt-10 shadow-inner">
                 <div className="text-center">
-                  <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">41%</span>
+                  <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">{progressPercentage}%</span>
                 </div>
              </div>
              <div className="flex justify-center gap-5 mt-8 w-full text-xs font-bold text-slate-600 dark:text-slate-400 uppercase tracking-wide">

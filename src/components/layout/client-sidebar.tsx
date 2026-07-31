@@ -25,7 +25,7 @@ export function ClientSidebar({ locale }: { locale: string }) {
       title: t('general'),
       items: [
         { name: t('settings'), href: `/${locale}/client/settings`, icon: Settings },
-        { name: t('logout'), href: `/${locale}/client/logout`, icon: LogOut },
+        { name: t('logout'), href: `/${locale}/auth/logout`, icon: LogOut },
       ]
     }
   ]

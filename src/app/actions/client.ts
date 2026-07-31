@@ -35,9 +35,41 @@ export async function approveProjectQuote(projectId: string) {
       }
     })
 
-    revalidatePath("/(client)")
+    revalidatePath("/client")
+    
     return { success: true }
-  } catch (error: any) {
-    return { success: false, error: error.message }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function updateClientSettings(formData: FormData) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const name = formData.get("name") as string
+    const phone = formData.get("phone") as string
+
+    if (!name) {
+      throw new Error("Name is required")
+    }
+
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        name,
+        phone
+      }
+    })
+
+    revalidatePath("/client/settings")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
   }
 }

@@ -6,7 +6,7 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Inisialisasi Project Next.js Full-stack (App Router + Tailwind CSS + ShadcnUI).
 - [x] Setup Prisma ORM terintegrasi di dalam project Next.js.
 - [x] Setup Database Supabase PostgreSQL dan migrasi awal (skema tabel MVP).
-- [ ] Setup Supabase Storage (beserta IAM/Policies untuk akses file).
+- [x] Setup Supabase Storage (beserta IAM/Policies untuk akses file).
 - [ ] Setup CI/CD pipeline (Staging environment).
 
 ## 2. Autentikasi & RBAC
@@ -16,9 +16,10 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [ ] Seeding akun dummy untuk Admin dan Team Member.
 
 ## 3. Modul Job Request
-- [/] Halaman Form Job Request (Client side).
-- [ ] Dashboard Admin: Menampilkan daftar Job Request masuk.
-- [ ] Integrasi Frontend-Backend untuk submit Job Request.
+- [x] Halaman Form Job Request (Client side).
+- [x] Dashboard Pekerja (Worker Dashboard) & Integrasi Email Resend: Menampilkan daftar Job Request masuk ke pekerja.
+- [x] Integrasi Frontend-Backend untuk submit Job Request.
+- [x] Fitur Negosiasi Harga (Worker Submit Quote -> Client Accept Quote).
 
 ## 4. Modul Negosiasi, Terms & Contract
 - [ ] UI/UX Halaman Detail Project (Chat Interface).
@@ -61,4 +62,11 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Perbaikan efek bayangan (*shadow*) pada Navbar dan *card Pricing* khusus mobile.
 - [x] Optimalisasi slider harga (*pricing*) di mobile agar *card* selanjutnya tertutup sempurna.
 - [x] Konversi bendera *language switcher* menggunakan gambar SVG dari CDN.
+- [x] Konversi bendera *language switcher* menggunakan gambar SVG dari CDN.
 - [x] Implementasi animasi *Marquee* yang berjalan otomatis tanpa batas pada bagian logo klien.
+
+## 10. Tambahan Dasbor Klien & Pekerja
+- [x] Implementasi tampilan "Dasbor Klien" yang modern dan *real-time*.
+- [x] Halaman *Active Projects*, *Contracts & Terms*, dan *Payment History* di dasbor klien.
+- [x] Pembuatan sistem *update profile* (*Settings*) untuk Klien.
+- [x] Integrasi dan fiksasi fungsi *Logout* terpusat.

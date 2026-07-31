@@ -357,5 +357,29 @@
     "price": "Price (IDR)",
     "duration": "Estimated Duration (Days)",
     "submitQuote": "Send Quote"
+  },
+  "ClientProjects": {
+    "title": "Active Projects",
+    "subtitle": "All your requested and ongoing projects in one place."
+  },
+  "ClientContracts": {
+    "title": "Contracts & Terms",
+    "subtitle": "Review your active contracts and approved terms.",
+    "noContracts": "No active contracts yet."
+  },
+  "ClientPayments": {
+    "title": "Payment History",
+    "subtitle": "Track all your DP and milestone payments.",
+    "noPayments": "No payment history found."
+  },
+  "ClientSettings": {
+    "title": "Settings",
+    "subtitle": "Manage your profile and preferences.",
+    "name": "Full Name",
+    "phone": "Phone Number",
+    "save": "Save Changes",
+    "saving": "Saving...",
+    "success": "Profile updated successfully!",
+    "error": "Failed to update profile."
   }
 }

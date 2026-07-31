@@ -357,5 +357,29 @@
     "price": "Harga (Rp)",
     "duration": "Estimasi Waktu (Hari)",
     "submitQuote": "Kirim Penawaran"
+  },
+  "ClientProjects": {
+    "title": "Proyek Aktif",
+    "subtitle": "Semua proyek yang Anda ajukan dan sedang berjalan."
+  },
+  "ClientContracts": {
+    "title": "Kontrak & Terms",
+    "subtitle": "Tinjau kontrak aktif dan persyaratan yang disetujui.",
+    "noContracts": "Belum ada kontrak aktif."
+  },
+  "ClientPayments": {
+    "title": "Riwayat Pembayaran",
+    "subtitle": "Lacak semua pembayaran DP dan pencapaian Anda.",
+    "noPayments": "Belum ada riwayat pembayaran."
+  },
+  "ClientSettings": {
+    "title": "Pengaturan",
+    "subtitle": "Kelola profil dan preferensi Anda.",
+    "name": "Nama Lengkap",
+    "phone": "Nomor Telepon",
+    "save": "Simpan Perubahan",
+    "saving": "Menyimpan...",
+    "success": "Profil berhasil diperbarui!",
+    "error": "Gagal memperbarui profil."
   }
 }
