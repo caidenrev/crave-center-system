@@ -2,9 +2,13 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Code2, PenTool, Star, UploadCloud, CheckCircle2 } from 'lucide-react'
+import { Code2, PenTool, Star, UploadCloud, CheckCircle2, Loader2 } from 'lucide-react'
 import { createJobRequest } from '@/app/actions/project'
 import { createClient } from '@/utils/supabase/client'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 type Worker = {
   id: string
@@ -90,11 +94,11 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
       
       {/* Progress Steps */}
       <div className="flex items-center mb-10">
-        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${step >= 1 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>1</div>
-        <div className={`flex-1 h-1 mx-2 rounded-full ${step >= 2 ? 'bg-primary' : 'bg-slate-100 dark:bg-slate-800'}`}></div>
-        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${step >= 2 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>2</div>
-        <div className={`flex-1 h-1 mx-2 rounded-full ${step >= 3 ? 'bg-primary' : 'bg-slate-100 dark:bg-slate-800'}`}></div>
-        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm ${step >= 3 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>3</div>
+        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm transition-colors ${step >= 1 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400'}`}>1</div>
+        <div className={`flex-1 h-1 mx-2 rounded-full transition-colors ${step >= 2 ? 'bg-primary' : 'bg-slate-100 dark:bg-slate-800'}`}></div>
+        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm transition-colors ${step >= 2 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>2</div>
+        <div className={`flex-1 h-1 mx-2 rounded-full transition-colors ${step >= 3 ? 'bg-primary' : 'bg-slate-100 dark:bg-slate-800'}`}></div>
+        <div className={`flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm transition-colors ${step >= 3 ? 'bg-primary text-white' : 'bg-slate-100 text-slate-400 dark:bg-slate-800'}`}>3</div>
       </div>
 
       {step === 1 && (
@@ -103,7 +107,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <button 
               onClick={() => setCategory('IT')}
-              className={`p-6 rounded-2xl border-2 text-left transition-all ${category === 'IT' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50'}`}
+              className={`p-6 rounded-2xl border-2 text-left transition-all cursor-pointer active:scale-[0.98] ${category === 'IT' ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-sm'}`}
             >
               <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center mb-4">
                 <Code2 className="w-6 h-6" />
@@ -114,7 +118,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
 
             <button 
               onClick={() => setCategory('NON_IT')}
-              className={`p-6 rounded-2xl border-2 text-left transition-all ${category === 'NON_IT' ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50'}`}
+              className={`p-6 rounded-2xl border-2 text-left transition-all cursor-pointer active:scale-[0.98] ${category === 'NON_IT' ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-sm'}`}
             >
               <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-600 flex items-center justify-center mb-4">
                 <PenTool className="w-6 h-6" />
@@ -124,13 +128,14 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
             </button>
           </div>
           <div className="mt-8 flex justify-end">
-            <button 
+            <Button 
               disabled={!category}
               onClick={() => setStep(2)}
-              className="px-6 py-2.5 bg-primary text-white font-medium rounded-xl disabled:opacity-50 transition-all hover:bg-primary/90"
+              size="lg"
+              className="px-6 rounded-xl"
             >
               {t.continue}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -140,7 +145,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
           <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">{t.step2}</h2>
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
             {filteredWorkers.map(w => (
-              <div key={w.id} onClick={() => setWorkerId(w.id)} className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all ${workerId === w.id ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50'}`}>
+              <div key={w.id} onClick={() => setWorkerId(w.id)} className={`p-4 rounded-2xl border-2 cursor-pointer flex items-center justify-between transition-all active:scale-[0.99] ${workerId === w.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 dark:border-slate-800 hover:border-primary/50 hover:shadow-sm'}`}>
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-500">
                     {w.name.substring(0,2).toUpperCase()}
@@ -163,7 +168,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
                     </div>
                   </div>
                 </div>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${workerId === w.id ? 'border-primary bg-primary' : 'border-slate-300'}`}>
+                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${workerId === w.id ? 'border-primary bg-primary' : 'border-slate-300'}`}>
                   {workerId === w.id && <CheckCircle2 className="w-4 h-4 text-white" />}
                 </div>
               </div>
@@ -175,16 +180,17 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
             )}
           </div>
           <div className="mt-8 flex justify-between">
-            <button onClick={() => setStep(1)} className="px-6 py-2.5 text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-all">
+            <Button variant="ghost" onClick={() => setStep(1)} className="px-6 rounded-xl">
               {t.back}
-            </button>
-            <button 
+            </Button>
+            <Button 
               disabled={!workerId}
               onClick={() => setStep(3)}
-              className="px-6 py-2.5 bg-primary text-white font-medium rounded-xl disabled:opacity-50 transition-all hover:bg-primary/90"
+              size="lg"
+              className="px-6 rounded-xl"
             >
               {t.continue}
-            </button>
+            </Button>
           </div>
         </div>
       )}
@@ -193,33 +199,35 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
         <form onSubmit={handleSubmit} className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">{t.step3}</h2>
           
-          <div className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.projectTitle}</label>
-              <input required name="title" type="text" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="E.g. E-Commerce Website" />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="title">{t.projectTitle}</Label>
+              <Input required name="title" id="title" type="text" className="h-11 rounded-xl" placeholder="E.g. E-Commerce Website" />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.projectDesc}</label>
-              <textarea required name="description" rows={4} className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="Describe what you need..." />
+            <div className="space-y-2">
+              <Label htmlFor="description">{t.projectDesc}</Label>
+              <Textarea required name="description" id="description" rows={4} className="min-h-[100px] rounded-xl" placeholder="Describe what you need..." />
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.deadline}</label>
-              <input required name="targetDeliveryDate" type="date" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" />
-            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="targetDeliveryDate">{t.deadline}</Label>
+                <Input required name="targetDeliveryDate" id="targetDeliveryDate" type="date" className="h-11 rounded-xl" />
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Budget (Opsional)</label>
-              <div className="relative">
-                <span className="absolute left-4 top-3 text-slate-400">Rp</span>
-                <input name="budgetRange" type="number" min="0" step="1000" className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="e.g. 5000000" />
+              <div className="space-y-2">
+                <Label htmlFor="budgetRange">Budget (Opsional)</Label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
+                  <Input name="budgetRange" id="budgetRange" type="number" min="0" step="1000" className="h-11 pl-10 rounded-xl" placeholder="e.g. 5000000" />
+                </div>
               </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.uploadBrief}</label>
-              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative">
+            <div className="space-y-2">
+              <Label>{t.uploadBrief}</Label>
+              <div className="border-2 border-dashed border-slate-200 dark:border-slate-700 rounded-xl p-8 text-center hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors relative cursor-pointer">
                 <input 
                   type="file" 
                   accept=".pdf,.doc,.docx"
@@ -235,23 +243,24 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
           </div>
 
           <div className="mt-8 flex justify-between">
-            <button type="button" onClick={() => setStep(2)} className="px-6 py-2.5 text-slate-600 dark:text-slate-400 font-medium hover:text-slate-900 dark:hover:text-white transition-all">
+            <Button type="button" variant="ghost" onClick={() => setStep(2)} className="px-6 rounded-xl">
               {t.back}
-            </button>
-            <button 
+            </Button>
+            <Button 
               type="submit"
               disabled={isSubmitting}
-              className="px-6 py-2.5 bg-primary text-white font-medium rounded-xl disabled:opacity-50 transition-all hover:bg-primary/90 flex items-center gap-2"
+              size="lg"
+              className="px-6 rounded-xl"
             >
               {isSubmitting ? (
                 <>
-                  <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   {t.submitting}
                 </>
               ) : (
                 t.submit
               )}
-            </button>
+            </Button>
           </div>
         </form>
       )}

@@ -1,9 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { FileText, Download, Calendar, User } from 'lucide-react'
+import { FileText, Download, Calendar, User, Loader2 } from 'lucide-react'
 import { submitWorkerOffer } from '@/app/actions/worker'
 import { useRouter } from 'next/navigation'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
 
 export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any }) {
   const [selectedReq, setSelectedReq] = useState<any | null>(null)
@@ -45,7 +48,7 @@ export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any
             <div 
               key={req.id} 
               onClick={() => setSelectedReq(req)}
-              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all ${selectedReq?.id === req.id ? 'border-primary bg-primary/5' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/50'}`}
+              className={`p-5 rounded-2xl border-2 cursor-pointer transition-all active:scale-[0.99] ${selectedReq?.id === req.id ? 'border-primary bg-primary/5 shadow-sm' : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/50 hover:shadow-sm'}`}
             >
               <h3 className="font-bold text-slate-900 dark:text-white mb-2">{req.title}</h3>
               <div className="flex items-center gap-2 text-sm text-slate-500 mb-2">
@@ -68,7 +71,7 @@ export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any
           <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-8 shadow-sm border border-slate-200 dark:border-slate-800 animate-in fade-in slide-in-from-bottom-4 duration-500">
             <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">{t.projectDetails}</h2>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
               <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
                 <p className="text-sm text-slate-500 mb-1">{t.client}</p>
                 <p className="font-medium text-slate-900 dark:text-white">{selectedReq.client.name}</p>
@@ -94,7 +97,7 @@ export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any
                   href={selectedReq.briefFileUrl} 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
+                  className="inline-flex items-center gap-2 px-4 py-2.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-medium rounded-xl hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer"
                 >
                   <Download className="w-5 h-5" />
                   {t.downloadBrief}
@@ -109,26 +112,34 @@ export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any
               <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t.quoteTitle}</h3>
               <form onSubmit={handleQuoteSubmit} className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.price}</label>
+                  <div className="space-y-2">
+                    <Label htmlFor="offeredPrice">{t.price}</Label>
                     <div className="relative">
-                      <span className="absolute left-4 top-3 text-slate-400">Rp</span>
-                      <input required name="offeredPrice" type="number" min="0" step="1000" className="w-full pl-10 pr-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="5000000" />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
+                      <Input required name="offeredPrice" id="offeredPrice" type="number" min="0" step="1000" className="h-11 pl-10 rounded-xl" placeholder="5000000" />
                     </div>
                   </div>
-                  <div>
-                    <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.duration}</label>
-                    <input required name="offeredDuration" type="number" min="1" className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" placeholder="e.g. 7" />
+                  <div className="space-y-2">
+                    <Label htmlFor="offeredDuration">{t.duration}</Label>
+                    <Input required name="offeredDuration" id="offeredDuration" type="number" min="1" className="h-11 rounded-xl" placeholder="e.g. 7" />
                   </div>
                 </div>
-                <div className="flex justify-end mt-4">
-                  <button 
+                <div className="flex justify-end pt-2">
+                  <Button 
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-3 bg-primary text-white font-medium rounded-xl disabled:opacity-50 hover:bg-primary/90 transition-colors flex items-center gap-2"
+                    size="lg"
+                    className="px-6 rounded-xl"
                   >
-                    {isSubmitting ? "Submitting..." : t.submitQuote}
-                  </button>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      t.submitQuote
+                    )}
+                  </Button>
                 </div>
               </form>
             </div>
