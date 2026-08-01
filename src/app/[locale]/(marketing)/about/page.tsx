@@ -31,7 +31,7 @@ export default function AboutPage() {
           className="space-y-6"
         >
           <h1 className="text-5xl md:text-7xl font-black tracking-tight text-foreground">
-            {t("title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">{t("titleHighlight")}</span>
+            {t("title")} <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">{t("titleHighlight")}</span>
           </h1>
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
             {t("subtitle")}
@@ -107,7 +107,7 @@ export default function AboutPage() {
       <section className="relative z-10 w-full max-w-5xl px-6 py-20">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-black mb-4 text-foreground">
-            {t("teamTitle")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">{t("teamTitleHighlight")}</span>
+            {t("teamTitle")} <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">{t("teamTitleHighlight")}</span>
           </h2>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto font-medium leading-relaxed">
             {t("teamSubtitle")}

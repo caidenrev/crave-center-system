@@ -26,7 +26,7 @@ export function DevPanel({ currentUser }: { currentUser: any }) {
   return (
     <div className="bg-white p-8 rounded-2xl shadow-lg border border-slate-200 max-w-xl mx-auto w-full mt-10">
       <h2 className="text-2xl font-bold text-slate-900 mb-2">Dev Control Panel</h2>
-      <p className="text-slate-500 mb-8">Use this panel to test different dashboard views by changing your account's role.</p>
+      <p className="text-slate-500 mb-8">Use this panel to test different dashboard views by changing your accounts role.</p>
 
       <div className="bg-slate-50 p-4 rounded-xl border border-slate-100 mb-8">
         <div className="text-sm text-slate-500 mb-1">Current Account</div>

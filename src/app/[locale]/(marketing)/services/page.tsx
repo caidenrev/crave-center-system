@@ -108,7 +108,7 @@ export default function ServicesPage() {
           className="space-y-6 flex flex-col items-center"
         >
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground max-w-4xl">
-            {t("title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">{t("titleHighlight")}</span>
+            {t("title")} <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">{t("titleHighlight")}</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl font-medium">
             {t("subtitle")}
@@ -243,7 +243,7 @@ export default function ServicesPage() {
           viewport={{ once: true }}
           className="bg-zinc-950 rounded-[3rem] p-12 md:p-16 border border-white/10 relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-tr from-blue-600/30 to-purple-800/30" />
+          <div className="absolute inset-0 bg-linear-to-tr from-blue-600/30 to-purple-800/30" />
           <div className="relative z-10">
             <h2 className="text-3xl md:text-4xl font-black text-white mb-8">{t("ctaTitle")}</h2>
             <Link href="/request">

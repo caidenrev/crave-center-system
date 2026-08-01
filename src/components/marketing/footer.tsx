@@ -3,7 +3,7 @@ import Link from "next/link"
 export function Footer() {
   return (
     <footer className="border-t border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950 text-zinc-600 dark:text-zinc-400 relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-gradient-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[80%] h-px bg-linear-to-r from-transparent via-zinc-200 dark:via-zinc-800 to-transparent"></div>
       
       <div className="max-w-6xl mx-auto px-6 py-16 md:py-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
@@ -21,18 +21,18 @@ export function Footer() {
           <div>
             <h4 className="font-semibold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Platform</h4>
             <ul className="space-y-4 text-sm font-medium">
-              <li><Link href="/#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Fitur Utama</Link></li>
-              <li><Link href="/request" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Mulai Project Baru</Link></li>
-              <li><Link href="/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Client Portal</Link></li>
+              <li><Link href="/#features" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Fitur Utama</Link></li>
+              <li><Link href="/client/request/new" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Mulai Project Baru</Link></li>
+              <li><Link href="/login" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Client Portal</Link></li>
             </ul>
           </div>
 
           <div>
             <h4 className="font-semibold text-zinc-900 dark:text-white mb-6 text-sm uppercase tracking-wider">Perusahaan</h4>
             <ul className="space-y-4 text-sm font-medium">
-              <li><Link href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Hubungi Kami</Link></li>
-              <li><Link href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Kebijakan Privasi</Link></li>
-              <li><Link href="#" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors">Syarat & Ketentuan</Link></li>
+              <li><Link href="/contact" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Hubungi Kami</Link></li>
+              <li><Link href="/privacy" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Kebijakan Privasi</Link></li>
+              <li><Link href="/terms" className="hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors cursor-pointer">Syarat & Ketentuan</Link></li>
             </ul>
           </div>
         </div>

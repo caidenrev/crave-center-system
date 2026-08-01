@@ -39,7 +39,7 @@ export default function Home() {
 
           <h1 className="text-5xl md:text-7xl lg:text-[5.5rem] font-black tracking-tight text-foreground max-w-5xl leading-[1.05]">
             {t("title1")} <br className="hidden md:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">
               {t("title2")}
             </span>
           </h1>
@@ -49,13 +49,13 @@ export default function Home() {
           </p>
 
           <div className="flex flex-col sm:flex-row gap-4 pt-8 w-full sm:w-auto">
-            <Link href="/request" className="w-full sm:w-auto">
+            <Link href="/client/request/new" className="w-full sm:w-auto">
               <Button size="lg" className="w-full sm:w-auto h-14 px-8 text-base font-bold group rounded-xl bg-primary hover:bg-blue-700 text-white transition-all shadow-[0_8px_25px_rgba(37,99,235,0.4)] hover:-translate-y-1">
                 {t("cta1")}
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Button>
             </Link>
-            <Link href="/contact" className="w-full sm:w-auto">
+            <Link href="/services" className="w-full sm:w-auto">
               <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 text-base font-bold rounded-xl border-border hover:bg-muted text-foreground transition-all hover:-translate-y-1 bg-white dark:bg-card">
                 {t("cta2")}
               </Button>
@@ -115,7 +115,7 @@ export default function Home() {
             transition={{ type: "spring", stiffness: 300 }}
             className="md:col-span-2 p-10 rounded-3xl bg-secondary text-white shadow-2xl overflow-hidden relative group"
           >
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-linear-to-br from-primary/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative z-10 h-full flex flex-col justify-between">
               <div>
                 <div className="w-14 h-14 bg-white/10 text-white rounded-2xl flex items-center justify-center mb-8 backdrop-blur-md">
@@ -175,7 +175,7 @@ export default function Home() {
             whileHover={{ y: -8 }}
             className="md:col-span-2 p-10 rounded-3xl bg-card border border-border shadow-xl overflow-hidden relative group"
           >
-            <div className="absolute inset-0 bg-gradient-to-tl from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+            <div className="absolute inset-0 bg-linear-to-tl from-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
             <div className="relative z-10 h-full flex flex-col md:flex-row gap-8 justify-between items-center">
               <div className="md:w-1/2">
                 <div className="w-14 h-14 bg-success/10 text-success rounded-2xl flex items-center justify-center mb-8">
@@ -299,7 +299,7 @@ export default function Home() {
       <section className="w-full max-w-6xl mx-auto px-6 py-24 relative z-10 text-center">
         <div className="rounded-[3rem] p-12 md:p-24 shadow-2xl relative overflow-hidden border border-white/10 bg-zinc-950">
           {/* Animated Background Gradients */}
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-600/40 via-indigo-900/40 to-purple-800/40 z-0" />
+          <div className="absolute inset-0 bg-linear-to-br from-blue-600/40 via-indigo-900/40 to-purple-800/40 z-0" />
           <motion.div
             animate={{
               scale: [1, 1.2, 1],

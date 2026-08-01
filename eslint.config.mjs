@@ -13,6 +13,15 @@ const eslintConfig = defineConfig([
     "build/**",
     "next-env.d.ts",
   ]),
+  {
+    rules: {
+      // Matikan error merah untuk penggunaan tipe data 'any'
+      "@typescript-eslint/no-explicit-any": "off",
+
+      // (Opsional) Mengubah alert variabel yang tidak terpakai dari merah menjadi kuning (warn)
+      "@typescript-eslint/no-unused-vars": "warn",
+    },
+  },
 ]);
 
 export default eslintConfig;

@@ -56,7 +56,7 @@ export default function PricingPage() {
           className="space-y-6 flex flex-col items-center"
         >
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground max-w-4xl">
-            {t("title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">{t("titleHighlight")}</span>
+            {t("title")} <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">{t("titleHighlight")}</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl font-medium">
             {t("subtitle")}

@@ -2,8 +2,14 @@
 
 import { useState } from 'react'
 import { updateClientSettings } from '@/app/actions/client'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Button } from '@/components/ui/button'
+import { Loader2, CheckCircle2, AlertCircle } from 'lucide-react'
 
 export function SettingsForm({ user, t }: { user: any, t: any }) {
+  const [name, setName] = useState(user?.name || '')
+  const [phone, setPhone] = useState(user?.phone || '')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [message, setMessage] = useState<{ text: string, type: 'success' | 'error' } | null>(null)
 
@@ -12,7 +18,10 @@ export function SettingsForm({ user, t }: { user: any, t: any }) {
     setIsSubmitting(true)
     setMessage(null)
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('phone', phone)
+
     const res = await updateClientSettings(formData)
 
     if (res.success) {
@@ -27,48 +36,54 @@ export function SettingsForm({ user, t }: { user: any, t: any }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6 max-w-xl">
       {message && (
-        <div className={`p-4 rounded-xl text-sm font-medium ${message.type === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'bg-red-50 text-red-600 border border-red-200'}`}>
+        <div className={`p-4 rounded-xl text-sm font-medium flex items-center gap-3 ${message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-900/20 dark:text-emerald-400 dark:border-emerald-800' : 'bg-red-50 text-red-700 border border-red-200 dark:bg-red-900/20 dark:text-red-400 dark:border-red-800'}`}>
+          {message.type === 'success' ? <CheckCircle2 className="w-4 h-4 shrink-0" /> : <AlertCircle className="w-4 h-4 shrink-0" />}
           {message.text}
         </div>
       )}
       
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.name || "Full Name"}</label>
-        <input 
+      <div className="space-y-2">
+        <Label htmlFor="name">{t.name || "Full Name"}</Label>
+        <Input 
           required 
           name="name" 
+          id="name"
           type="text" 
-          defaultValue={user.name}
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" 
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="h-11 rounded-xl"
         />
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">{t.phone || "Phone Number"}</label>
-        <input 
+      <div className="space-y-2">
+        <Label htmlFor="phone">{t.phone || "Phone Number"}</Label>
+        <Input 
           name="phone" 
+          id="phone"
           type="text" 
-          defaultValue={user.phone || ''}
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
           placeholder="+62 8..."
-          className="w-full px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 focus:ring-2 focus:ring-primary/20 outline-none transition-all" 
+          className="h-11 rounded-xl"
         />
       </div>
 
-      <div className="pt-4">
-        <button 
+      <div className="pt-2">
+        <Button 
           type="submit"
           disabled={isSubmitting}
-          className="px-6 py-2.5 bg-primary text-white font-medium rounded-xl disabled:opacity-50 transition-all hover:bg-primary/90 flex items-center gap-2"
+          size="lg"
+          className="px-6 rounded-xl cursor-pointer"
         >
           {isSubmitting ? (
             <>
-              <div className="w-4 h-4 rounded-full border-2 border-white border-t-transparent animate-spin"></div>
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               {t.saving || "Saving..."}
             </>
           ) : (
             t.save || "Save Changes"
           )}
-        </button>
+        </Button>
       </div>
     </form>
   )

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { ShieldCheck, LayoutDashboard, Zap, Server, ChevronRight } from "lucide-react"
+import { ShieldCheck, LayoutDashboard} from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export default function ProductsPage() {
@@ -24,7 +24,7 @@ export default function ProductsPage() {
           className="space-y-6 flex flex-col items-center"
         >
           <h1 className="text-4xl md:text-6xl font-black tracking-tight text-foreground max-w-4xl">
-            {t("title")} <span className="text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary">{t("titleHighlight")}</span>
+            {t("title")} <span className="text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary">{t("titleHighlight")}</span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl font-medium">
             {t("subtitle")}
@@ -63,7 +63,7 @@ export default function ProductsPage() {
           viewport={{ once: true }}
           className="bg-secondary text-white p-8 md:p-12 rounded-3xl shadow-2xl flex flex-col md:flex-row-reverse gap-8 items-center relative overflow-hidden"
         >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/30 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-linear-to-br from-primary/30 to-transparent pointer-events-none" />
           <div className="md:w-1/2 space-y-4 relative z-10">
             <div className="w-12 h-12 bg-white/10 text-accent rounded-xl flex items-center justify-center backdrop-blur-sm">
               <ShieldCheck className="w-6 h-6" />
