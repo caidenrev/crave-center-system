@@ -1,15 +1,27 @@
 "use client"
 
 import { motion } from "framer-motion"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
-import { Mail, MapPin, Phone } from "lucide-react"
+import { Mail, MapPin, Phone, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 export default function ContactPage() {
   const t = useTranslations("ContactPage")
+  const [isSubmitting, setIsSubmitting] = useState(false)
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsSubmitting(true)
+    // Simulate submission
+    await new Promise(resolve => setTimeout(resolve, 1500))
+    alert(t("success"))
+    setIsSubmitting(false)
+  }
+
   return (
     <div className="relative overflow-hidden flex flex-col items-center pt-32 pb-24 min-h-screen">
       <div className="w-full max-w-6xl px-6">
@@ -81,7 +93,7 @@ export default function ContactPage() {
           >
             <div className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-xl">
               <h3 className="text-2xl font-bold text-zinc-900 dark:text-white mb-6">{t("formTitle")}</h3>
-              <form className="space-y-5" onSubmit={(e) => { e.preventDefault(); alert(t("success")) }}>
+              <form className="space-y-5" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-2">
                     <Label htmlFor="firstName">{t("firstName")}</Label>
@@ -103,8 +115,15 @@ export default function ContactPage() {
                   <Textarea id="message" placeholder={t("messagePlaceholder")} className="min-h-[150px] resize-y rounded-xl" required />
                 </div>
 
-                <Button type="submit" className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
-                  {t("submit")}
+                <Button type="submit" disabled={isSubmitting} className="w-full h-12 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-semibold">
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Sending...
+                    </>
+                  ) : (
+                    t("submit")
+                  )}
                 </Button>
               </form>
             </div>
