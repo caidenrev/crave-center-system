@@ -52,7 +52,8 @@
     "emailPlaceholder": "name@company.com",
     "passwordLabel": "Password",
     "forgotPassword": "Forgot password?",
-    "signInBtn": "Sign in (Coming Soon)",
+    "signInBtn": "Sign in",
+    "signingIn": "Signing in...",
     "noAccount": "Don't have an account?",
     "register": "Register now",
     "googleError": "Failed to connect with Google"
@@ -179,6 +180,7 @@
     "title": "Get Started with Crave",
     "subtitle": "Create an account to start managing your IT projects.",
     "googleBtn": "Register with Google",
+    "googleLoading": "Redirecting...",
     "orEmail": "Or register with email",
     "nameLabel": "Full Name",
     "namePlaceholder": "Eka Revandi",
@@ -188,7 +190,8 @@
     "phonePlaceholder": "+62 812-3456-7890",
     "passwordLabel": "Password",
     "passwordPlaceholder": "••••••••",
-    "registerBtn": "Create Account (Coming Soon)",
+    "registerBtn": "Create Crave Account",
+    "registering": "Creating account...",
     "hasAccount": "Already have an account?",
     "signIn": "Sign In",
     "terms": "By registering, you agree to our Terms of Service and Privacy Policy."
@@ -298,6 +301,10 @@
     "general": "GENERAL",
     "settings": "Settings",
     "logout": "Log out",
+    "logoutModalTitle": "Confirm Logout",
+    "logoutModalDesc": "Are you sure you want to log out of your account?",
+    "logoutModalConfirm": "Log out",
+    "logoutModalCancel": "Cancel",
     "ctaTitle": "Need a Custom App?",
     "ctaDesc": "Submit your new IT requirements now.",
     "ctaBtn": "Start Request"

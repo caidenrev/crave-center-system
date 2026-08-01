@@ -7,9 +7,10 @@ import { ClientProjectList } from '@/components/client/client-project-list'
 
 import { createClient } from "@/utils/supabase/server"
 
-export default async function ClientDashboard({ params }: { params: Promise<{ locale: string }> }) {
+export default async function ClientDashboard({ params, searchParams }: { params: Promise<{ locale: string }>, searchParams: Promise<{ search?: string }> }) {
   const t = await getTranslations('ClientDashboard');
   const { locale } = await params;
+  const { search } = await searchParams;
   
   await requireRole(["CLIENT"])
   const supabase = await createClient()
@@ -35,6 +36,14 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
     runningProjects = projects.filter(p => p.status === 'IN_PROGRESS' || p.status === 'PENDING_DP').length
     endedProjects = projects.filter(p => p.status === 'COMPLETED').length
   }
+
+  // Filter projects by search query (title + status)
+  const filteredProjects = search 
+    ? projects.filter(p => 
+        p.title.toLowerCase().includes(search.toLowerCase()) ||
+        p.status.toLowerCase().includes(search.toLowerCase())
+      )
+    : projects;
 
   const progressPercentage = totalProjects > 0 ? Math.round((endedProjects / totalProjects) * 100) : 0;
   const activeProjects = projects.filter(p => p.status !== 'COMPLETED' && p.status !== 'CANCELLED');
@@ -64,7 +73,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         
         {/* Card 1 */}
-        <div className="bg-gradient-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-xl shadow-blue-900/20 relative overflow-hidden">
+        <div className="bg-linear-to-br from-blue-600 to-indigo-700 text-white rounded-3xl p-6 shadow-xl shadow-blue-900/20 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-black/10 rounded-full blur-2xl"></div>
           <div className="flex justify-between items-start mb-4 relative z-10">
@@ -82,7 +91,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
         </div>
 
         {/* Card 2 */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-700 text-white rounded-3xl p-6 shadow-xl shadow-emerald-900/20 relative overflow-hidden">
+        <div className="bg-linear-to-br from-emerald-500 to-teal-700 text-white rounded-3xl p-6 shadow-xl shadow-emerald-900/20 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           <div className="flex justify-between items-start mb-4 relative z-10">
             <span className="font-medium text-white/90">{t('endedProjects')}</span>
@@ -99,7 +108,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
         </div>
 
         {/* Card 3 */}
-        <div className="bg-gradient-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 shadow-xl shadow-orange-900/20 relative overflow-hidden">
+        <div className="bg-linear-to-br from-amber-500 to-orange-600 text-white rounded-3xl p-6 shadow-xl shadow-orange-900/20 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           <div className="flex justify-between items-start mb-4 relative z-10">
             <span className="font-medium text-white/90">{t('runningProjects')}</span>
@@ -116,7 +125,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
         </div>
 
         {/* Card 4 */}
-        <div className="bg-gradient-to-br from-purple-500 to-pink-600 text-white rounded-3xl p-6 shadow-xl shadow-purple-900/20 relative overflow-hidden">
+        <div className="bg-linear-to-br from-purple-500 to-pink-600 text-white rounded-3xl p-6 shadow-xl shadow-purple-900/20 relative overflow-hidden">
           <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl"></div>
           <div className="flex justify-between items-start mb-4 relative z-10">
             <span className="font-medium text-white/90">{t('pendingProjects')}</span>
@@ -145,7 +154,7 @@ export default async function ClientDashboard({ params }: { params: Promise<{ lo
           </div>
           
           <div className="flex-1 flex flex-col gap-4">
-            <ClientProjectList projects={projects.map(p => ({
+            <ClientProjectList projects={filteredProjects.map(p => ({
               ...p,
               offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
             }))} t={{}} />

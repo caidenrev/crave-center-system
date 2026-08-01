@@ -52,7 +52,8 @@
     "emailPlaceholder": "nama@perusahaan.com",
     "passwordLabel": "Password",
     "forgotPassword": "Lupa password?",
-    "signInBtn": "Masuk (Segera Hadir)",
+    "signInBtn": "Masuk",
+    "signingIn": "Memproses...",
     "noAccount": "Belum punya akun?",
     "register": "Daftar sekarang",
     "googleError": "Gagal terhubung dengan Google"
@@ -179,6 +180,7 @@
     "title": "Mulai Bersama Crave",
     "subtitle": "Buat akun untuk mulai mengelola proyek TI Anda.",
     "googleBtn": "Daftar dengan Google",
+    "googleLoading": "Mengalihkan...",
     "orEmail": "Atau daftar dengan email",
     "nameLabel": "Nama Lengkap",
     "namePlaceholder": "Eka Revandi",
@@ -188,7 +190,8 @@
     "phonePlaceholder": "+62 812-3456-7890",
     "passwordLabel": "Kata Sandi",
     "passwordPlaceholder": "••••••••",
-    "registerBtn": "Buat Akun (Segera Hadir)",
+    "registerBtn": "Buat Akun Crave",
+    "registering": "Mendaftarkan...",
     "hasAccount": "Sudah punya akun?",
     "signIn": "Masuk",
     "terms": "Dengan mendaftar, Anda menyetujui Syarat Ketentuan dan Kebijakan Privasi kami."
@@ -298,6 +301,10 @@
     "general": "UMUM",
     "settings": "Pengaturan",
     "logout": "Keluar",
+    "logoutModalTitle": "Konfirmasi Logout",
+    "logoutModalDesc": "Apakah Anda yakin ingin keluar dari akun Anda?",
+    "logoutModalConfirm": "Logout",
+    "logoutModalCancel": "Batal",
     "ctaTitle": "Butuh Aplikasi Kustom?",
     "ctaDesc": "Ajukan kebutuhan IT baru Anda sekarang.",
     "ctaBtn": "Buat Request"
