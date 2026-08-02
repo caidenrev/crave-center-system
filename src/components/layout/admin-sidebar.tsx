@@ -148,8 +148,8 @@ export function AdminSidebar({
               alt="Crave"
               className="h-7 w-auto hidden dark:block transition-transform group-hover:scale-105"
             />
-            <span className="font-bold text-xl ml-2 text-slate-900 dark:text-white">
-              Admin
+            <span className="font-bold text-xl ml-2 text-slate-900 dark:text-white tracking-tight">
+              Crave
             </span>
           </Link>
         </div>
@@ -193,8 +193,8 @@ export function AdminSidebar({
                   alt="Crave"
                   className="h-7 w-auto hidden dark:block"
                 />
-                <span className="font-bold text-xl ml-2 text-slate-900 dark:text-white">
-                  Admin
+                <span className="font-bold text-xl ml-2 text-slate-900 dark:text-white tracking-tight">
+                  Crave
                 </span>
               </Link>
               <button
