@@ -179,22 +179,38 @@ export function AdminProjectsClient({ initialProjects }: { initialProjects: Proj
                   <span className="font-bold text-slate-800 dark:text-slate-200">{proj.manager}</span>
                 </div>
 
-                <div>
-                  <div className="flex justify-between text-xs mb-1.5 font-bold">
-                    <span className="text-slate-500 dark:text-slate-400">{t('completion')}</span>
-                    <span className="text-slate-900 dark:text-white">{proj.progress}%</span>
+                <div className="flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60 transition-all hover:bg-slate-50 dark:hover:bg-slate-800">
+                  <div className="flex flex-col">
+                    <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('completion')}</span>
+                    <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 leading-none">{proj.progress}%</span>
                   </div>
-                  <div className="w-full h-2.5 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-700 ${
-                        proj.progress === 100 
-                          ? 'bg-emerald-500' 
-                          : proj.status === 'Delayed' || proj.status === 'ON_HOLD'
-                          ? 'bg-amber-500' 
-                          : 'bg-primary'
-                      }`}
-                      style={{ width: `${proj.progress}%` }}
-                    />
+                  
+                  <div className="relative w-[72px] h-[36px] flex items-end justify-center">
+                    <svg className="w-full h-full drop-shadow-sm overflow-visible" viewBox="0 0 100 50">
+                      <path
+                        d="M 10 50 A 40 40 0 0 1 90 50"
+                        fill="none"
+                        className="stroke-slate-200 dark:stroke-slate-700"
+                        strokeWidth="12"
+                        strokeLinecap="round"
+                      />
+                      {proj.progress > 0 && (
+                        <path
+                          d="M 10 50 A 40 40 0 0 1 90 50"
+                          fill="none"
+                          className={
+                            proj.progress === 100
+                              ? 'stroke-emerald-500'
+                              : proj.status === 'Delayed' || proj.status === 'ON_HOLD'
+                              ? 'stroke-amber-500'
+                              : 'stroke-blue-500'
+                          }
+                          strokeWidth="12"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(proj.progress / 100) * (Math.PI * 40)} ${Math.PI * 40}`}
+                        />
+                      )}
+                    </svg>
                   </div>
                 </div>
 
@@ -241,9 +257,19 @@ export function AdminProjectsClient({ initialProjects }: { initialProjects: Proj
                     <td className="px-6 py-4 font-semibold">{p.manager}</td>
                     <td className="px-6 py-4">{getStatusBadge(p.status)}</td>
                     <td className="px-6 py-4">
-                      <div className="flex items-center gap-2">
-                        <div className="w-20 h-2 bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                          <div className="h-full bg-primary" style={{ width: `${p.progress}%` }} />
+                      <div className="flex items-center gap-3">
+                        <div className="relative w-8 h-4 flex items-end justify-center">
+                          <svg className="w-full h-full overflow-visible" viewBox="0 0 100 50">
+                            <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" className="stroke-slate-200 dark:stroke-slate-700" strokeWidth="16" strokeLinecap="round" />
+                            <path 
+                              d="M 10 50 A 40 40 0 0 1 90 50" 
+                              fill="none" 
+                              className={
+                                p.progress === 100 ? 'stroke-emerald-500' : p.status === 'Delayed' || p.status === 'ON_HOLD' ? 'stroke-amber-500' : 'stroke-blue-500'
+                              } 
+                              strokeWidth="16" strokeLinecap="round" strokeDasharray={`${(p.progress / 100) * (Math.PI * 40)} ${Math.PI * 40}`} 
+                            />
+                          </svg>
                         </div>
                         <span className="text-xs font-extrabold text-slate-900 dark:text-white">{p.progress}%</span>
                       </div>

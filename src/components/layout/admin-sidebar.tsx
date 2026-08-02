@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard,
   Users,
@@ -156,17 +157,27 @@ export function AdminSidebar({
       </aside>
 
       {/* Mobile / Tablet Slide-Over Drawer */}
-      {mobileOpen && (
-        <div className="fixed inset-0 z-50 flex md:hidden">
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
-            onClick={onMobileClose}
-          />
+      <AnimatePresence>
+        {mobileOpen && (
+          <div className="fixed inset-0 z-50 flex md:hidden">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs"
+              onClick={onMobileClose}
+            />
 
-          {/* Drawer Content */}
-          <div className="relative flex flex-col w-72 max-w-[80vw] bg-white dark:bg-slate-900 shadow-2xl h-full border-r border-slate-200 dark:border-slate-800 z-10">
-            <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
+            {/* Drawer Content */}
+            <motion.div 
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="relative flex flex-col w-72 max-w-[80vw] bg-white dark:bg-slate-900 shadow-2xl h-full border-r border-slate-200 dark:border-slate-800 z-10"
+            >
+              <div className="h-16 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
               <Link
                 href={`/${locale}/admin`}
                 onClick={onMobileClose}
@@ -194,9 +205,10 @@ export function AdminSidebar({
               </button>
             </div>
             {renderNavContent()}
-          </div>
+          </motion.div>
         </div>
-      )}
+        )}
+      </AnimatePresence>
 
       <ConfirmModal
         open={showLogoutModal}

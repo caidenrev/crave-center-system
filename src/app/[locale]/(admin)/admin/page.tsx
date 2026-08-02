@@ -13,10 +13,14 @@ import {
   CheckCircle2,
   ChevronRight,
   Info,
+  Plus,
+  Hexagon,
+  Wallet,
 } from "lucide-react";
 import Link from "next/link";
 import { AdminActivityChart } from "@/components/admin/admin-activity-chart";
 import { AdminWorkerDonutChart } from "@/components/admin/admin-worker-donut-chart";
+import { RealtimeClock } from "@/components/admin/realtime-clock";
 
 export default async function AdminDashboardPage(props: {
   params: Promise<{ locale: string }>;
@@ -74,9 +78,35 @@ export default async function AdminDashboardPage(props: {
   // 3. Fetch recent projects for activity feed
   const recentProjects = await prisma.project
     .findMany({
-      take: 4,
+      take: 5,
       orderBy: { createdAt: "desc" },
       include: { client: true, worker: true },
+    })
+    .catch(() => []);
+
+  // 4. Fetch team members for collaboration widget
+  const teamMembersList = await prisma.user
+    .findMany({
+      where: { role: "TEAM_MEMBER" },
+      take: 4,
+      orderBy: { createdAt: "desc" },
+      include: {
+        workerProjects: {
+          where: {
+            status: { in: ["IN_PROGRESS", "WORKER_REVIEW", "PENDING_DP", "ON_HOLD", "IN_WARRANTY"] },
+          },
+          take: 1,
+        },
+      },
+    })
+    .catch(() => []);
+
+  // 5. Fetch recent payments
+  const recentPayments = await prisma.payment
+    .findMany({
+      take: 4,
+      orderBy: { createdAt: "desc" },
+      include: { project: { include: { client: true } } },
     })
     .catch(() => []);
 
@@ -85,12 +115,8 @@ export default async function AdminDashboardPage(props: {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-3 border border-primary/20">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            Admin Overview & Analytics
-          </div>
           <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-            {t("title")}
+            Dashboard
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
             {t("subtitle")}
@@ -106,105 +132,265 @@ export default async function AdminDashboardPage(props: {
         </div>
       </div>
 
-      {/* Stats Cards - Responsive 2-column grid on mobile/tablet, 4-column on desktop */}
+      {/* Stats Cards - Clean Solid Colors (Donezo Style) */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {/* Card 1: Total Users */}
-        <div className="bg-linear-to-br from-indigo-600 via-indigo-700 to-blue-800 text-white rounded-3xl p-5 md:p-6 shadow-xl shadow-indigo-900/20 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-500" />
-          <div className="flex justify-between items-start mb-3 md:mb-4 relative z-10">
-            <span className="font-medium text-white/90 text-xs md:text-sm">
+        {/* Card 1: Total Users (Primary Color) */}
+        <div className="bg-primary text-white rounded-2xl p-5 md:p-6 shadow-sm relative overflow-hidden">
+          <div className="flex justify-between items-start mb-6">
+            <span className="font-medium text-white/90 text-sm md:text-base">
               {t("totalUsers")}
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
-              <Users className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center shadow-sm">
+              <ArrowUpRight className="w-4 h-4 text-primary stroke-[2.5]" />
             </div>
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1.5 md:mb-2 tracking-tight">
+          <div>
+            <h3 className="text-4xl md:text-5xl font-semibold text-white mb-4 tracking-tight">
               {totalUsers}
             </h3>
-            <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-medium text-white/90 bg-white/15 backdrop-blur-md inline-flex px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg">
-              <TrendingUp className="w-3 h-3 md:w-3.5 md:h-3.5" /> {t("registered")}
+            <div className="flex items-center gap-1.5 text-xs font-medium text-white/90 bg-white/10 inline-flex px-2 py-1 rounded-md">
+              <Users className="w-3.5 h-3.5" /> {t("registered")}
             </div>
           </div>
         </div>
 
         {/* Card 2: Active Projects */}
-        <div className="bg-linear-to-br from-purple-600 via-purple-700 to-pink-700 text-white rounded-3xl p-5 md:p-6 shadow-xl shadow-purple-900/20 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-500" />
-          <div className="flex justify-between items-start mb-3 md:mb-4 relative z-10">
-            <span className="font-medium text-white/90 text-xs md:text-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 md:p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-6">
+            <span className="font-medium text-slate-700 dark:text-slate-300 text-sm md:text-base">
               {t("totalProjects")}
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
-              <FolderKanban className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <div className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </div>
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1.5 md:mb-2 tracking-tight">
+          <div>
+            <h3 className="text-4xl md:text-5xl font-semibold text-slate-900 dark:text-white mb-4 tracking-tight">
               {totalProjects}
             </h3>
-            <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-medium text-white/90 bg-white/15 backdrop-blur-md inline-flex px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg">
-              <ArrowUpRight className="w-3 h-3 md:w-3.5 md:h-3.5" /> {t("activeArchived")}
+            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 inline-flex px-2 py-1 rounded-md">
+              <FolderKanban className="w-3.5 h-3.5" /> {t("activeArchived")}
             </div>
           </div>
         </div>
 
         {/* Card 3: Job Requests */}
-        <div className="bg-linear-to-br from-emerald-500 via-teal-600 to-emerald-800 text-white rounded-3xl p-5 md:p-6 shadow-xl shadow-teal-900/20 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-500" />
-          <div className="flex justify-between items-start mb-3 md:mb-4 relative z-10">
-            <span className="font-medium text-white/90 text-xs md:text-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 md:p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-6">
+            <span className="font-medium text-slate-700 dark:text-slate-300 text-sm md:text-base">
               {t("newRequests")}
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
-              <CheckSquare className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <div className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </div>
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1.5 md:mb-2 tracking-tight">
+          <div>
+            <h3 className="text-4xl md:text-5xl font-semibold text-slate-900 dark:text-white mb-4 tracking-tight">
               {activeRequests}
             </h3>
-            <div className="flex items-center gap-1.5 text-[11px] md:text-xs font-medium text-white/90 bg-white/15 backdrop-blur-md inline-flex px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg">
-              <Clock className="w-3 h-3 md:w-3.5 md:h-3.5" /> {t("pendingReview")}
+            <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 inline-flex px-2 py-1 rounded-md">
+              <CheckSquare className="w-3.5 h-3.5" /> {t("pendingReview")}
             </div>
           </div>
         </div>
 
         {/* Card 4: Worker Applications */}
-        <div className="bg-linear-to-br from-amber-500 via-orange-600 to-red-600 text-white rounded-3xl p-5 md:p-6 shadow-xl shadow-orange-900/20 relative overflow-hidden group">
-          <div className="absolute -right-6 -top-6 w-32 h-32 bg-white/10 rounded-full blur-3xl group-hover:scale-125 transition-transform duration-500" />
-          <div className="flex justify-between items-start mb-3 md:mb-4 relative z-10">
-            <span className="font-medium text-white/90 text-xs md:text-sm">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 md:p-6 shadow-sm">
+          <div className="flex justify-between items-start mb-6">
+            <span className="font-medium text-slate-700 dark:text-slate-300 text-sm md:text-base">
               {t("pendingApplicants")}
             </span>
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-2xl bg-white/20 flex items-center justify-center backdrop-blur-md">
-              <ShieldAlert className="w-4 h-4 md:w-5 md:h-5 text-white" />
+            <div className="w-8 h-8 rounded-full border border-slate-200 dark:border-slate-700 flex items-center justify-center">
+              <ArrowUpRight className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             </div>
           </div>
-          <div className="relative z-10">
-            <h3 className="text-3xl md:text-4xl font-extrabold text-white mb-1.5 md:mb-2 tracking-tight">
+          <div>
+            <h3 className="text-4xl md:text-5xl font-semibold text-slate-900 dark:text-white mb-4 tracking-tight">
               {pendingApps}
             </h3>
-            <Link
-              href={`/${locale}/admin/applications`}
-              className="flex items-center gap-1 text-[11px] md:text-xs font-semibold text-white bg-white/20 hover:bg-white/30 backdrop-blur-md inline-flex px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg transition-colors cursor-pointer"
-            >
-              Review Now <ChevronRight className="w-3 h-3" />
-            </Link>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 inline-flex px-2 py-1 rounded-md">
+                <ShieldAlert className="w-3.5 h-3.5" /> Pelamar
+              </div>
+              {pendingApps > 0 && (
+                <Link
+                  href={`/${locale}/admin/applications`}
+                  className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5"
+                >
+                  Review <ChevronRight className="w-3 h-3" />
+                </Link>
+              )}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Analytics Grid Row: Interactive Activity Bar Chart & Worker Donut Chart */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-stretch">
-        {/* Interactive Weekly/Monthly Activity Chart */}
-        <div className="lg:col-span-2 h-full flex flex-col">
+      {/* ROW 2 & 3: Main Dashboard Grid (Matches Reference Layout) */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch mb-6">
+        
+        {/* ROW 2 */}
+        {/* Project Analytics -> AdminActivityChart */}
+        <div className="lg:col-span-6">
           <AdminActivityChart />
         </div>
 
-        {/* Worker Status Donut Chart */}
-        <div className="lg:col-span-1 h-full flex flex-col">
+        {/* Reminders -> Payment History */}
+        <div className="lg:col-span-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm h-full flex flex-col">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Payment History
+              </h3>
+            </div>
+            
+            <div className="space-y-3 flex-1">
+              {recentPayments.map((payment) => (
+                <div key={payment.id} className="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800">
+                  <div className="flex items-center gap-2.5 overflow-hidden">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                      <Wallet className="w-4 h-4" />
+                    </div>
+                    <div className="truncate">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                        {payment.project.client.name}
+                      </h4>
+                      <p className="text-[10px] text-slate-500 font-medium truncate">
+                        {payment.type}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-xs font-bold text-slate-900 dark:text-white">
+                      Rp{Number(payment.amount).toLocaleString('id-ID')}
+                    </p>
+                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md mt-0.5 inline-block ${
+                      payment.status === 'SUCCESS' ? 'text-emerald-600 bg-emerald-500/10' :
+                      payment.status === 'PENDING' ? 'text-amber-600 bg-amber-500/10' :
+                      'text-rose-600 bg-rose-500/10'
+                    }`}>
+                      {payment.status}
+                    </span>
+                  </div>
+                </div>
+              ))}
+              
+              {recentPayments.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full opacity-50 py-4">
+                  <Wallet className="w-8 h-8 mb-2" />
+                  <p className="text-xs font-medium">No recent payments.</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Project -> Recent Projects */}
+        <div className="lg:col-span-3">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm h-full flex flex-col">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Project
+              </h3>
+              <Link
+                href={`/${locale}/admin/projects`}
+                className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary/20 dark:border-primary/30 text-xs font-semibold text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 stroke-[2.5]" /> New
+              </Link>
+            </div>
+            
+            <div className="space-y-4 flex-1">
+              {recentProjects.map((project, idx) => {
+                const iconColors = [
+                  "text-blue-500 bg-blue-50 dark:bg-blue-900/20 border-blue-100 dark:border-blue-800/50",
+                  "text-emerald-500 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-100 dark:border-emerald-800/50",
+                  "text-purple-500 bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800/50",
+                  "text-amber-500 bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800/50",
+                ];
+                const colorClass = iconColors[idx % iconColors.length];
+                const dueDateStr = project.targetDeliveryDate 
+                  ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(project.targetDeliveryDate))
+                  : 'Not Set';
+
+                return (
+                  <div key={project.id} className="flex items-center gap-3 group">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center border shrink-0 transition-transform group-hover:scale-105 ${colorClass}`}>
+                      <FolderKanban className="w-4 h-4" />
+                    </div>
+                    <div className="overflow-hidden">
+                      <h4 className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                        {project.title}
+                      </h4>
+                      <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                        Due date: {dueDateStr}
+                      </p>
+                    </div>
+                  </div>
+                );
+              })}
+              
+              {recentProjects.length === 0 && (
+                <p className="text-sm text-slate-500 text-center py-4">No recent projects.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* ROW 3 */}
+        {/* Team Collaboration */}
+        <div className="lg:col-span-5">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm h-full flex flex-col">
+            <div className="flex justify-between items-center mb-5">
+              <h3 className="text-base font-bold text-slate-900 dark:text-white">
+                Team Collaboration
+              </h3>
+              <Link
+                href={`/${locale}/admin/team`}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 dark:border-primary/30 text-xs font-semibold text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+              >
+                <Plus className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 stroke-[2.5]" /> Add Member
+              </Link>
+            </div>
+            
+            <div className="space-y-4 flex-1">
+              {teamMembersList.map((member) => {
+                const activeProject = member.workerProjects?.[0];
+                const isWorking = !!activeProject;
+                
+                return (
+                  <div key={member.id} className="flex items-center justify-between gap-4 p-2 -mx-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                    <div className="flex items-center gap-3 overflow-hidden">
+                      <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shrink-0 text-slate-400 dark:text-slate-500">
+                        <Hexagon className="w-5 h-5" />
+                      </div>
+                      <div className="truncate">
+                        <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">{member.name}</h4>
+                        <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
+                          Working on <span className="font-semibold text-slate-700 dark:text-slate-300">{isWorking ? activeProject.title : "Internal Tasks"}</span>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <span className={`px-2.5 py-1 rounded-md text-[10px] font-bold border shrink-0 ${
+                      isWorking 
+                        ? 'bg-amber-500/10 text-amber-600 border-amber-500/20' 
+                        : 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20'
+                    }`}>
+                      {isWorking ? 'In Progress' : 'Completed'}
+                    </span>
+                  </div>
+                );
+              })}
+              
+              {teamMembersList.length === 0 && (
+                <p className="text-sm text-slate-500 py-4">No team members yet.</p>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Project Progress -> AdminWorkerDonutChart */}
+        <div className="lg:col-span-4">
           <AdminWorkerDonutChart
             locale={locale}
             totalWorkers={totalWorkers}
@@ -213,62 +399,67 @@ export default async function AdminDashboardPage(props: {
             awayWorkers={awayWorkers}
           />
         </div>
+
+        {/* Time Tracker Realtime Clock */}
+        <div className="lg:col-span-3">
+          <RealtimeClock />
+        </div>
       </div>
 
-      {/* Dynamic System Alerts Section */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
+      {/* ROW 4: System Alerts Section (Kept at the very bottom as requested) */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-500 animate-pulse" />
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-primary" />
               {t("systemAlertsTitle")}
             </h3>
-            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
               {t("systemAlertsSubtitle")}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <span className="text-xs bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 px-3 py-1 rounded-full font-semibold border border-emerald-200 dark:border-emerald-800/50 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />
+            <span className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full font-medium border border-primary/20 flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               {t("statusHealthy")}
             </span>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* Dynamic Alert 1: Pending Worker Applications */}
           {pendingApps > 0 ? (
-            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex flex-col justify-between space-y-3">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-xl bg-amber-500/20 text-amber-600 dark:text-amber-400 shrink-0">
-                  <ShieldAlert className="w-5 h-5" />
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <ShieldAlert className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                     {t("pendingAppsTitle", { count: pendingApps })}
                   </h4>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                     {t("pendingAppsDesc")}
                   </p>
                 </div>
               </div>
               <Link
                 href={`/${locale}/admin/applications`}
-                className="w-full py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs flex justify-center items-center gap-1 transition-colors cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-medium text-xs flex justify-center items-center gap-1.5 transition-colors cursor-pointer"
               >
                 {t("reviewAppsBtn", { count: pendingApps })} <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           ) : (
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-500 shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
+            <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-800 text-slate-500 shrink-0">
+                <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                   {t("workerAppsClearTitle")}
                 </h4>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   {t("workerAppsClearDesc")}
                 </p>
               </div>
@@ -277,37 +468,37 @@ export default async function AdminDashboardPage(props: {
 
           {/* Dynamic Alert 2: Job Requests */}
           {activeRequests > 0 ? (
-            <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 flex flex-col justify-between space-y-3">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between space-y-4">
               <div className="flex items-start gap-3">
-                <div className="p-2 rounded-xl bg-blue-500/20 text-blue-600 dark:text-blue-400 shrink-0">
-                  <Clock className="w-5 h-5" />
+                <div className="p-2.5 rounded-xl bg-primary/10 text-primary shrink-0">
+                  <Clock className="w-4 h-4" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                     {t("newRequestsTitle", { count: activeRequests })}
                   </h4>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 mt-0.5">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                     {t("newRequestsDesc")}
                   </p>
                 </div>
               </div>
               <Link
                 href={`/${locale}/admin/requests`}
-                className="w-full py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-semibold text-xs flex justify-center items-center gap-1 transition-colors cursor-pointer"
+                className="w-full py-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white font-medium text-xs flex justify-center items-center gap-1.5 transition-colors cursor-pointer"
               >
                 {t("reviewRequestsBtn", { count: activeRequests })} <ChevronRight className="w-3.5 h-3.5" />
               </Link>
             </div>
           ) : (
-            <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
-                <CheckCircle2 className="w-5 h-5" />
+            <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-start gap-3">
+              <div className="p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-800 text-slate-500 shrink-0">
+                <CheckCircle2 className="w-4 h-4" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                   {t("requestsProcessedTitle")}
                 </h4>
-                <p className="text-[11px] text-slate-600 dark:text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                   {t("requestsProcessedDesc")}
                 </p>
               </div>
@@ -315,15 +506,15 @@ export default async function AdminDashboardPage(props: {
           )}
 
           {/* Dynamic Alert 3: Database & Core System Health */}
-          <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 shrink-0">
-              <CheckCircle2 className="w-5 h-5" />
+          <div className="p-5 rounded-2xl bg-slate-50/80 dark:bg-slate-800/40 border border-slate-200 dark:border-slate-800 flex items-start gap-3">
+            <div className="p-2.5 rounded-xl bg-slate-200/50 dark:bg-slate-800 text-slate-500 shrink-0">
+              <CheckCircle2 className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+              <h4 className="text-sm font-semibold text-slate-900 dark:text-white">
                 {t("databaseActiveTitle")}
               </h4>
-              <p className="text-[11px] text-slate-600 dark:text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">
                 {t("databaseActiveDesc")}
               </p>
             </div>
@@ -331,9 +522,9 @@ export default async function AdminDashboardPage(props: {
         </div>
 
         {/* System Alert Testing Note */}
-        <div className="mt-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200/60 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-2.5">
-          <Info className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" />
-          <span>
+        <div className="mt-6 p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-800/80 text-xs text-slate-500 dark:text-slate-400 flex items-start gap-3">
+          <Info className="w-4 h-4 text-slate-400 shrink-0" />
+          <span className="leading-relaxed">
             {t("testAlertsInfo")}
           </span>
         </div>

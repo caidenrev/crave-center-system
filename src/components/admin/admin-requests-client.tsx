@@ -13,6 +13,12 @@ import {
   UserCheck,
   Briefcase,
   User,
+  MoreHorizontal,
+  ChevronDown,
+  Settings2,
+  Download,
+  LayoutGrid,
+  List,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -57,6 +63,10 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
   const [assigningRequest, setAssigningRequest] = useState<JobRequestItem | null>(null)
   const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
+  
+  // Dropdown states
+  const [openActionId, setOpenActionId] = useState<string | null>(null)
+  const [viewOptionsOpen, setViewOptionsOpen] = useState(false)
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -80,28 +90,27 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
       case 'Pending Review':
       case 'REQUESTED':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
-            <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-500/20">
             {t('filterPending')}
           </span>
         )
       case 'Awaiting Assignment':
       case 'WORKER_REVIEW':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20">
-            <CheckCircle2 className="w-3.5 h-3.5" /> {t('filterWorker')}
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            {t('filterWorker')}
           </span>
         )
       case 'Needs Clarification':
       case 'PENDING_DP':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
-            <AlertCircle className="w-3.5 h-3.5" /> {t('filterPendingDP')}
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+            {t('filterPendingDP')}
           </span>
         )
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-slate-50 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
             {status}
           </span>
         )
@@ -153,32 +162,88 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
           )}
         </div>
 
-        {/* Status Filter */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
-          <Filter className="w-4 h-4 text-slate-400 shrink-0" />
-          {[
-            { id: 'ALL', label: t('filterAll') },
-            { id: 'PENDING_REVIEW', label: t('filterPending') },
-            { id: 'WORKER_REVIEW', label: t('filterWorker') },
-            { id: 'PENDING_DP', label: t('filterPendingDP') },
-          ].map(filter => (
+        {/* Right side controls */}
+        <div className="flex items-center gap-3 justify-between md:justify-end">
+          
+          {/* Status Filter (Now condensed or kept scrollable) */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none">
+            {[
+              { id: 'ALL', label: t('filterAll') },
+              { id: 'PENDING_REVIEW', label: t('filterPending') },
+              { id: 'WORKER_REVIEW', label: t('filterWorker') },
+            ].map(filter => (
+              <button
+                key={filter.id}
+                onClick={() => setStatusFilter(filter.id)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
+                  statusFilter === filter.id
+                    ? 'bg-primary text-white shadow-sm'
+                    : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden md:block" />
+
+          {/* View Options Dropdown */}
+          <div className="relative">
             <button
-              key={filter.id}
-              onClick={() => setStatusFilter(filter.id)}
-              className={`px-3.5 py-2 rounded-2xl text-xs font-semibold transition-all whitespace-nowrap cursor-pointer ${
-                statusFilter === filter.id
-                  ? 'bg-primary text-white shadow-md shadow-primary/25'
-                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
-              }`}
+              onClick={() => setViewOptionsOpen(!viewOptionsOpen)}
+              className="inline-flex items-center gap-2 px-3 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl shadow-sm transition-all cursor-pointer"
             >
-              {filter.label}
+              <Settings2 className="w-4 h-4 text-slate-500" /> View options <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
-          ))}
+
+            {viewOptionsOpen && (
+              <>
+                <div className="fixed inset-0 z-40" onClick={() => setViewOptionsOpen(false)} />
+                <div className="absolute right-0 mt-2 w-64 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 z-50 p-4 space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-xs font-bold text-slate-900 dark:text-white">Layout</span>
+                    <div className="flex bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg">
+                      <button className="p-1 rounded-md bg-white dark:bg-slate-700 shadow-sm text-slate-900 dark:text-white"><List className="w-3.5 h-3.5" /></button>
+                      <button className="p-1 rounded-md text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"><LayoutGrid className="w-3.5 h-3.5" /></button>
+                    </div>
+                  </div>
+                  
+                  <div className="space-y-3">
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Order By</label>
+                      <select className="w-full text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 outline-none">
+                        <option>Last modified</option>
+                        <option>Date created</option>
+                      </select>
+                    </div>
+                    
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">Show Properties</label>
+                      <div className="flex flex-wrap gap-1.5">
+                        {['Reference ID', 'Status', 'Client Info', 'Est. Budget'].map(prop => (
+                          <span key={prop} className="px-2 py-1 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 rounded-full text-[10px] font-semibold border border-slate-200 dark:border-slate-700">
+                            {prop}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="h-px bg-slate-100 dark:bg-slate-800 my-2" />
+                  
+                  <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">
+                    <Download className="w-3.5 h-3.5" /> Export to CSV
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
         </div>
       </div>
 
       {/* Main Data Table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-visible">
         {filteredRequests.length === 0 ? (
           <div className="p-12 text-center space-y-3">
             <div className="w-14 h-14 rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center mx-auto text-slate-400">
@@ -187,7 +252,7 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
             <h4 className="text-base font-bold text-slate-800 dark:text-slate-200">{t('filterAll')}</h4>
           </div>
         ) : (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto pb-24 md:pb-32">
             <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
               <thead className="bg-slate-50/80 dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 font-bold text-xs uppercase tracking-wider border-b border-slate-200 dark:border-slate-800">
                 <tr>
@@ -244,31 +309,66 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
                     {/* Worker */}
                     <td className="px-6 py-4">
                       {req.assignedWorker ? (
-                        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                          <UserCheck className="w-3.5 h-3.5" /> {req.assignedWorker}
+                        <div className="inline-flex items-center px-3 py-1 rounded-xl bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-500/20">
+                          {req.assignedWorker}
                         </div>
                       ) : (
-                        <span className="text-xs text-slate-400 italic flex items-center gap-1">
-                          <User className="w-3.5 h-3.5" /> {t('unassigned')}
+                        <span className="text-xs text-slate-400 italic">
+                          {t('unassigned')}
                         </span>
                       )}
                     </td>
 
-                    {/* Actions */}
+                    {/* Actions Dropdown */}
                     <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="relative inline-block text-left">
                         <button
-                          onClick={() => setSelectedRequest(req)}
-                          className="px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-slate-900 dark:text-slate-300 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl transition-all flex items-center gap-1 cursor-pointer"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setOpenActionId(openActionId === req.id ? null : req.id);
+                          }}
+                          className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl shadow-sm transition-all border cursor-pointer ${
+                            openActionId === req.id
+                              ? 'bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white'
+                              : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
+                          }`}
                         >
-                          <Eye className="w-3.5 h-3.5 text-primary" /> {t('viewBrief')}
+                          Options <ChevronDown className={`w-3.5 h-3.5 transition-transform ${openActionId === req.id ? 'rotate-180 text-slate-600' : 'text-slate-400'}`} />
                         </button>
-                        <button
-                          onClick={() => setAssigningRequest(req)}
-                          className="px-3 py-1.5 text-xs font-semibold text-white bg-primary hover:bg-primary/90 rounded-xl shadow-xs transition-all flex items-center gap-1 cursor-pointer"
-                        >
-                          <UserPlus className="w-3.5 h-3.5" /> {t('assign')}
-                        </button>
+
+                        {openActionId === req.id && (
+                          <>
+                            <div 
+                              className="fixed inset-0 z-40" 
+                              onClick={(e) => { e.stopPropagation(); setOpenActionId(null); }} 
+                            />
+                            <div className="absolute right-6 mt-2 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                              <div className="p-1.5 space-y-0.5">
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setSelectedRequest(req); setOpenActionId(null); }}
+                                  className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
+                                >
+                                  <Eye className="w-4 h-4 text-slate-400" /> {t('viewBrief')}
+                                </button>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setAssigningRequest(req); setOpenActionId(null); }}
+                                  className="w-full text-left px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
+                                >
+                                  <UserPlus className="w-4 h-4 text-slate-400" /> {t('assign')}
+                                </button>
+                              </div>
+                              <div className="h-px bg-slate-100 dark:bg-slate-800" />
+                              <div className="p-1.5">
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); setOpenActionId(null); }}
+                                  className="w-full text-left px-3 py-2 text-xs font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl flex items-center gap-2 transition-colors cursor-pointer"
+                                >
+                                  <X className="w-4 h-4" /> Reject Request
+                                </button>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
@@ -329,58 +429,74 @@ export function AdminRequestsClient({ initialRequests }: { initialRequests: JobR
 
       {/* Assign Worker Modal */}
       {assigningRequest && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-200">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 max-w-md w-full shadow-2xl relative space-y-5">
+        <div className="fixed inset-0 z-50 bg-slate-900/40 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-slate-900 rounded-[24px] p-6 md:p-8 max-w-[460px] w-full shadow-2xl relative flex flex-col">
             <button 
               onClick={() => setAssigningRequest(null)} 
-              className="absolute top-6 right-6 p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 cursor-pointer"
+              className="absolute top-6 right-6 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
 
-            <div>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t('assignModalTitle')}</h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t('assignModalSubtitle')} <strong className="text-slate-900 dark:text-white">{assigningRequest.id} - {assigningRequest.service}</strong></p>
+            <div className="pr-6 mb-6">
+              <h3 className="text-xl md:text-[22px] font-bold text-slate-900 dark:text-white leading-tight">{t('assignModalTitle')}</h3>
+              <p className="text-[13px] text-slate-500 dark:text-slate-400 mt-2">
+                {t('assignModalSubtitle')} <strong className="text-slate-900 dark:text-white font-semibold">{assigningRequest.id} - {assigningRequest.service}</strong>
+              </p>
             </div>
 
-            <div className="space-y-2 max-h-60 overflow-y-auto pr-1">
+            <div className="space-y-3 max-h-[300px] overflow-y-auto pr-3 custom-scrollbar relative">
+              <style dangerouslySetInnerHTML={{__html: `
+                .custom-scrollbar::-webkit-scrollbar {
+                  width: 8px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-track {
+                  background: transparent;
+                  margin-block: 4px;
+                }
+                .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background-color: #94a3b8;
+                  border-radius: 9999px;
+                  border: 2px solid transparent;
+                  background-clip: padding-box;
+                }
+                .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+                  background-color: #475569;
+                }
+              `}} />
+              
               {mockWorkersList.map(worker => (
                 <div
                   key={worker.id}
                   onClick={() => setSelectedWorkerId(worker.id)}
-                  className={`p-3 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${
+                  className={`p-4 rounded-[20px] border transition-all cursor-pointer flex items-center gap-4 ${
                     selectedWorkerId === worker.id
-                      ? 'bg-primary/10 border-primary text-slate-900 dark:text-white'
-                      : 'bg-slate-50 dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 hover:border-slate-300'
+                      ? 'bg-blue-50/50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800'
+                      : 'bg-[#fafafa] dark:bg-slate-800/50 border-slate-100 dark:border-slate-800 hover:border-slate-200 dark:hover:border-slate-700'
                   }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-primary/20 text-primary flex items-center justify-center font-bold text-xs">
-                      {worker.name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="font-bold text-xs text-slate-900 dark:text-white">{worker.name}</div>
-                      <div className="text-[10px] text-slate-400">{worker.role} • {t('activeTasks')}: {worker.activeTasks}</div>
-                    </div>
+                  <div className="w-10 h-10 shrink-0 rounded-[12px] bg-[#dbeafe] dark:bg-blue-900/50 text-[#2563eb] dark:text-blue-400 flex items-center justify-center font-bold text-sm">
+                    {worker.name.charAt(0)}
                   </div>
-                  {selectedWorkerId === worker.id && (
-                    <CheckCircle2 className="w-4 h-4 text-primary" />
-                  )}
+                  <div className="flex-1 min-w-0">
+                    <div className="font-bold text-sm text-slate-900 dark:text-white truncate">{worker.name}</div>
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate mt-0.5">{worker.role} • {t('activeTasks')}: {worker.activeTasks}</div>
+                  </div>
                 </div>
               ))}
             </div>
 
-            <div className="flex justify-end gap-3 pt-2">
+            <div className="flex justify-end gap-3 mt-8">
               <button
                 onClick={() => setAssigningRequest(null)}
-                className="px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 text-xs font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+                className="px-6 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-sm font-semibold hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
                 {t('cancel')}
               </button>
               <button
                 onClick={handleAssignWorker}
                 disabled={!selectedWorkerId}
-                className="px-5 py-2.5 rounded-xl bg-primary text-white text-xs font-semibold hover:bg-primary/90 transition-all shadow-md shadow-primary/25 disabled:opacity-50 cursor-pointer"
+                className="px-6 py-2.5 rounded-xl bg-[#8ba6fb] hover:bg-[#7a95ea] text-white text-sm font-semibold transition-all disabled:opacity-50 cursor-pointer shadow-sm"
               >
                 {t('confirmAssign')}
               </button>

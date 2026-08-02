@@ -21,199 +21,131 @@ export function AdminWorkerDonutChart({
 }: WorkerDonutChartProps) {
   const t = useTranslations("AdminDonut");
 
-  // Compute percentages
-  const availablePercent =
-    totalWorkers > 0 ? Math.round((availableWorkers / totalWorkers) * 100) : 0;
-  const busyPercent =
-    totalWorkers > 0 ? Math.round((busyWorkers / totalWorkers) * 100) : 0;
-  const awayPercent =
-    totalWorkers > 0 ? Math.round((awayWorkers / totalWorkers) * 100) : 0;
+  // Arch SVG calculation (radius = 80, circumference ~ 251.327)
+  const radius = 80;
+  const circum = Math.PI * radius;
 
-  // SVG Donut calculation (radius = 36, circumference ~ 226.19)
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
+  const total = totalWorkers || 1;
+  const availablePct = availableWorkers / total;
+  const busyPct = busyWorkers / total;
 
-  const strokeDashAvailable = (availablePercent / 100) * circumference;
-  const strokeDashBusy = (busyPercent / 100) * circumference;
-  const strokeDashAway = (awayPercent / 100) * circumference;
-
-  const offsetAvailable = 0;
-  const offsetBusy = strokeDashAvailable;
-  const offsetAway = strokeDashAvailable + strokeDashBusy;
+  const availableLength = availablePct * circum;
+  const busyLength = busyPct * circum;
+  const availableAndBusyLength = availableLength + busyLength;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-xs flex flex-col justify-between h-full">
-      <div>
-        <div className="flex items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100 dark:border-slate-800/80">
-          <div className="flex items-center gap-3 min-w-0">
-            <div className="w-9 h-9 rounded-2xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shrink-0 border border-indigo-500/20 shadow-xs">
-              <Users className="w-4.5 h-4.5" />
-            </div>
-            <div className="min-w-0">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white leading-tight truncate">
-                {t("title")}
-              </h3>
-              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">
-                {t("subtitle")}
-              </p>
-            </div>
-          </div>
-          <span className="text-xs font-bold px-3 py-1 rounded-full bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/20 whitespace-nowrap shrink-0">
-            {t("membersBadge", { count: totalWorkers })}
-          </span>
-        </div>
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between h-full">
+      {/* Header - Minimalist */}
+      <div className="flex items-start justify-between mb-8">
+        <h3 className="text-lg font-medium text-slate-900 dark:text-white tracking-tight">
+          {t("title")}
+        </h3>
+        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+          {t("membersBadge", { count: totalWorkers })}
+        </span>
+      </div>
 
-        {/* Compact Donut Visual & 3-Status Legend */}
-        <div className="flex flex-col items-center justify-center my-3 space-y-3">
-          <div className="relative w-32 h-32 flex items-center justify-center shrink-0">
-            <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-              {/* Background ring */}
-              <circle
-                cx="50"
-                cy="50"
-                r={radius}
-                className="stroke-slate-100 dark:stroke-slate-800/80"
-                strokeWidth="10"
+      {/* Arch Gauge */}
+      <div className="flex-1 flex flex-col items-center justify-center relative">
+        <div className="relative w-full max-w-[280px] aspect-[2/1.2]">
+          <svg className="w-full h-full drop-shadow-xs" viewBox="0 0 200 120">
+            <defs>
+              <pattern
+                id="hatch"
+                width="6"
+                height="6"
+                patternTransform="rotate(45)"
+                patternUnits="userSpaceOnUse"
+                className="text-slate-200 dark:text-slate-700"
+              >
+                <line
+                  x1="0"
+                  y1="0"
+                  x2="0"
+                  y2="6"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                />
+              </pattern>
+            </defs>
+            {/* Base Hatched Arch (Away/Empty) */}
+            <path
+              d="M 20 100 A 80 80 0 0 1 180 100"
+              fill="none"
+              stroke="url(#hatch)"
+              strokeWidth="24"
+              strokeLinecap="round"
+            />
+            {/* Dark Blue (Available + Busy) */}
+            {availableAndBusyLength > 0 && (
+              <path
+                d="M 20 100 A 80 80 0 0 1 180 100"
                 fill="none"
+                className="stroke-blue-800 dark:stroke-blue-900 transition-all duration-1000 ease-out"
+                strokeWidth="24"
+                strokeLinecap="round"
+                strokeDasharray={`${availableAndBusyLength} ${circum}`}
               />
+            )}
+            {/* Light Blue (Available) */}
+            {availableLength > 0 && (
+              <path
+                d="M 20 100 A 80 80 0 0 1 180 100"
+                fill="none"
+                className="stroke-blue-500 transition-all duration-1000 ease-out"
+                strokeWidth="24"
+                strokeLinecap="round"
+                strokeDasharray={`${availableLength} ${circum}`}
+              />
+            )}
+          </svg>
 
-              {/* 1. Available segment (Emerald) */}
-              {availablePercent > 0 && (
-                <circle
-                  cx="50"
-                  cy="50"
-                  r={radius}
-                  className="stroke-emerald-500 transition-all duration-700"
-                  strokeWidth="10"
-                  fill="none"
-                  strokeDasharray={`${strokeDashAvailable} ${circumference}`}
-                  strokeDashoffset={`-${offsetAvailable}`}
-                  strokeLinecap="round"
-                />
-              )}
-
-              {/* 2. Busy segment (Rose) */}
-              {busyPercent > 0 && (
-                <circle
-                  cx="50"
-                  cy="50"
-                  r={radius}
-                  className="stroke-rose-500 transition-all duration-700"
-                  strokeWidth="10"
-                  fill="none"
-                  strokeDasharray={`${strokeDashBusy} ${circumference}`}
-                  strokeDashoffset={`-${offsetBusy}`}
-                  strokeLinecap="round"
-                />
-              )}
-
-              {/* 3. Away segment (Amber) */}
-              {awayPercent > 0 && (
-                <circle
-                  cx="50"
-                  cy="50"
-                  r={radius}
-                  className="stroke-amber-500 transition-all duration-700"
-                  strokeWidth="10"
-                  fill="none"
-                  strokeDasharray={`${strokeDashAway} ${circumference}`}
-                  strokeDashoffset={`-${offsetAway}`}
-                  strokeLinecap="round"
-                />
-              )}
-            </svg>
-
-            {/* Inner Center Label */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-              <span className="text-2xl font-extrabold text-slate-900 dark:text-white tracking-tight">
-                {totalWorkers}
-              </span>
-              <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">
-                {t("workersCenter")}
-              </span>
-            </div>
-          </div>
-
-          {/* 3-Status Legend Cards */}
-          <div className="w-full space-y-2">
-            {/* Available */}
-            <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded-xl bg-emerald-500/10 text-emerald-500">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                    {t("availableTitle")}
-                  </h4>
-                  <p className="text-[10px] text-slate-400">{t("availableDesc")}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
-                  {availableWorkers}
-                </span>
-                <span className="text-[10px] text-emerald-500 font-bold ml-1">
-                  ({availablePercent}%)
-                </span>
-              </div>
-            </div>
-
-            {/* Busy */}
-            <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded-xl bg-rose-500/10 text-rose-500">
-                  <Clock className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                    {t("busyTitle")}
-                  </h4>
-                  <p className="text-[10px] text-slate-400">{t("busyDesc")}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
-                  {busyWorkers}
-                </span>
-                <span className="text-[10px] text-rose-500 font-bold ml-1">
-                  ({busyPercent}%)
-                </span>
-              </div>
-            </div>
-
-            {/* Away */}
-            <div className="flex items-center justify-between p-2 rounded-2xl bg-slate-50/80 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800/80">
-              <div className="flex items-center gap-2">
-                <div className="p-1 rounded-xl bg-amber-500/10 text-amber-500">
-                  <Coffee className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900 dark:text-white">
-                    {t("awayTitle")}
-                  </h4>
-                  <p className="text-[10px] text-slate-400">{t("awayDesc")}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-xs font-extrabold text-slate-900 dark:text-white">
-                  {awayWorkers}
-                </span>
-                <span className="text-[10px] text-amber-500 font-bold ml-1">
-                  ({awayPercent}%)
-                </span>
-              </div>
-            </div>
+          {/* Center Text */}
+          <div className="absolute bottom-4 inset-x-0 flex flex-col items-center text-center">
+            <span className="text-5xl font-semibold text-slate-900 dark:text-white tracking-tight leading-none mb-1">
+              {Math.round(availablePct * 100)}%
+            </span>
+            <span className="text-sm font-medium text-slate-500 dark:text-slate-400">
+              {t("availableTitle")}
+            </span>
           </div>
         </div>
       </div>
 
-      <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+      {/* Legend & Action */}
+      <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex items-center justify-between gap-2 mb-6 px-2">
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-3.5 h-3.5 rounded-full bg-blue-500" />
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Tersedia</span>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              <div className="w-3.5 h-3.5 rounded-full bg-blue-800 dark:bg-blue-900" />
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Sibuk</span>
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-1.5">
+            <div className="flex items-center gap-2">
+              <div
+                className="w-3.5 h-3.5 rounded-full text-slate-300 dark:text-slate-600"
+                style={{
+                  backgroundImage:
+                    "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 3px)",
+                }}
+              />
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Cuti</span>
+            </div>
+          </div>
+        </div>
+
         <Link
           href={`/${locale}/admin/team`}
-          className="w-full py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-semibold text-xs flex justify-center items-center gap-1.5 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+          className="w-full py-2.5 rounded-xl text-primary font-semibold text-sm flex justify-center items-center gap-1 hover:bg-primary/5 transition-colors cursor-pointer"
         >
-          {t("manageTeam")} <ChevronRight className="w-3.5 h-3.5" />
+          Kelola Beban Kerja <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
     </div>
