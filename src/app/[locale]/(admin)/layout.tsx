@@ -1,27 +1,42 @@
 import { requireRole } from "@/lib/auth";
-import Link from "next/link";
+import { AdminSidebar } from "@/components/layout/admin-sidebar";
+import { ClientTopbar } from "@/components/layout/client-topbar";
+import { createClient } from "@/utils/supabase/server";
+import { prisma } from "@/lib/db";
 
-export default async function AdminLayout({
-  children,
-}: {
+export default async function AdminLayout(props: {
   children: React.ReactNode;
+  params: Promise<{ locale: string }>;
 }) {
   await requireRole(["ADMIN"]);
+  const { locale } = await props.params;
+  
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+  
+  let dbUser = null;
+  if (user) {
+    dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+  }
+  
+  const topbarUser = user ? {
+    id: user.id,
+    name: dbUser?.name || user.user_metadata?.full_name || user.user_metadata?.name || null,
+    email: user.email || null,
+    image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
+  } : null;
 
   return (
-    <div className="min-h-screen flex bg-zinc-50 dark:bg-zinc-950">
-      <aside className="w-64 border-r border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 p-4 hidden md:block">
-        <h2 className="font-bold text-xl mb-6 tracking-tight text-zinc-900 dark:text-white">Admin Panel</h2>
-        <nav className="space-y-2">
-          <Link href="/admin-dashboard" className="block px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300">Overview</Link>
-          <Link href="/requests" className="block px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300">Job Requests</Link>
-          <Link href="/projects" className="block px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300">Projects</Link>
-          <Link href="/team" className="block px-3 py-2 rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm font-medium text-zinc-700 dark:text-zinc-300">Team Workload</Link>
-        </nav>
-      </aside>
-      <main className="flex-1 p-6 md:p-8 overflow-y-auto">
-        {children}
-      </main>
+    <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans">
+      <AdminSidebar locale={locale} />
+      <div className="flex-1 flex flex-col min-w-0">
+        <ClientTopbar user={topbarUser} />
+        <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">
+          <div className="mx-auto w-full max-w-7xl">
+            {props.children}
+          </div>
+        </main>
+      </div>
     </div>
   );
 }

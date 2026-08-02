@@ -21,7 +21,7 @@ async function main() {
     })
 
     if (error) {
-      console.error(`Supabase Error for ${acc.email}:`, error.message)
+      console.error(`Supabase Error for ${acc.email}:`, error)
     } else {
       console.log(`Supabase User created: ${data.user?.id}`)
       

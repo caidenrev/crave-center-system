@@ -14,18 +14,20 @@ export default async function AdminApplicationsPage() {
   })
 
   return (
-    <div className="p-8 pb-20">
-      <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">Worker Applications</h1>
-      <p className="text-slate-500 mb-8">Review and approve new team members to join Crave ITSM.</p>
+    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
+      <div>
+        <h1 className="text-3xl font-bold text-slate-900 dark:text-white mb-2 tracking-tight">Worker Applications</h1>
+        <p className="text-slate-500 dark:text-slate-400">Review and approve new team members to join Crave ITSM.</p>
+      </div>
 
-      <div className="bg-white dark:bg-zinc-900 border border-slate-200 dark:border-zinc-800 rounded-2xl shadow-sm overflow-hidden">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
         {pendingApps.length === 0 ? (
           <div className="p-12 text-center text-slate-500">
             No pending applications at the moment.
           </div>
         ) : (
           <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
-            <thead className="bg-slate-50 dark:bg-zinc-900/50 text-slate-700 dark:text-slate-200 uppercase font-semibold text-xs border-b border-slate-200 dark:border-zinc-800">
+            <thead className="bg-slate-50 dark:bg-slate-800/50 text-slate-700 dark:text-slate-300 uppercase font-semibold text-xs border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="px-6 py-4">Applicant</th>
                 <th className="px-6 py-4">Category & Skills</th>
@@ -34,9 +36,9 @@ export default async function AdminApplicationsPage() {
                 <th className="px-6 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-200 dark:divide-zinc-800">
+            <tbody className="divide-y divide-slate-200 dark:divide-slate-800/50">
               {pendingApps.map((app: any) => (
-                <tr key={app.id} className="hover:bg-slate-50/50 dark:hover:bg-zinc-800/20 transition-colors">
+                <tr key={app.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-800/20 transition-colors">
                   <td className="px-6 py-4">
                     <div className="font-medium text-slate-900 dark:text-white">{app.user.name}</div>
                     <div className="text-xs text-slate-500">{app.user.email}</div>
@@ -47,7 +49,7 @@ export default async function AdminApplicationsPage() {
                     </div>
                     <div className="flex flex-wrap gap-1 mt-1">
                       {app.skills.map((s: string) => (
-                        <span key={s} className="px-1.5 py-0.5 bg-slate-100 dark:bg-zinc-800 text-slate-600 dark:text-slate-400 rounded text-[10px]">
+                        <span key={s} className="px-1.5 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 rounded text-[10px]">
                           {s}
                         </span>
                       ))}

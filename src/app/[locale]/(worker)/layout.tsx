@@ -23,11 +23,16 @@ export default async function WorkerLayout(props: {
     where: { email: user.email }
   })
 
+  const topbarUser = {
+    ...dbUser,
+    name: dbUser?.name ?? user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
+  }
+
   return (
     <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans">
       <WorkerSidebar locale={locale} />
       <div className="flex-1 flex flex-col min-w-0">
-        <ClientTopbar user={dbUser} />
+        <ClientTopbar user={topbarUser} />
         <main className="flex-1 p-6 md:p-8 overflow-y-auto">
           {children}
         </main>

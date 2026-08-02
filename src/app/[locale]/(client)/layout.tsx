@@ -2,6 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { ClientSidebar } from "@/components/layout/client-sidebar";
 import { ClientTopbar } from "@/components/layout/client-topbar";
 import { createClient } from "@/utils/supabase/server";
+import { prisma } from "@/lib/db";
 
 export default async function ClientLayout(props: {
   children: React.ReactNode;
@@ -13,9 +14,14 @@ export default async function ClientLayout(props: {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
   
+  let dbUser = null;
+  if (user) {
+    dbUser = await prisma.user.findUnique({ where: { id: user.id } });
+  }
+  
   const topbarUser = user ? {
     id: user.id,
-    name: user.user_metadata?.full_name || user.user_metadata?.name || null,
+    name: dbUser?.name || user.user_metadata?.full_name || user.user_metadata?.name || null,
     email: user.email || null,
     image: user.user_metadata?.avatar_url || user.user_metadata?.picture || null
   } : null;

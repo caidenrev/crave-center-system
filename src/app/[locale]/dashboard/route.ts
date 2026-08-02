@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       const role = dbUser?.role || 'CLIENT'
 
       let nextPath = `/${locale}/client`
-      if (role === 'ADMIN') nextPath = `/${locale}/admin`
+      if (role === 'ADMIN') nextPath = `/${locale}/admin/applications`
       if (role === 'TEAM_MEMBER') nextPath = `/${locale}/worker`
 
       return NextResponse.redirect(`${origin}${nextPath}`)
