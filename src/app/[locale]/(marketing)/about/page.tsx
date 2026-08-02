@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
-import { MessageSquareWarning, ShieldCheck, Target, Lightbulb, Users } from "lucide-react"
+import { Target, Lightbulb} from "lucide-react"
 
 export default function AboutPage() {
   const t = useTranslations("AboutPage")
@@ -128,7 +128,7 @@ export default function AboutPage() {
                 
                 {/* Front Side */}
                 <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-card border border-border p-8 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center">
-                  <div className={`w-28 h-28 rounded-full mb-6 flex items-center justify-center bg-gradient-to-br ${member.color} text-white text-4xl font-black shadow-inner`}>
+                  <div className={`w-28 h-28 rounded-full mb-6 flex items-center justify-center bg-linear-to-br ${member.color} text-white text-4xl font-black shadow-inner`}>
                     {member.initials}
                   </div>
                   <h3 className="text-2xl font-bold text-foreground mb-1">{member.name}</h3>
