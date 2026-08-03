@@ -51,19 +51,19 @@ export function AdminWorkerDonutChart({
             <defs>
               <pattern
                 id="hatch"
-                width="6"
-                height="6"
+                width="8"
+                height="8"
                 patternTransform="rotate(45)"
                 patternUnits="userSpaceOnUse"
-                className="text-slate-200 dark:text-slate-700"
+                className="text-slate-300 dark:text-slate-600"
               >
                 <line
                   x1="0"
                   y1="0"
                   x2="0"
-                  y2="6"
+                  y2="8"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="3"
                 />
               </pattern>
             </defs>
@@ -132,7 +132,7 @@ export function AdminWorkerDonutChart({
                 className="w-3.5 h-3.5 rounded-full text-slate-300 dark:text-slate-600"
                 style={{
                   backgroundImage:
-                    "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 3px)",
+                    "repeating-linear-gradient(45deg, currentColor, currentColor 2px, transparent 2px, transparent 6px)",
                 }}
               />
               <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{t("awayTitle").split(" ")[0]}</span>

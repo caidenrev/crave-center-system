@@ -35,6 +35,16 @@ export async function approveProjectQuote(projectId: string) {
       }
     })
 
+    // Create Notification for Worker
+    const { createNotification } = await import("@/app/actions/notification")
+    await createNotification({
+      userId: project.workerId!,
+      title: "Offer Approved!",
+      message: `Client ${project.client.name} has approved your offer for ${project.title}.`,
+      type: "SUCCESS",
+      link: "/id/worker/projects"
+    })
+
     revalidatePath("/client")
     
     return { success: true }

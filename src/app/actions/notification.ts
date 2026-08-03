@@ -67,3 +67,37 @@ export async function markAllAsRead() {
     return { success: false, error: error.message }
   }
 }
+
+import { NotificationType } from '@/generated/prisma'
+
+export async function createNotification({
+  userId,
+  title,
+  message,
+  type = "INFO",
+  link = null
+}: {
+  userId: string
+  title: string
+  message: string
+  type?: string
+  link?: string | null
+}) {
+  try {
+    await prisma.notification.create({
+      data: {
+        userId,
+        title,
+        message,
+        type: type as NotificationType,
+        link,
+        isRead: false
+      }
+    })
+    return { success: true }
+  } catch (error: any) {
+    console.error("Failed to create notification:", error)
+    return { success: false, error: error.message }
+  }
+}
+

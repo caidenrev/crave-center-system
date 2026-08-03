@@ -62,6 +62,19 @@ export async function submitApplication(formData: FormData) {
       }
     })
 
+    // Find all admins and notify them
+    const admins = await prisma.user.findMany({ where: { role: Role.ADMIN } })
+    const { createNotification } = await import("@/app/actions/notification")
+    for (const admin of admins) {
+      await createNotification({
+        userId: admin.id,
+        title: "New Worker Application",
+        message: `${dbUser.name} has submitted an application for the ${category} category.`,
+        type: "INFO",
+        link: "/id/admin/applications"
+      })
+    }
+
     revalidatePath("/apply")
     return { success: true }
   } catch (error: any) {
@@ -104,10 +117,28 @@ export async function reviewApplication(applicationId: string, action: 'APPROVE'
           skills: application.skills
         }
       })
+      
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: application.userId,
+        title: "Application Approved!",
+        message: "Congratulations! Your worker application has been approved. You are now a team member.",
+        type: "SUCCESS",
+        link: "/id/worker"
+      })
     } else {
       await prisma.workerApplication.update({
         where: { id: applicationId },
         data: { status: ApplicationStatus.REJECTED }
+      })
+
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: application.userId,
+        title: "Application Status Update",
+        message: "Your worker application has been reviewed but unfortunately it was not approved at this time.",
+        type: "ERROR",
+        link: "/id/apply"
       })
     }
 

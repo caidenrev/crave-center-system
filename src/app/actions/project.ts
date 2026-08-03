@@ -63,6 +63,17 @@ export async function createJobRequest(formData: FormData) {
       }
     })
 
+    // Create Notification for Worker
+    const { createNotification } = await import("@/app/actions/notification")
+    await createNotification({
+      userId: workerId,
+      title: "New Job Request",
+      message: `${dbUser.name} requested you for a new project: ${title}`,
+      type: "INFO",
+      link: "/id/worker/projects"
+    })
+
+
     // Send Real-time Email to Worker
     if (process.env.RESEND_API_KEY) {
       try {

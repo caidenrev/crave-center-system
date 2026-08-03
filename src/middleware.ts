@@ -37,7 +37,7 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const pathWithoutLocale = pathname.replace(/^\/(en|id)/, '') || '/'
   
-  const publicRoutes = ["/", "/products", "/solutions", "/services", "/pricing", "/about", "/resources", "/contact"]
+  const publicRoutes = ["/", "/products", "/solutions", "/services", "/pricing", "/about", "/resources", "/contact", "/api/enable-realtime"]
   const isPublicRoute = publicRoutes.includes(pathWithoutLocale) || 
                         pathWithoutLocale.startsWith("/resources/") || 
                         pathWithoutLocale.startsWith("/login") || 
@@ -65,7 +65,7 @@ export async function middleware(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Skip next internals and static files
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    // Skip next internals, static files, and api routes
+    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 }
