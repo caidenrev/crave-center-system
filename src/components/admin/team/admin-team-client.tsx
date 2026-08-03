@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Briefcase, Activity, Mail, Search, Filter, CheckCircle2, X, Send, User } from 'lucide-react'
+import { Briefcase, Activity, Mail, Search, Filter, CheckCircle2, X, Send } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
 export interface TeamMemberItem {
@@ -122,7 +122,7 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                     </div>
                     {/* Status Dot */}
                     <div 
-                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-sm ${
+                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-xs ${
                         member.status === 'Available' ? 'bg-emerald-500' : member.status === 'Busy' ? 'bg-rose-500' : 'bg-amber-500'
                       }`} 
                       title={`Status: ${member.status}`} 
@@ -136,7 +136,7 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                       ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
                       : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
                   }`}>
-                    {member.status}
+                    {member.status === 'Available' ? t('filterAvailable') : member.status === 'Busy' ? t('filterBusy') : t('filterAway')}
                   </span>
                 </div>
 
@@ -160,10 +160,10 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                 <div className="bg-slate-50/80 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-2.5">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-semibold">
-                      <Activity className="w-3.5 h-3.5 text-primary" /> Active Tasks
+                      <Activity className="w-3.5 h-3.5 text-primary" /> {t('activeTasks')}
                     </span>
                     <span className="font-extrabold text-slate-900 dark:text-white text-xs">
-                      {member.activeTasks} / {member.maxCapacity} Tasks
+                      {member.activeTasks} / {member.maxCapacity} {t('tasksLabel')}
                     </span>
                   </div>
                   
@@ -177,13 +177,13 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                   </div>
 
                   <div className="flex justify-between items-center text-[11px] pt-0.5 font-bold">
-                    <span className="text-slate-400">Capacity Used</span>
+                    <span className="text-slate-400">{t('capacityUsed')}</span>
                     <span className={`px-2 py-0.5 rounded-lg text-[10px] ${
                       workloadPercentage >= 80 
                         ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' 
                         : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                     }`}>
-                      {workloadPercentage}% Capacity
+                      {workloadPercentage}% {t('capacityLabel')}
                     </span>
                   </div>
                 </div>

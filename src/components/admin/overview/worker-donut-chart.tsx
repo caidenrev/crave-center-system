@@ -1,6 +1,6 @@
 "use client";
 
-import { Users, ChevronRight, CheckCircle2, Clock, Coffee } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 
@@ -17,7 +17,6 @@ export function AdminWorkerDonutChart({
   totalWorkers = 0,
   availableWorkers = 0,
   busyWorkers = 0,
-  awayWorkers = 0,
 }: WorkerDonutChartProps) {
   const t = useTranslations("AdminDonut");
 
@@ -34,7 +33,7 @@ export function AdminWorkerDonutChart({
   const availableAndBusyLength = availableLength + busyLength;
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col justify-between h-full">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between h-full">
       {/* Header - Minimalist */}
       <div className="flex items-start justify-between mb-8">
         <h3 className="text-lg font-medium text-slate-900 dark:text-white tracking-tight">
@@ -118,13 +117,13 @@ export function AdminWorkerDonutChart({
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex items-center gap-2">
               <div className="w-3.5 h-3.5 rounded-full bg-blue-500" />
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Tersedia</span>
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{t("availableTitle").split(" ")[0]}</span>
             </div>
           </div>
           <div className="flex flex-col items-center gap-1.5">
             <div className="flex items-center gap-2">
               <div className="w-3.5 h-3.5 rounded-full bg-blue-800 dark:bg-blue-900" />
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Sibuk</span>
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{t("busyTitle").split(" ")[0]}</span>
             </div>
           </div>
           <div className="flex flex-col items-center gap-1.5">
@@ -136,7 +135,7 @@ export function AdminWorkerDonutChart({
                     "repeating-linear-gradient(45deg, currentColor, currentColor 1px, transparent 1px, transparent 3px)",
                 }}
               />
-              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">Cuti</span>
+              <span className="text-xs font-medium text-slate-600 dark:text-slate-400">{t("awayTitle").split(" ")[0]}</span>
             </div>
           </div>
         </div>
@@ -145,7 +144,7 @@ export function AdminWorkerDonutChart({
           href={`/${locale}/admin/team`}
           className="w-full py-2.5 rounded-xl text-primary font-semibold text-sm flex justify-center items-center gap-1 hover:bg-primary/5 transition-colors cursor-pointer"
         >
-          Kelola Beban Kerja <ChevronRight className="w-4 h-4" />
+          {t("manageTeam")} <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
     </div>

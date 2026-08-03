@@ -1,17 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import {
-  LayoutGrid,
-  List,
-  PlayCircle,
-  CheckCircle,
-  Clock,
-  Search,
-  X,
-  Calendar,
-  User,
-  ChevronRight,
+import {LayoutGrid, List, PlayCircle, CheckCircle, Clock, Search, X, Calendar, User, ChevronRight, FolderKanban,
 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 
@@ -146,8 +136,14 @@ export function AdminProjectsClient({ initialProjects }: { initialProjects: Proj
         </div>
       </div>
 
-      {/* Grid View */}
-      {viewMode === 'grid' && (
+      {/* Content View Rendering: Empty State vs Grid View vs Table View */}
+      {filteredProjects.length === 0 ? (
+        <div className="p-12 text-center text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 shadow-xs">
+          <FolderKanban className="w-10 h-10 mx-auto text-slate-300 dark:text-slate-700 mb-3" />
+          <h4 className="font-bold text-sm text-slate-900 dark:text-white">{t('noResults')}</h4>
+          <p className="text-xs mt-1 text-slate-400">{t('noResultsDesc')}</p>
+        </div>
+      ) : viewMode === 'grid' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProjects.map((proj) => (
             <div 
@@ -226,20 +222,17 @@ export function AdminProjectsClient({ initialProjects }: { initialProjects: Proj
             </div>
           ))}
         </div>
-      )}
-
-      {/* Table View */}
-      {viewMode === 'table' && (
+      ) : (
         <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-600 dark:text-slate-300">
               <thead className="bg-slate-50/80 dark:bg-slate-800/60 uppercase text-slate-500 dark:text-slate-400 font-bold text-xs border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">ID</th>
-                  <th className="px-6 py-4">Project Name</th>
+                  <th className="px-6 py-4">{t('thId')}</th>
+                  <th className="px-6 py-4">{t('thProjectName')}</th>
                   <th className="px-6 py-4">{t('clientLabel')}</th>
                   <th className="px-6 py-4">{t('assignedWorker')}</th>
-                  <th className="px-6 py-4">Status</th>
+                  <th className="px-6 py-4">{t('thStatus')}</th>
                   <th className="px-6 py-4">{t('completion')}</th>
                   <th className="px-6 py-4">{t('dueDate')}</th>
                 </tr>

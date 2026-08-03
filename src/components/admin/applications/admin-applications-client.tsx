@@ -5,7 +5,6 @@ import {
   CheckCircle2,
   XCircle,
   MessageCircle,
-  ExternalLink,
   Search,
   Filter,
   X,

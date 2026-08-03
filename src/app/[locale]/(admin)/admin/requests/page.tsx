@@ -1,6 +1,6 @@
 import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { AdminRequestsClient, JobRequestItem } from '@/components/admin/admin-requests-client'
+import { AdminRequestsClient, JobRequestItem, WorkerOption } from '@/components/admin/requests/admin-requests-client'
 import { getTranslations } from 'next-intl/server'
 
 export default async function AdminRequestsPage() {
@@ -16,8 +16,24 @@ export default async function AdminRequestsPage() {
     orderBy: { createdAt: 'desc' }
   }).catch(() => [])
 
-  // Map DB data or fallback to demo items if database has no active requests yet
-  const initialRequests: JobRequestItem[] = dbProjects.length > 0 ? dbProjects.map((p) => ({
+  // Fetch real team workers for assignment
+  const dbWorkers = await prisma.user.findMany({
+    where: { role: 'TEAM_MEMBER' },
+    include: { tasks: { where: { status: { not: 'DONE' } } } },
+    orderBy: { createdAt: 'desc' }
+  }).catch(() => [])
+
+  const teamWorkers: WorkerOption[] = dbWorkers.map(w => ({
+    id: w.id,
+    name: w.name || 'Unnamed Worker',
+    email: w.email,
+    skills: w.skills || [],
+    role: w.category || 'Developer',
+    activeTasks: w.tasks?.length || 0
+  }))
+
+  // Map DB data
+  const initialRequests: JobRequestItem[] = dbProjects.map((p) => ({
     id: p.id.split('-')[0].toUpperCase(),
     clientName: p.client?.name || 'Client',
     clientEmail: p.client?.email || 'client@crave.com',
@@ -29,11 +45,7 @@ export default async function AdminRequestsPage() {
     briefUrl: p.briefFileUrl,
     description: p.description,
     assignedWorker: p.worker?.name || null
-  })) : [
-    { id: 'REQ-101', clientName: 'Acme Corp', clientEmail: 'contact@acme.com', service: 'E-Commerce Website Revamp', category: 'Web App', budget: 'Rp 10.000.000 - 20.000.000', status: 'Pending Review', date: 'Oct 12, 2026', description: 'Complete overhaul of current e-commerce store with modern UI, mobile responsiveness, payment gateway integration, and fast performance.' },
-    { id: 'REQ-102', clientName: 'TechFlow', clientEmail: 'hello@techflow.io', service: 'Mobile App (iOS/Android)', category: 'Mobile App', budget: 'Rp 25.000.000+', status: 'Worker Review', date: 'Oct 10, 2026', assignedWorker: 'Alex Johnson', description: 'Cross-platform mobile application built with React Native or Flutter, including user authentication and real-time push notifications.' },
-    { id: 'REQ-103', clientName: 'Global Media', clientEmail: 'info@globalmedia.com', service: 'ITSM Dashboard Customization', category: 'Custom System', budget: 'Rp 5.000.000 - 10.000.000', status: 'Pending DP', date: 'Oct 09, 2026', description: 'Custom administrative reporting tools with data visualization and downloadable PDF invoices.' },
-  ]
+  }))
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
@@ -45,7 +57,8 @@ export default async function AdminRequestsPage() {
         <p className="text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
       </div>
 
-      <AdminRequestsClient initialRequests={initialRequests} />
+      <AdminRequestsClient initialRequests={initialRequests} teamWorkers={teamWorkers} />
     </div>
   )
 }
+

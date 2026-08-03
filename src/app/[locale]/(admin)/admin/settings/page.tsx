@@ -2,7 +2,7 @@ import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { createClient } from '@/utils/supabase/server'
 import { getTranslations } from 'next-intl/server'
-import { AdminSettingsClient } from '@/components/admin/admin-settings-client'
+import { AdminSettingsClient } from '@/components/admin/settings/admin-settings-client'
 
 export default async function AdminSettingsPage() {
   await requireRole(["ADMIN"])
