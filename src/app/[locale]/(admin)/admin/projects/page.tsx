@@ -1,6 +1,6 @@
 import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { AdminProjectsClient, ProjectCardItem } from '@/components/admin/admin-projects-client'
+import { AdminProjectsClient, ProjectCardItem } from '@/components/admin/projects/admin-projects-client'
 import { getTranslations } from 'next-intl/server'
 
 export default async function AdminProjectsPage() {
@@ -13,10 +13,10 @@ export default async function AdminProjectsPage() {
     orderBy: { createdAt: 'desc' }
   }).catch(() => [])
 
-  const initialProjects: ProjectCardItem[] = dbProjects.length > 0 ? dbProjects.map((p) => {
+  const initialProjects: ProjectCardItem[] = dbProjects.map((p) => {
     const totalTasks = p.tasks?.length || 0
     const doneTasks = p.tasks?.filter(t => t.status === 'DONE').length || 0
-    const calculatedProgress = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : (p.status === 'COMPLETED' ? 100 : 35)
+    const calculatedProgress = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : (p.status === 'COMPLETED' ? 100 : 0)
 
     return {
       id: p.id.split('-')[0].toUpperCase(),
@@ -29,12 +29,7 @@ export default async function AdminProjectsPage() {
       description: p.description,
       budget: p.budgetRange || undefined
     }
-  }) : [
-    { id: 'PRJ-2001', name: 'Crave E-Commerce Revamp', client: 'Acme Corp', manager: 'Alex Johnson', status: 'In Progress', progress: 65, dueDate: 'Nov 15, 2026' },
-    { id: 'PRJ-2002', name: 'Mobile App MVP', client: 'TechFlow', manager: 'Michael Chen', status: 'In Progress', progress: 30, dueDate: 'Dec 01, 2026' },
-    { id: 'PRJ-2003', name: 'SEO Optimization Q4', client: 'Global Media', manager: 'Devon Carter', status: 'Completed', progress: 100, dueDate: 'Oct 01, 2026' },
-    { id: 'PRJ-2004', name: 'Brand Identity Redesign', client: 'Stark Ind.', manager: 'Siti Rahma', status: 'Delayed', progress: 45, dueDate: 'Oct 10, 2026' },
-  ]
+  })
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">

@@ -1,26 +1,57 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { Clock } from "lucide-react";
 
-export function RealtimeClock() {
-  const [time, setTime] = useState<Date | null>(null);
+let currentTimestamp: number | null = null;
+const listeners = new Set<() => void>();
+let intervalId: ReturnType<typeof setInterval> | null = null;
 
-  useEffect(() => {
-    // Set initial time on client side to avoid hydration mismatch
-    setTime(new Date());
-    
-    const interval = setInterval(() => {
-      setTime(new Date());
+function subscribe(callback: () => void) {
+  listeners.add(callback);
+
+  if (!intervalId && typeof window !== "undefined") {
+    currentTimestamp = Date.now();
+    intervalId = setInterval(() => {
+      currentTimestamp = Date.now();
+      listeners.forEach((listener) => listener());
     }, 1000);
-    
-    return () => clearInterval(interval);
-  }, []);
+  }
+
+  return () => {
+    listeners.delete(callback);
+    if (listeners.size === 0 && intervalId) {
+      clearInterval(intervalId);
+      intervalId = null;
+      currentTimestamp = null;
+    }
+  };
+}
+
+function getSnapshot() {
+  if (currentTimestamp === null && typeof window !== "undefined") {
+    currentTimestamp = Date.now();
+  }
+  return currentTimestamp;
+}
+
+function getServerSnapshot() {
+  return null;
+}
+
+export function RealtimeClock() {
+  const timestamp = useSyncExternalStore(
+    subscribe,
+    getSnapshot,
+    getServerSnapshot
+  );
+
+  const time = timestamp ? new Date(timestamp) : null;
 
   // Show a static placeholder matching the layout before hydration to prevent layout shift
   if (!time) {
     return (
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm h-full flex flex-col justify-between group min-h-[220px]">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-xs h-full flex flex-col justify-between group min-h-[220px]">
         <div className="relative z-10">
           <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5" /> Time Tracker
@@ -44,7 +75,7 @@ export function RealtimeClock() {
   }).toUpperCase();
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-sm h-full flex flex-col justify-between group min-h-[220px]">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 shadow-xs h-full flex flex-col justify-between group min-h-[220px]">
       <div className="relative z-10">
         <h3 className="text-xs font-semibold text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
           <Clock className="w-3.5 h-3.5" /> Time Tracker
@@ -71,7 +102,7 @@ export function RealtimeClock() {
               key={offset} 
               className={`flex flex-col items-center justify-center w-8 h-10 rounded-lg transition-colors ${
                 isToday 
-                  ? 'bg-primary text-white shadow-sm' 
+                  ? 'bg-primary text-white shadow-xs' 
                   : 'text-slate-400 dark:text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800'
               }`}
             >

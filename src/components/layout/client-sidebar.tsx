@@ -42,7 +42,7 @@ export function ClientSidebar({ locale }: { locale: string }) {
 
   return (
     <>
-      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 flex-shrink-0 hidden md:flex flex-col">
+      <aside className="w-64 bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 shrink-0 hidden md:flex flex-col">
         <div className="h-16 flex items-center px-6 border-b border-slate-200 dark:border-slate-800">
           <Link href={`/${locale}/client`} className="flex items-center group">
             <img src="/light-mode-logo.png" alt="Crave" className="h-7 w-auto dark:hidden transition-transform group-hover:scale-105" />

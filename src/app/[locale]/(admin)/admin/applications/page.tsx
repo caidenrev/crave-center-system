@@ -1,7 +1,7 @@
 import { prisma } from '@/lib/db'
 import { requireRole } from '@/lib/auth'
 import { ApplicationStatus } from '@/generated/prisma'
-import { AdminApplicationsClient, ApplicationItem } from '@/components/admin/admin-applications-client'
+import { AdminApplicationsClient, ApplicationItem } from '@/components/admin/applications/admin-applications-client'
 import { getTranslations } from 'next-intl/server'
 
 export default async function AdminApplicationsPage() {

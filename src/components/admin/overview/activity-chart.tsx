@@ -5,30 +5,31 @@ import { motion, AnimatePresence } from "framer-motion";
 import { BarChart3, Calendar } from "lucide-react";
 import { useTranslations } from "next-intl";
 
-export function AdminActivityChart() {
+export interface ActivityDataItem {
+  label: string;
+  req: number;
+  comp: number;
+}
+
+interface AdminActivityChartProps {
+  weeklyData?: ActivityDataItem[];
+  monthlyData?: ActivityDataItem[];
+}
+
+export function AdminActivityChart({
+  weeklyData = [],
+  monthlyData = [],
+}: AdminActivityChartProps) {
   const [viewMode, setViewMode] = useState<"weekly" | "monthly">("weekly");
   const t = useTranslations("AdminActivity");
 
-  const weeklyData = [
-    { label: "Mon", req: 40, comp: 25 },
-    { label: "Tue", req: 65, comp: 50 },
-    { label: "Wed", req: 85, comp: 70 },
-    { label: "Thu", req: 55, comp: 45 },
-    { label: "Fri", req: 95, comp: 80 },
-    { label: "Sat", req: 30, comp: 20 },
-    { label: "Sun", req: 45, comp: 35 },
-  ];
-
-  const monthlyData = [
-    { label: "Jan", req: 60, comp: 45 },
-    { label: "Feb", req: 75, comp: 60 },
-    { label: "Mar", req: 90, comp: 85 },
-    { label: "Apr", req: 70, comp: 65 },
-    { label: "May", req: 100, comp: 90 },
-    { label: "Jun", req: 80, comp: 75 },
-  ];
-
   const currentData = viewMode === "weekly" ? weeklyData : monthlyData;
+
+  // Calculate max value for dynamic scaling (min max scale = 5 for aesthetics)
+  const maxVal = Math.max(
+    5,
+    ...currentData.flatMap((d) => [d.req, d.comp])
+  );
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-xs flex flex-col justify-between h-full">
@@ -92,43 +93,58 @@ export function AdminActivityChart() {
       </div>
 
       {/* Bar Chart Bars Container */}
-      <div className="h-44 md:h-52 flex items-end justify-between gap-2 md:gap-4 pt-4 px-2">
-        <AnimatePresence>
-          {currentData.map((item, index) => (
-            <div key={item.label + viewMode} className="flex-1 flex flex-col items-center gap-2 h-full justify-end group">
-              <div className="w-full max-w-[36px] flex items-end justify-center gap-1 h-full">
-                {/* Job Requests Bar (Blue) */}
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: `${item.req}%`, opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 }}
-                  className="w-1/2 bg-blue-600 dark:bg-blue-500 rounded-t-lg relative group-hover:bg-blue-500 transition-colors shadow-xs"
-                >
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-1.5 rounded-md whitespace-nowrap pointer-events-none z-20 font-bold shadow-lg">
-                    {item.req} Req
-                  </div>
-                </motion.div>
+      <div className="h-44 md:h-52 flex items-end justify-between gap-2 md:gap-4 pt-4 px-2 overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={viewMode}
+            initial={{ opacity: 0, y: 6 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -6 }}
+            transition={{ duration: 0.25, ease: "easeInOut" }}
+            className="w-full h-full flex items-end justify-between gap-2 md:gap-4"
+          >
+            {currentData.map((item, index) => {
+              const reqPct = Math.round((item.req / maxVal) * 100);
+              const compPct = Math.round((item.comp / maxVal) * 100);
 
-                {/* Completed Tasks Bar (Emerald) */}
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: `${item.comp}%`, opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.5, delay: index * 0.05 + 0.02 }}
-                  className="w-1/2 bg-emerald-500 dark:bg-emerald-400 rounded-t-lg relative group-hover:bg-emerald-400 transition-colors shadow-xs"
+              return (
+                <div
+                  key={item.label}
+                  className="flex-1 flex flex-col items-center gap-2 h-full justify-end group"
                 >
-                  <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-1.5 rounded-md whitespace-nowrap pointer-events-none z-20 font-bold shadow-lg">
-                    {item.comp} Comp
-                  </div>
-                </motion.div>
-              </div>
+                  <div className="w-full max-w-[36px] flex items-end justify-center gap-1 h-full">
+                    {/* Job Requests Bar (Blue) */}
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${reqPct}%` }}
+                      transition={{ duration: 0.45, ease: "easeOut", delay: index * 0.03 }}
+                      className="w-1/2 bg-blue-600 dark:bg-blue-500 rounded-t-lg relative group-hover:bg-blue-500 transition-colors shadow-xs"
+                    >
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-1.5 rounded-md whitespace-nowrap pointer-events-none z-20 font-bold shadow-lg">
+                        {item.req} Req
+                      </div>
+                    </motion.div>
 
-              <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
-                {item.label}
-              </span>
-            </div>
-          ))}
+                    {/* Completed Tasks Bar (Emerald) */}
+                    <motion.div
+                      initial={{ height: 0 }}
+                      animate={{ height: `${compPct}%` }}
+                      transition={{ duration: 0.45, ease: "easeOut", delay: index * 0.03 + 0.02 }}
+                      className="w-1/2 bg-emerald-500 dark:bg-emerald-400 rounded-t-lg relative group-hover:bg-emerald-400 transition-colors shadow-xs"
+                    >
+                      <div className="opacity-0 group-hover:opacity-100 transition-opacity absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[10px] py-1 px-1.5 rounded-md whitespace-nowrap pointer-events-none z-20 font-bold shadow-lg">
+                        {item.comp} Comp
+                      </div>
+                    </motion.div>
+                  </div>
+
+                  <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500">
+                    {item.label}
+                  </span>
+                </div>
+              );
+            })}
+          </motion.div>
         </AnimatePresence>
       </div>
 
