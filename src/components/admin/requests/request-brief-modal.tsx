@@ -63,15 +63,15 @@ export function RequestBriefModal({
           </div>
 
           <div>
-            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Project Description</span>
+            <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('projectDescLabel')}</span>
             <p className="mt-1 text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-800/40 p-3 rounded-xl border border-slate-100 dark:border-slate-800/60 leading-relaxed font-normal">
-              {selectedRequest.description || "Client provided no additional description for this request."}
+              {selectedRequest.description || t('noDescription')}
             </p>
           </div>
 
           {selectedRequest.briefUrl && (
             <div>
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Attached Brief</span>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">{t('attachedBriefLabel')}</span>
               <div className="mt-1">
                 <a
                   href={selectedRequest.briefUrl}
@@ -79,7 +79,7 @@ export function RequestBriefModal({
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-2 px-3 py-2 rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 text-xs font-bold hover:underline"
                 >
-                  <Briefcase className="w-4 h-4" /> Download Client Brief File
+                  <Briefcase className="w-4 h-4" /> {t('downloadBriefBtn')}
                 </a>
               </div>
             </div>
@@ -89,11 +89,12 @@ export function RequestBriefModal({
         <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-end">
           <button
             onClick={onClose}
-            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs transition-colors"
+            className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs transition-colors cursor-pointer"
           >
-            Close
+            {t('close')}
           </button>
         </div>
+
       </div>
     </div>
   )

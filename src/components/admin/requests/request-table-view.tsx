@@ -1,6 +1,6 @@
 'use client'
 
-import { Eye, UserPlus, Briefcase, User, ChevronDown } from 'lucide-react'
+import { Eye, UserPlus, Briefcase} from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { JobRequestItem } from './admin-requests-client'
 
@@ -18,8 +18,6 @@ interface RequestTableViewProps {
 export function RequestTableView({
   requests,
   visibleProps,
-  openActionId,
-  setOpenActionId,
   onViewBrief,
   onAssignModal,
   onRejectRequest,
@@ -38,8 +36,9 @@ export function RequestTableView({
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl overflow-hidden shadow-xs">
-      <div className="overflow-x-auto">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs">
+      <div className="overflow-x-auto rounded-3xl">
+        <div className="min-w-[800px]">
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-slate-100 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-800/40 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
@@ -106,47 +105,38 @@ export function RequestTableView({
                   </td>
                 )}
                 <td className="py-4 px-6 text-right whitespace-nowrap">
-                  <div className="relative inline-block text-left">
+                  <div className="flex items-center justify-end gap-2">
                     <button
-                      onClick={() => setOpenActionId(openActionId === req.id ? null : req.id)}
-                      className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors cursor-pointer"
+                      onClick={() => onViewBrief(req)}
+                      className="px-3 py-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap"
                     >
-                      <ChevronDown className="w-4 h-4" />
+                      <Eye className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                      <span>{t('btnViewBrief')}</span>
                     </button>
-
-                    {openActionId === req.id && (
-                      <>
-                        <div className="fixed inset-0 z-10" onClick={() => setOpenActionId(null)} />
-                        <div className="absolute right-0 mt-1 w-48 bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 z-20 p-1.5 animate-in fade-in slide-in-from-top-2 duration-150">
-                          <button
-                            onClick={() => { setOpenActionId(null); onViewBrief(req); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
-                          >
-                            <Eye className="w-3.5 h-3.5 text-blue-500" /> {t('btnViewBrief')}
-                          </button>
-                          <button
-                            onClick={() => { setOpenActionId(null); onAssignModal(req); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-colors cursor-pointer"
-                          >
-                            <UserPlus className="w-3.5 h-3.5 text-purple-500" /> {t('btnAssignWorker')}
-                          </button>
-                          <div className="h-px bg-slate-100 dark:bg-slate-800 my-1" />
-                          <button
-                            onClick={() => { setOpenActionId(null); onRejectRequest(req.id); }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 rounded-xl transition-colors cursor-pointer"
-                          >
-                            {t('reject')}
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    <button
+                      onClick={() => onAssignModal(req)}
+                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                    >
+                      <UserPlus className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('btnAssignWorker')}</span>
+                    </button>
+                    <button
+                      onClick={() => onRejectRequest(req.id)}
+                      title={t('reject')}
+                      className="px-2.5 py-1.5 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/40 border border-rose-200/60 dark:border-rose-900/40 rounded-xl text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
+                    >
+                      {t('reject')}
+                    </button>
                   </div>
                 </td>
+
               </tr>
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
+
   )
 }

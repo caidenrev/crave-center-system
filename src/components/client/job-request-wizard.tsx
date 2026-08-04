@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Code2, PenTool, Star, UploadCloud, CheckCircle2, Loader2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { createJobRequest } from '@/app/actions/project'
 import { createClient } from '@/utils/supabase/client'
 import { Input } from '@/components/ui/input'
@@ -57,7 +58,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
           
         if (error) {
           console.error("Upload error:", error)
-          alert("Failed to upload file")
+          toast.error("Failed to upload file")
           setIsSubmitting(false)
           return
         }
@@ -76,18 +77,19 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
       // 2. Submit form
       const res = await createJobRequest(formData)
       if (res.success) {
-        alert(t.success)
+        toast.success(t.success || "Request berhasil dikirim!")
         router.push('/client')
       } else {
-        alert(res.error)
+        toast.error(res.error || "Gagal mengirim permintaan")
       }
     } catch (err) {
       console.error(err)
-      alert("Something went wrong")
+      toast.error("Terjadi kesalahan jaringan")
     } finally {
       setIsSubmitting(false)
     }
   }
+
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl p-6 md:p-10 shadow-sm border border-slate-200 dark:border-slate-800">
@@ -175,7 +177,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
             ))}
             {filteredWorkers.length === 0 && (
               <div className="text-center py-10 text-slate-500">
-                No workers found for this category.
+                {t.noWorkers || 'No workers found for this category.'}
               </div>
             )}
           </div>
@@ -217,7 +219,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="budgetRange">Budget (Opsional)</Label>
+                <Label htmlFor="budgetRange">{t.budgetLabel || 'Budget (Optional)'}</Label>
                 <div className="relative">
                   <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">Rp</span>
                   <Input name="budgetRange" id="budgetRange" type="number" min="0" step="1000" className="h-11 pl-10 rounded-xl" placeholder="e.g. 5000000" />
@@ -236,7 +238,7 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
                 />
                 <UploadCloud className="w-8 h-8 text-slate-400 mx-auto mb-3" />
                 <p className="text-sm text-slate-600 dark:text-slate-400">
-                  {file ? file.name : "Drag and drop your file here, or click to browse"}
+                  {file ? file.name : (t.dropzone || 'Drag and drop your file here, or click to browse')}
                 </p>
               </div>
             </div>

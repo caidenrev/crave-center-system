@@ -90,7 +90,9 @@ export function AdminSidebar({
                 return (
                   <button
                     key={item.name}
+                    suppressHydrationWarning
                     onClick={() => setShowLogoutModal(true)}
+
                     className={cn(
                       "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left cursor-pointer",
                       "text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-950/30 dark:hover:text-red-300",
