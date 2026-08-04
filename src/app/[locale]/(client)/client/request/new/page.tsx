@@ -30,7 +30,10 @@ export default async function NewRequestPage() {
     uploadBrief: t('uploadBrief'),
     deadline: t('deadline'),
     submitting: t('submitting'),
-    success: t('success')
+    success: t('success'),
+    noWorkers: t('noWorkers'),
+    budgetLabel: t('budgetLabel'),
+    dropzone: t('dropzone'),
   }
 
   return (

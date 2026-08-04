@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/db'
 import { requireRole } from '@/lib/auth'
-import { ClientProjectList } from '@/components/client/client-project-list'
+import { ClientProjectList } from '@/components/client/projects/client-project-list'
 
 import { createClient } from "@/utils/supabase/server"
 
@@ -154,10 +154,13 @@ export default async function ClientDashboard({ params, searchParams }: { params
           </div>
           
           <div className="flex-1 flex flex-col gap-4">
-            <ClientProjectList projects={filteredProjects.map(p => ({
-              ...p,
-              offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
-            }))} t={{}} />
+            <ClientProjectList
+              projects={filteredProjects.map(p => ({
+                ...p,
+                offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
+              }))}
+              currentUserId={dbUser?.id || ""}
+            />
           </div>
         </div>
 
@@ -168,19 +171,20 @@ export default async function ClientDashboard({ params, searchParams }: { params
             <h3 className="font-bold text-lg text-slate-900 dark:text-white mb-4">{t('reminders')}</h3>
             {upcomingProject ? (
               <>
-                <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">Deadline: {upcomingProject.title}</h4>
+                <h4 className="text-xl font-bold text-slate-800 dark:text-slate-100 leading-tight line-clamp-2">{upcomingProject.title}</h4>
                 <div className="flex items-center gap-2 mt-3 text-sm text-slate-500 bg-slate-50 dark:bg-slate-800/60 px-3 py-2 rounded-xl w-fit">
                   <Clock className="w-4 h-4" /> {t('dueDate')} {new Date(upcomingProject.targetDeliveryDate).toLocaleDateString()}
                 </div>
                 <Link href={`/${locale}/client/projects`} className="w-full mt-6 py-3.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded-xl hover:bg-slate-800 dark:hover:bg-slate-100 transition-all shadow-md flex justify-center items-center">
-                  View Project
+                  {t('viewProject')}
                 </Link>
               </>
             ) : (
               <div className="text-slate-500 dark:text-slate-400 mt-4">
-                No upcoming deadlines.
+                {t('noDeadlines')}
               </div>
             )}
+
           </div>
 
           {/* Mini Progress Card */}

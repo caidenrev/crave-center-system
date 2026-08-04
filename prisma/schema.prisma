@@ -66,6 +66,8 @@ enum DeliverableStatus {
 enum MessageVisibility {
   INTERNAL
   CLIENT
+  CLIENT_ADMIN
+  CLIENT_WORKER
 }
 
 enum ApplicationStatus {
@@ -246,6 +248,12 @@ model Message {
   senderId       String
   content        String            @db.Text
   visibility     MessageVisibility @default(CLIENT)
+
+  // Lampiran & Soft Delete
+  fileUrl        String?           @db.Text
+  fileName       String?
+  fileType       String?           // 'IMAGE' | 'FILE'
+  isDeleted      Boolean           @default(false)
 
   // Relasi
   project        Project           @relation(fields: [projectId], references: [id])
