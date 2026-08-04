@@ -56,12 +56,12 @@ export default async function WorkerDashboardPage(props: {
         take: 5,
       })
       .catch(() => []),
-    // Requests waiting for this worker's response
+    // Requests assigned to this worker by Admin waiting for worker offer
     prisma.project
       .findMany({
         where: {
           workerId: dbUser.id,
-          status: "REQUESTED",
+          status: "WORKER_REVIEW",
         },
         include: { client: true },
         orderBy: { targetDeliveryDate: "asc" },
