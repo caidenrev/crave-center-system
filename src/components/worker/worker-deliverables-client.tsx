@@ -10,7 +10,6 @@ import {
   CheckCircle2,
   Clock,
   AlertCircle,
-  Eye,
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 

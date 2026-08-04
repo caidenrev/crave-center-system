@@ -22,17 +22,17 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Fitur Negosiasi Harga (Worker Submit Quote -> Client Accept Quote).
 
 ## 4. Modul Negosiasi, Terms & Contract
-- [ ] UI/UX Halaman Detail Project (Chat Interface).
-- [ ] API untuk sistem messaging berbasis teks (Internal vs Client visibility).
-- [ ] Halaman Admin untuk membuat "Terms" (Scope, Harga, Milestone).
-- [ ] UI Client untuk review Terms dan fitur Digital Checkbox approval.
+- [x] UI/UX Halaman Detail Project (Chat Interface & Chat Drawer Realtime).
+- [x] API untuk sistem messaging berbasis teks (Internal vs Client visibility).
+- [x] Halaman Admin untuk membuat "Terms" (Scope, Harga, Milestone).
+- [x] UI Client untuk review Terms dan fitur Digital Checkbox approval.
 - [ ] Generate Contract otomatis dalam bentuk file (PDF generation/HTML to PDF) disimpan ke S3.
 
 ## 5. Modul Task Management & Progress
-- [ ] Halaman manajemen Task di dashboard Admin/Team Member (Kanban/List view).
-- [ ] Form pembuatan dan assignment Task.
+- [x] Halaman manajemen Task di dashboard Admin/Team Member (Kanban/List view).
+- [x] Form pembuatan dan assignment Task.
 - [ ] Fungsi pencatatan `actual_time` saat Task diubah ke Done.
-- [ ] API penghitung persentase progres (progress bar) project.
+- [x] API penghitung persentase progres (progress bar) project.
 - [ ] Cron Job (opsional/MVP) untuk set status project `On Hold` (delay > 3 hari).
 
 ## 6. Modul Delivery & Gatekeeper
@@ -45,7 +45,7 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 ## 7. Modul Payment
 - [ ] Integrasi Payment Gateway (Midtrans/Xendit) untuk pembuatan invoice/Link Bayar.
 - [ ] Webhook handler dari Payment Gateway (untuk update status payment & trigger invoice pelunasan).
-- [ ] Halaman riwayat pembayaran di sisi Client dan Admin.
+- [x] Halaman riwayat pembayaran di sisi Client dan Admin.
 
 ## 8. Finalisasi MVP & Testing
 - [ ] Testing End-to-End untuk User Flow dari Request sampai Delivery.
@@ -62,8 +62,10 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Perbaikan efek bayangan (*shadow*) pada Navbar dan *card Pricing* khusus mobile.
 - [x] Optimalisasi slider harga (*pricing*) di mobile agar *card* selanjutnya tertutup sempurna.
 - [x] Konversi bendera *language switcher* menggunakan gambar SVG dari CDN.
-- [x] Konversi bendera *language switcher* menggunakan gambar SVG dari CDN.
 - [x] Implementasi animasi *Marquee* yang berjalan otomatis tanpa batas pada bagian logo klien.
+- [x] Penyelarasan terjemahan dwibahasa (ID/EN) tombol & label (`Ketentuan & Kontrak`, `Pesan`, `Detail`, `Tenggat`, `Garansi`) dan penanganan error `MISSING_MESSAGE`.
+- [x] Redesain toolbar & sistem filter proyek di Dashboard Admin & Worker (Grid/Table view switcher & scrollable status pills).
+- [x] Penyelarasan warna & desain badge status proyek di Dashboard Worker agar 100% cocok dengan Dashboard Admin.
 
 ## 10. Tambahan Dasbor Klien & Pekerja
 - [x] Implementasi tampilan "Dasbor Klien" yang modern dan *real-time*.
@@ -72,3 +74,6 @@ Berikut adalah daftar task yang perlu dikerjakan untuk mengembangkan platform MV
 - [x] Integrasi dan fiksasi fungsi *Logout* terpusat.
 - [x] Sistem Pendaftaran Pekerja (*Worker Application*) dengan form *apply* dan dasbor *approval* Admin.
 - [x] Implementasi sistem Notifikasi *Real-time* berbasis Supabase WebSocket untuk Client, Worker, dan Admin.
+- [x] Logika visibilitas & penugasan proyek: Proyek baru (`REQUESTED`) hanya masuk ke Dashboard Admin, dan baru muncul di Dashboard Worker setelah Admin menugaskan worker (`WORKER_REVIEW`).
+- [x] Fitur penutupan/nonaktifkan Chat & Pembuat Terms otomatis untuk proyek yang dibatalkan (`CANCELLED`/Rejected) di semua dashboard (Admin, Worker, Client).
+- [x] Pembersihan & strukturisasi folder root project (arsip file `.md` dokumentasi ke folder `docs/`).

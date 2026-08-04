@@ -35,8 +35,10 @@ export function LanguageSwitcher() {
       onMouseLeave={() => setIsOpen(false)}
     >
       <button 
+        suppressHydrationWarning
         className="flex items-center gap-1.5 px-3 py-2 rounded-full hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-sm font-bold text-muted-foreground hover:text-foreground"
       >
+
         <Globe className="w-4 h-4" />
         {currentLang}
       </button>

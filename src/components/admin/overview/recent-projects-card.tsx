@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { FolderKanban, Plus } from "lucide-react";
+import { FolderKanban, ArrowRight } from "lucide-react";
 import Link from "next/link";
 
 interface ProjectItem {
@@ -36,10 +36,10 @@ export async function RecentProjectsCard({
         </h3>
         <Link
           href={`/${locale}/admin/projects`}
-          className="flex items-center gap-1 px-3 py-1.5 rounded-full border border-primary/20 dark:border-primary/30 text-xs font-semibold text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700 text-xs font-semibold text-primary hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
         >
-          <Plus className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 stroke-[2.5]" />{" "}
-          {t("newProject")}
+          <span>{t("viewAll") || "Lihat Semua"}</span>
+          <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>
 

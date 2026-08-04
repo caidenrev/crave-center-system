@@ -34,7 +34,9 @@ export default async function AdminRequestsPage() {
 
   // Map DB data
   const initialRequests: JobRequestItem[] = dbProjects.map((p) => ({
-    id: p.id.split('-')[0].toUpperCase(),
+    id: p.id ? (p.id.includes('-') ? p.id.split('-')[0].toUpperCase() : p.id.substring(0, 8).toUpperCase()) : 'REQ',
+    projectId: p.id,
+
     clientName: p.client?.name || 'Client',
     clientEmail: p.client?.email || 'client@crave.com',
     service: p.title,
@@ -46,6 +48,7 @@ export default async function AdminRequestsPage() {
     description: p.description,
     assignedWorker: p.worker?.name || null
   }))
+
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">

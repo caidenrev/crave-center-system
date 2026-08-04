@@ -10,6 +10,7 @@ interface SettingsHeaderBannerProps {
   isUploadingAvatar: boolean
   onUploadClick: () => void
   uploadLabel: string
+  roleBadgeLabel?: string
 }
 
 export function SettingsHeaderBanner({
@@ -20,6 +21,7 @@ export function SettingsHeaderBanner({
   isUploadingAvatar,
   onUploadClick,
   uploadLabel,
+  roleBadgeLabel,
 }: SettingsHeaderBannerProps) {
   return (
     <div className="relative overflow-hidden rounded-3xl bg-linear-to-r from-slate-900 via-indigo-950 to-slate-900 border border-slate-800 p-6 md:p-8 text-white shadow-xl">
@@ -57,12 +59,13 @@ export function SettingsHeaderBanner({
           <div>
             <div className="inline-flex items-center gap-2 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs font-medium mb-1">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Super Admin Authorized
+              {roleBadgeLabel || "Super Admin Authorized"}
             </div>
             <h2 className="text-2xl font-bold tracking-tight text-white">{name}</h2>
             <p className="text-sm text-slate-400 font-mono mt-0.5">{email}</p>
           </div>
         </div>
+
 
         <div className="flex items-center gap-3 self-start md:self-auto">
           <div className="px-4 py-2 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md flex items-center gap-2 text-xs text-slate-300">

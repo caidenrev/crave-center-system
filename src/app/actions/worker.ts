@@ -117,3 +117,43 @@ export async function createWorkerTask(formData: FormData) {
     return { success: false, error: error.message }
   }
 }
+
+export async function updateWorkerProfile(data: {
+  name: string
+  phone?: string
+  category?: string
+  skills?: string[]
+}) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email }
+    })
+
+    if (!dbUser) {
+      throw new Error("User not found")
+    }
+
+    await prisma.user.update({
+      where: { id: dbUser.id },
+      data: {
+        name: data.name,
+        phone: data.phone || null,
+        category: data.category || null,
+        skills: data.skills || [],
+      }
+    })
+
+    revalidatePath("/(worker)")
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+

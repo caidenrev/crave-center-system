@@ -1,16 +1,21 @@
 'use client'
 
-import { useState } from 'react'
-import { Search, X, CheckCircle2 } from 'lucide-react'
+import { useState, useTransition } from 'react'
+import { Search, X, CheckCircle2, Loader2 } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { useRouter } from 'next/navigation'
+import { assignWorkerToRequest, rejectJobRequest } from '@/app/actions/project'
 import { RequestViewOptions } from './request-view-options'
 import { RequestTableView } from './request-table-view'
 import { RequestGridView } from './request-grid-view'
 import { RequestBriefModal } from './request-brief-modal'
 import { RequestAssignModal } from './request-assign-modal'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
+
 
 export interface JobRequestItem {
   id: string
+  projectId: string
   clientName: string
   clientEmail: string
   service: string
@@ -39,6 +44,8 @@ interface AdminRequestsClientProps {
 
 export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: AdminRequestsClientProps) {
   const workersList = teamWorkers
+  const router = useRouter()
+  const [isPending, startTransition] = useTransition()
   const [requests, setRequests] = useState<JobRequestItem[]>(initialRequests)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
@@ -58,9 +65,12 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
   // Modals & Toast State
   const [selectedRequest, setSelectedRequest] = useState<JobRequestItem | null>(null)
   const [assigningRequest, setAssigningRequest] = useState<JobRequestItem | null>(null)
+  const [rejectingRequestItem, setRejectingRequestItem] = useState<JobRequestItem | null>(null)
   const [selectedWorkerId, setSelectedWorkerId] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<string | null>(null)
   const [openActionId, setOpenActionId] = useState<string | null>(null)
+  const [isAssigning, setIsAssigning] = useState(false)
+  const [isRejecting, setIsRejecting] = useState<string | null>(null)
 
   const showToast = (msg: string) => {
     setToastMessage(msg)
@@ -120,31 +130,71 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
     }
   }
 
-  const handleAssignWorker = () => {
-    if (!assigningRequest || !selectedWorkerId) return
+  const handleAssignWorker = async () => {
+    if (!assigningRequest || !selectedWorkerId || isAssigning) return
     const workerObj = workersList.find(w => w.id === selectedWorkerId)
     if (!workerObj) return
 
-    setRequests(prev => prev.map(req => {
-      if (req.id === assigningRequest.id) {
-        return {
-          ...req,
-          assignedWorker: workerObj.name,
-          status: 'Worker Review'
-        }
+    setIsAssigning(true)
+    try {
+      const result = await assignWorkerToRequest(assigningRequest.projectId, selectedWorkerId)
+      
+      if (result.success) {
+        setRequests(prev => prev.map(req => {
+          if (req.projectId === assigningRequest.projectId) {
+            return {
+              ...req,
+              assignedWorker: workerObj.name,
+              status: 'Worker Review'
+            }
+          }
+          return req
+        }))
+        showToast(t('assignSuccess', { worker: workerObj.name, request: assigningRequest.service }))
+        startTransition(() => router.refresh())
+      } else {
+        showToast(result.error || t('assignError'))
       }
-      return req
-    }))
-
-    showToast(`Worker ${workerObj.name} successfully assigned to ${assigningRequest.id}!`)
-    setAssigningRequest(null)
-    setSelectedWorkerId(null)
+    } catch {
+      showToast(t('assignError'))
+    } finally {
+      setIsAssigning(false)
+      setAssigningRequest(null)
+      setSelectedWorkerId(null)
+    }
   }
 
-  const handleRejectRequest = (id: string) => {
-    setRequests(prev => prev.filter(r => r.id !== id))
-    showToast(`Request ${id} has been rejected.`)
+  const handleRejectClick = (id: string) => {
+    const request = requests.find(r => r.id === id || r.projectId === id)
+    if (request) {
+      setRejectingRequestItem(request)
+    }
   }
+
+  const confirmRejectRequest = async () => {
+    if (!rejectingRequestItem || isRejecting) return
+    const id = rejectingRequestItem.id
+
+    setIsRejecting(id)
+    try {
+      const result = await rejectJobRequest(rejectingRequestItem.projectId)
+      
+      if (result.success) {
+        setRequests(prev => prev.filter(r => r.projectId !== rejectingRequestItem.projectId))
+        showToast(t('rejectSuccess', { request: rejectingRequestItem.service }))
+        startTransition(() => router.refresh())
+      } else {
+        showToast(result.error || t('rejectError'))
+      }
+    } catch {
+      showToast(t('rejectError'))
+    } finally {
+      setIsRejecting(null)
+      setRejectingRequestItem(null)
+      setOpenActionId(null)
+    }
+  }
+
 
   return (
     <div className="space-y-6">
@@ -153,6 +203,18 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
         <div className="fixed top-5 right-5 z-50 bg-slate-900 text-white text-xs font-bold px-4 py-3 rounded-2xl shadow-2xl flex items-center gap-2 animate-in fade-in slide-in-from-top-4 duration-200 border border-slate-700">
           <CheckCircle2 className="w-4 h-4 text-emerald-400" />
           <span>{toastMessage}</span>
+        </div>
+      )}
+
+      {/* Loading Overlay */}
+      {(isAssigning || isRejecting || isPending) && (
+        <div className="fixed inset-0 bg-black/20 backdrop-blur-[1px] z-[60] flex items-center justify-center">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl px-6 py-4 flex items-center gap-3 shadow-2xl border border-slate-200 dark:border-slate-700">
+            <Loader2 className="w-5 h-5 animate-spin text-blue-500" />
+            <span className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+              {t('processing')}
+            </span>
+          </div>
         </div>
       )}
 
@@ -225,7 +287,7 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
           setOpenActionId={setOpenActionId}
           onViewBrief={(req) => setSelectedRequest(req)}
           onAssignModal={(req) => { setAssigningRequest(req); setSelectedWorkerId(null); }}
-          onRejectRequest={handleRejectRequest}
+          onRejectRequest={handleRejectClick}
           getStatusBadge={getStatusBadge}
         />
       ) : (
@@ -233,7 +295,7 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
           requests={filteredRequests}
           onViewBrief={(req) => setSelectedRequest(req)}
           onAssignModal={(req) => { setAssigningRequest(req); setSelectedWorkerId(null); }}
-          onRejectRequest={handleRejectRequest}
+          onRejectRequest={handleRejectClick}
           getStatusBadge={getStatusBadge}
         />
       )}
@@ -253,7 +315,22 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
         setSelectedWorkerId={setSelectedWorkerId}
         onClose={() => setAssigningRequest(null)}
         onAssign={handleAssignWorker}
+        isLoading={isAssigning}
       />
+
+      {/* Reject Confirmation Modal */}
+      <ConfirmModal
+        open={!!rejectingRequestItem}
+        onConfirm={confirmRejectRequest}
+        onCancel={() => setRejectingRequestItem(null)}
+        title={t('rejectConfirmTitle')}
+        description={t('rejectConfirmDesc')}
+        confirmText={t('reject')}
+        cancelText={t('cancelBtn')}
+        variant="destructive"
+      />
+
     </div>
   )
 }
+

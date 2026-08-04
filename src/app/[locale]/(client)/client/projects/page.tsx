@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/db'
 import { requireRole } from '@/lib/auth'
-import { ClientProjectList } from '@/components/client/client-project-list'
+import { ClientProjectList } from '@/components/client/projects/client-project-list'
 import { createClient } from "@/utils/supabase/server"
 
 export default async function ClientProjectsPage() {
@@ -33,10 +33,14 @@ export default async function ClientProjectsPage() {
       </div>
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
-        <ClientProjectList projects={projects.map(p => ({
-          ...p,
-          offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
-        }))} t={{}} />
+        <ClientProjectList
+          projects={projects.map(p => ({
+            ...p,
+            offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
+          }))}
+          currentUserId={dbUser?.id || ""}
+        />
+
       </div>
     </div>
   )

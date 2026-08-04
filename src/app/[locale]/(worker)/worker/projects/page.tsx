@@ -26,7 +26,10 @@ export default async function WorkerProjectsPage(props: {
 
   const projects = await prisma.project
     .findMany({
-      where: { workerId: dbUser.id },
+      where: {
+        workerId: dbUser.id,
+        status: { not: "REQUESTED" },
+      },
       include: {
         client: true,
         tasks: true,
@@ -73,7 +76,8 @@ export default async function WorkerProjectsPage(props: {
         </p>
       </div>
 
-      <WorkerProjectsClient projects={serializedProjects} />
+      <WorkerProjectsClient projects={serializedProjects} currentUserId={dbUser.id} />
     </div>
   );
 }
+
