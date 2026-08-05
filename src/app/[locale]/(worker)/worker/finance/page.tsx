@@ -42,7 +42,7 @@ export default async function WorkerFinancePage(props: {
 
   const totalIncome = incomes.reduce((acc, curr) => acc + curr.amount, 0)
   
-  const successCount = incomes.filter(i => i.status === "SUCCESS" || i.status === "PAID").length;
+  const successCount = incomes.filter(i => i.status === "SUCCESS").length;
   const pendingCount = incomes.filter(i => i.status === "PENDING").length;
 
   return (

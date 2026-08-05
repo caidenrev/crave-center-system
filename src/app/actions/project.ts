@@ -77,6 +77,38 @@ export async function createJobRequest(formData: FormData) {
       })
     }
 
+    // Notify the requested Worker
+    await createNotification({
+      userId: worker.id,
+      title: "Klien Memilih Anda!",
+      message: `${dbUser.name} telah meminta Anda untuk mengerjakan proyek: ${title}. Menunggu persetujuan Admin.`,
+      type: "INFO",
+      link: "/id/worker/projects"
+    })
+
+    // Send email to the requested Worker
+    if (process.env.RESEND_API_KEY && worker.email) {
+      resend.emails.send({
+        from: 'Crave ITSM <onboarding@resend.dev>',
+        to: worker.email,
+        subject: `Pekerjaan Baru Di-Request: ${title}`,
+        html: `
+          <h2>Halo ${worker.name},</h2>
+          <p>Klien <strong>${dbUser.name}</strong> secara khusus memilih Anda untuk mengerjakan proyek baru mereka.</p>
+          <h3>Detail Proyek:</h3>
+          <ul>
+            <li><strong>Judul:</strong> ${title}</li>
+            <li><strong>Kategori:</strong> ${category}</li>
+            <li><strong>Anggaran Klien:</strong> ${budgetRange || "Tidak disebutkan"}</li>
+          </ul>
+          <h3>Deskripsi / Permintaan Klien:</h3>
+          <p>${description}</p>
+          <br/>
+          <p>Saat ini permintaan sedang direview oleh pihak Admin. Anda akan diberitahu kembali setelah Admin secara resmi menugaskan proyek ini kepada Anda.</p>
+        `
+      }).catch((err) => console.error("Email send error to worker (Request):", err))
+    }
+
     revalidatePath("/(admin)")
     revalidatePath("/(worker)")
     revalidatePath("/(client)")
@@ -126,6 +158,29 @@ export async function assignWorkerToRequest(projectId: string, workerId: string)
       type: "INFO",
       link: "/id/worker/projects"
     })
+
+    // Send email to worker
+    if (process.env.RESEND_API_KEY && worker.email) {
+      resend.emails.send({
+        from: 'Crave ITSM <onboarding@resend.dev>',
+        to: worker.email,
+        subject: `Pekerjaan Baru Ditugaskan: ${project.title}`,
+        html: `
+          <h2>Halo ${worker.name},</h2>
+          <p>Admin telah menugaskan Anda untuk mengerjakan proyek baru dari klien <strong>${project.client.name}</strong>.</p>
+          <h3>Detail Proyek:</h3>
+          <ul>
+            <li><strong>Judul:</strong> ${project.title}</li>
+            <li><strong>Kategori:</strong> ${project.category}</li>
+            <li><strong>Anggaran Klien:</strong> ${project.budgetRange || "Tidak disebutkan"}</li>
+          </ul>
+          <h3>Deskripsi Permintaan Klien:</h3>
+          <p>${project.description}</p>
+          <br/>
+          <p>Silakan masuk ke Dashboard Pekerja Crave untuk meninjau detailnya secara lengkap dan menyusun penawaran (harga & estimasi waktu) untuk dikirim kembali ke klien.</p>
+        `
+      }).catch(err => console.error("Failed to send email to worker:", err))
+    }
 
     // Notify client
     await createNotification({
@@ -392,7 +447,7 @@ export async function createMidtransTransaction(paymentId: string) {
       include: { project: { include: { client: true } } }
     })
     if (!payment) throw new Error("Payment record not found")
-    if (payment.status === "SUCCESS" || payment.status === "PAID") {
+    if (payment.status === "SUCCESS") {
       throw new Error("Payment already completed")
     }
 

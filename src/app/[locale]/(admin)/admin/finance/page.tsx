@@ -27,11 +27,11 @@ export default async function AdminFinancePage(props: {
   }))
 
   const totalIncome = incomes.reduce((acc, curr) => {
-    if (curr.status === "SUCCESS" || curr.status === "PAID") return acc + curr.amount
+    if (curr.status === "SUCCESS") return acc + curr.amount
     return acc
   }, 0)
 
-  const successCount = incomes.filter(i => i.status === "SUCCESS" || i.status === "PAID").length;
+  const successCount = incomes.filter(i => i.status === "SUCCESS").length;
   const pendingCount = incomes.filter(i => i.status === "PENDING").length;
 
   return (
