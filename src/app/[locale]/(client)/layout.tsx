@@ -28,7 +28,7 @@ export default async function ClientLayout(props: {
 
   return (
     <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans">
-      <ClientSidebar locale={locale} />
+      <ClientSidebar locale={locale} user={topbarUser} />
       <div className="flex-1 flex flex-col min-w-0">
         <ClientTopbar user={topbarUser} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto p-6 md:p-8">

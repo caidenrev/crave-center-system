@@ -1,11 +1,12 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, X } from 'lucide-react'
+import { Search, X, Menu } from 'lucide-react'
 import { useRouter, usePathname } from 'next/navigation'
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { NotificationBell } from './notification-bell'
+import { getUserAvatar } from '@/lib/utils'
 
 type UserProps = {
   id?: string;
@@ -14,8 +15,7 @@ type UserProps = {
   image?: string | null;
 }
 
-export function ClientTopbar({ user }: { user?: UserProps | null }) {
-  const initials = user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'US'
+export function ClientTopbar({ user, onMenuToggle }: { user?: UserProps | null; onMenuToggle?: () => void }) {
   const email = user?.email || 'client@example.com'
   const name = user?.name || 'User Client'
   const router = useRouter()
@@ -37,9 +37,16 @@ export function ClientTopbar({ user }: { user?: UserProps | null }) {
   }
 
   return (
-    <header className="h-16 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md sticky top-0 z-30 flex items-center justify-between px-6">
-      <div className="flex-1 flex items-center">
-        <div className="relative w-full max-w-md">
+    <header className="h-20 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl sticky top-0 z-30 flex items-center justify-between px-4 md:px-8">
+      <div className="flex items-center gap-4">
+        <button
+          onClick={onMenuToggle}
+          className="md:hidden p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors cursor-pointer"
+          aria-label="Toggle menu"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <div className="hidden md:flex relative w-full max-w-md">
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
           <input 
             type="text" 
@@ -59,23 +66,22 @@ export function ClientTopbar({ user }: { user?: UserProps | null }) {
           )}
         </div>
       </div>
-      <div className="flex items-center gap-2 md:gap-4">
+      <div className="flex items-center gap-3 md:gap-5">
         <LanguageSwitcher />
         <ThemeToggle />
         {user?.id && <NotificationBell userId={user.id} />}
-        <div className="flex items-center gap-3 ml-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-          <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
-            {user?.image ? (
-              <img src={user.image} alt={name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-primary font-bold text-sm">{initials}</span>
-            )}
+        <button 
+          onClick={() => router.push('/client/settings')}
+          className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200 dark:border-slate-700 cursor-pointer"
+        >
+          <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-100 dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-800">
+            <img src={getUserAvatar(user)} alt={name} className="w-full h-full object-cover" />
           </div>
-          <div className="hidden md:flex flex-col">
+          <div className="hidden md:flex flex-col items-start text-left">
             <span className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">{name}</span>
             <span className="text-xs text-slate-500 dark:text-slate-400">{email}</span>
           </div>
-        </div>
+        </button>
       </div>
     </header>
   )

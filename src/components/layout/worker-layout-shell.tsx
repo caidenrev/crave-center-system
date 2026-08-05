@@ -26,6 +26,7 @@ export function WorkerLayoutShell({
     <div className="h-screen flex overflow-hidden bg-slate-50 dark:bg-slate-950 font-sans">
       <WorkerSidebar
         locale={locale}
+        user={topbarUser}
         mobileOpen={mobileOpen}
         onMobileClose={() => setMobileOpen(false)}
       />

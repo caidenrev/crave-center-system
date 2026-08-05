@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl"
 import { User, Bell, Shield, Key } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
-import { SettingsHeaderBanner } from "./settings-header-banner"
 import { SettingsTabNav, TabType, TabItem } from "./settings-tab-nav"
 import { ProfileTab } from "./tabs/profile-tab"
 import { NotificationsTab } from "./tabs/notifications-tab"
@@ -85,16 +84,6 @@ export function AdminSettingsClient({ user }: AdminSettingsClientProps) {
         onChange={handleAvatarFileChange}
         accept="image/png,image/jpeg,image/webp"
         className="hidden"
-      />
-
-      <SettingsHeaderBanner
-        name={user.name}
-        email={user.email}
-        initials={user.initials}
-        avatarUrl={avatarUrl}
-        isUploadingAvatar={isUploadingAvatar}
-        onUploadClick={() => fileInputRef.current?.click()}
-        uploadLabel={t("uploadImage")}
       />
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-hidden flex flex-col md:flex-row">

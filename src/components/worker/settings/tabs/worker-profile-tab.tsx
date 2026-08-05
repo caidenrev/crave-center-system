@@ -7,6 +7,7 @@ import { Camera, Loader2, Lock, Save } from "lucide-react"
 import { toast } from "sonner"
 import { updateWorkerProfile } from "@/app/actions/worker"
 import { createClient } from "@/utils/supabase/client"
+import { getDefaultAvatar } from "@/lib/utils"
 
 interface WorkerProfileTabProps {
   user: {
@@ -91,14 +92,8 @@ export function WorkerProfileTab({
       <form onSubmit={handleProfileSubmit} className="space-y-6 pt-2">
         {/* Profile Picture Card - Matches Admin Settings layout exactly */}
         <div className="flex items-center gap-6 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/50">
-          <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary via-indigo-500 to-purple-600 p-0.5 overflow-hidden shrink-0 shadow-md">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt={name} className="w-full h-full object-cover rounded-[14px]" />
-            ) : (
-              <div className="w-full h-full rounded-[14px] bg-slate-900 flex items-center justify-center text-white font-extrabold text-xl">
-                {user.initials}
-              </div>
-            )}
+          <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-800 overflow-hidden shrink-0 shadow-sm">
+            <img src={avatarUrl || getDefaultAvatar(user.name || user.email || 'default')} alt={name} className="w-full h-full object-cover" />
           </div>
           <div className="flex-1">
             <h4 className="font-semibold text-slate-900 dark:text-white text-sm">{t("workerAvatar")}</h4>

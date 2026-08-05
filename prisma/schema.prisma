@@ -197,6 +197,8 @@ model Payment {
   type           PaymentType
   status         PaymentStatus @default(PENDING)
   paymentMethod  String?
+  snapToken      String?
+  snapRedirectUrl String?
   paidAt         DateTime?
 
   // Relasi

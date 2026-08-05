@@ -6,7 +6,6 @@ import { useTranslations } from "next-intl"
 import { User, Bell, Key, Code2 } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
-import { SettingsHeaderBanner } from "@/components/admin/settings/settings-header-banner"
 import { SettingsTabNav, TabItem } from "@/components/admin/settings/settings-tab-nav"
 import { WorkerProfileTab } from "./tabs/worker-profile-tab"
 import { WorkerSkillsTab } from "./tabs/worker-skills-tab"
@@ -86,18 +85,6 @@ export function WorkerSettingsClient({ user }: { user: WorkerUserProps }) {
         onChange={handleAvatarFileChange}
         accept="image/png,image/jpeg,image/webp"
         className="hidden"
-      />
-
-      {/* Header Banner - Matches Admin layout with Worker Role Badge */}
-      <SettingsHeaderBanner
-        name={user.name}
-        email={user.email}
-        initials={user.initials}
-        avatarUrl={avatarUrl}
-        isUploadingAvatar={isUploadingAvatar}
-        onUploadClick={() => fileInputRef.current?.click()}
-        uploadLabel={t("uploadImage")}
-        roleBadgeLabel={t("roleBadge")}
       />
 
       {/* Main Settings Card */}

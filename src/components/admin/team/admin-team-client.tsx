@@ -1,8 +1,9 @@
 'use client'
 
 import { useState } from 'react'
-import { Briefcase, Activity, Mail, Search, Filter, CheckCircle2, X, Send } from 'lucide-react'
+import { Briefcase, Activity, Mail, Search, Filter, CheckCircle2, X, Send, User } from 'lucide-react'
 import { useTranslations } from 'next-intl'
+import { getDefaultAvatar } from '@/lib/utils'
 
 export interface TeamMemberItem {
   id: string
@@ -111,90 +112,117 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
               key={member.id} 
               className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group"
             >
-              {/* Top Section - Avatar & Profile */}
-              <div>
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div className="relative">
-                    <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-primary via-indigo-500 to-purple-600 p-0.5 shadow-md shrink-0">
-                      <div className="w-full h-full rounded-[14px] bg-slate-900 flex items-center justify-center text-white font-extrabold text-xl">
-                        {member.name.charAt(0)}
-                      </div>
-                    </div>
-                    {/* Status Dot */}
-                    <div 
-                      className={`absolute -bottom-1 -right-1 w-4 h-4 rounded-full border-2 border-white dark:border-slate-900 shadow-xs ${
-                        member.status === 'Available' ? 'bg-emerald-500' : member.status === 'Busy' ? 'bg-rose-500' : 'bg-amber-500'
-                      }`} 
-                      title={`Status: ${member.status}`} 
+              {/* Top Section - Avatar & Status Badge */}
+              <div className="flex items-start justify-between gap-4 mb-4">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full shadow-md overflow-hidden shrink-0">
+                    <img
+                      src={getDefaultAvatar(member.name || member.email || 'default')}
+                      alt={member.name}
+                      className="w-full h-full object-cover"
                     />
                   </div>
-
-                  <span className={`px-2.5 py-1 rounded-full text-[11px] font-extrabold border ${
-                    member.status === 'Available' 
-                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20'
-                      : member.status === 'Busy'
-                      ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20'
-                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20'
-                  }`}>
-                    {member.status === 'Available' ? t('filterAvailable') : member.status === 'Busy' ? t('filterBusy') : t('filterAway')}
-                  </span>
                 </div>
-
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-0.5 group-hover:text-primary transition-colors">{member.name}</h3>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-4 flex items-center gap-1.5">
-                  <Briefcase className="w-3.5 h-3.5 text-slate-400" /> {member.role}
-                </p>
-
-                {/* Skills Pills */}
-                <div className="flex flex-wrap gap-1.5 mb-5">
-                  {member.skills.map(s => (
-                    <span key={s} className="px-2.5 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 text-[11px] font-semibold border border-slate-200/50 dark:border-slate-700/50">
-                      {s}
-                    </span>
-                  ))}
-                </div>
+                <span className={`px-2.5 py-1 flex items-center gap-1.5 rounded-full text-[11px] font-extrabold text-white shadow-sm border-none ${
+                  member.status === 'Available' 
+                    ? 'bg-emerald-500'
+                    : member.status === 'Busy'
+                    ? 'bg-rose-500'
+                    : 'bg-amber-500'
+                }`}>
+                  {member.status === 'Available' ? <CheckCircle2 className="w-3 h-3" /> : member.status === 'Busy' ? <Activity className="w-3 h-3" /> : <X className="w-3 h-3" />}
+                  {member.status === 'Available' ? t('filterAvailable') : member.status === 'Busy' ? t('filterBusy') : t('filterAway')}
+                </span>
               </div>
 
-              {/* Redesigned Active Tasks & Workload Capacity Section */}
-              <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
-                <div className="bg-slate-50/80 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-100 dark:border-slate-800 space-y-2.5">
+              {/* Profile Details */}
+              <div>
+                <div className="space-y-1 mb-5">
+                  <h3 className="text-xl font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug cursor-pointer">
+                    {member.name}
+                  </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 pt-1">
+                    Keahlian: <strong className="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1">{member.skills.join(', ')}</strong>
+                  </p>
+                </div>
+
+                {/* Redesigned Active Tasks & Workload Capacity Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
                   <div className="flex justify-between items-center text-xs">
-                    <span className="text-slate-500 dark:text-slate-400 flex items-center gap-1.5 font-semibold">
-                      <Activity className="w-3.5 h-3.5 text-primary" /> {t('activeTasks')}
+                    <span className="text-slate-500 flex items-center gap-1.5 font-medium">
+                      <User className="w-3.5 h-3.5 text-primary" /> Role Ditugaskan
                     </span>
-                    <span className="font-extrabold text-slate-900 dark:text-white text-xs">
-                      {member.activeTasks} / {member.maxCapacity} {t('tasksLabel')}
+                    <span className="font-bold bg-blue-500 text-white px-3 py-1 rounded-full text-[11px] uppercase tracking-wider shadow-sm">
+                      {member.role === 'NON_IT' ? 'Non-IT' : member.role.replace(/_/g, ' ')}
                     </span>
-                  </div>
-                  
-                  <div className="w-full h-2.5 bg-slate-200/70 dark:bg-slate-700/70 rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full rounded-full transition-all duration-700 ${
-                        workloadPercentage >= 80 ? 'bg-rose-500' : workloadPercentage >= 50 ? 'bg-amber-500' : 'bg-emerald-500'
-                      }`}
-                      style={{ width: `${workloadPercentage}%` }}
-                    />
                   </div>
 
-                  <div className="flex justify-between items-center text-[11px] pt-0.5 font-bold">
-                    <span className="text-slate-400">{t('capacityUsed')}</span>
-                    <span className={`px-2 py-0.5 rounded-lg text-[10px] ${
-                      workloadPercentage >= 80 
-                        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400' 
-                        : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                    }`}>
-                      {workloadPercentage}% {t('capacityLabel')}
-                    </span>
+                  <div className="flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60">
+                    <div className="flex flex-col">
+                      <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('capacityUsed')}</span>
+                      <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 leading-none">{workloadPercentage}%</span>
+                      <span className="text-[10px] text-slate-400 mt-1 font-medium">{member.activeTasks} / {member.maxCapacity} {t('tasksLabel')}</span>
+                    </div>
+                    
+                    <div className="relative w-[72px] h-[36px] flex items-end justify-center">
+                      <svg className="w-full h-full drop-shadow-sm overflow-visible" viewBox="0 0 100 50">
+                        <path
+                          d="M 10 50 A 40 40 0 0 1 90 50"
+                          fill="none"
+                          className="stroke-slate-200 dark:stroke-slate-700"
+                          strokeWidth="12"
+                          strokeLinecap="round"
+                        />
+                        {workloadPercentage > 0 && (
+                          <path
+                            d="M 10 50 A 40 40 0 0 1 90 50"
+                            fill="none"
+                            className={
+                              workloadPercentage >= 80
+                                ? 'stroke-rose-500'
+                                : workloadPercentage >= 50
+                                ? 'stroke-amber-500'
+                                : 'stroke-emerald-500'
+                            }
+                            strokeWidth="12"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(workloadPercentage / 100) * (Math.PI * 40)} ${Math.PI * 40}`}
+                          />
+                        )}
+                      </svg>
+                    </div>
                   </div>
                 </div>
 
-                {/* Message Worker Button */}
-                <button 
-                  onClick={() => setMessagingMember(member)}
-                  className="w-full py-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex justify-center items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors cursor-pointer"
-                >
-                  <Mail className="w-4 h-4 text-primary" /> {t('messageWorker')}
-                </button>
+                {/* Elegant Action Panel */}
+                <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+                  <button
+                    suppressHydrationWarning
+                    className="w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700 cursor-pointer shadow-2xs group"
+                  >
+                    <User className="w-3.5 h-3.5 shrink-0" />
+                    <span>Lihat Profil Lengkap</span>
+                  </button>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      suppressHydrationWarning
+                      onClick={() => setMessagingMember(member)}
+                      className="w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white border-none cursor-pointer shadow-md"
+                    >
+                      <Mail className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('messageWorker')}</span>
+                    </button>
+
+                    <button
+                      suppressHydrationWarning
+                      className="w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 border border-slate-200/50 dark:border-slate-700 cursor-pointer shadow-2xs group"
+                    >
+                      <span>Detail Tugas</span>
+                      <span className="opacity-70 group-hover:opacity-100 transition-opacity">&gt;</span>
+                    </button>
+                  </div>
+                </div>
               </div>
             </div>
           )

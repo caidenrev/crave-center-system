@@ -5,6 +5,8 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/language-switcher"
 import { NotificationBell } from './notification-bell'
 
+import { getUserAvatar } from '@/lib/utils'
+
 type UserProps = {
   id?: string;
   name?: string | null;
@@ -13,7 +15,6 @@ type UserProps = {
 }
 
 export function AdminTopbar({ user, onMenuToggle }: { user?: UserProps | null; onMenuToggle?: () => void }) {
-  const initials = user?.name ? user.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() : 'AD'
   const email = user?.email || 'admin@crave.com'
   const name = user?.name || 'Admin'
 
@@ -34,14 +35,10 @@ export function AdminTopbar({ user, onMenuToggle }: { user?: UserProps | null; o
         <ThemeToggle />
         {user?.id && <NotificationBell userId={user.id} />}
         <div className="flex items-center gap-3 ml-2 border-l border-slate-200 dark:border-slate-700 pl-4">
-          <div className="w-9 h-9 rounded-full bg-linear-to-br from-primary to-indigo-600 flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm">
-            {user?.image ? (
-              <img src={user.image} alt={name} className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-white font-bold text-xs">{initials}</span>
-            )}
+          <div className="w-9 h-9 rounded-full flex items-center justify-center overflow-hidden border-2 border-white dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-800">
+            <img src={getUserAvatar(user)} alt={name} className="w-full h-full object-cover" />
           </div>
-          <div className="hidden md:flex flex-col">
+          <div className="hidden md:flex flex-col items-start text-left">
             <span className="text-sm font-semibold text-slate-900 dark:text-white leading-tight">{name}</span>
             <span className="text-[11px] text-slate-500 dark:text-slate-400">{email}</span>
           </div>

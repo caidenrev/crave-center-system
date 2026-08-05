@@ -1,6 +1,7 @@
 "use client"
 
 import { Camera, Loader2, Zap } from "lucide-react"
+import { getDefaultAvatar } from "@/lib/utils"
 
 interface SettingsHeaderBannerProps {
   name: string
@@ -29,24 +30,18 @@ export function SettingsHeaderBanner({
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-5">
           <div className="relative group">
-            <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-primary via-indigo-500 to-purple-600 p-0.5 shadow-lg shadow-primary/20 overflow-hidden">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={name}
-                  className="w-full h-full object-cover rounded-[14px]"
-                />
-              ) : (
-                <div className="w-full h-full rounded-[14px] bg-slate-900 flex items-center justify-center text-white font-extrabold text-2xl">
-                  {initials}
-                </div>
-              )}
+            <div className="w-20 h-20 rounded-full bg-slate-100 dark:bg-slate-800 border-2 border-white dark:border-slate-800 shadow-lg overflow-hidden">
+              <img
+                src={avatarUrl || getDefaultAvatar(name || email || 'default')}
+                alt={name}
+                className="w-full h-full object-cover"
+              />
             </div>
             <button
               type="button"
               onClick={onUploadClick}
               disabled={isUploadingAvatar}
-              className="absolute -bottom-1 -right-1 p-2 bg-primary hover:bg-primary/90 text-white rounded-xl shadow-md transition-transform transform hover:scale-105 cursor-pointer disabled:opacity-50"
+              className="absolute -bottom-1 -right-1 p-2 bg-primary hover:bg-primary/90 text-white rounded-full shadow-md transition-transform transform hover:scale-105 cursor-pointer disabled:opacity-50"
               title={uploadLabel}
             >
               {isUploadingAvatar ? (

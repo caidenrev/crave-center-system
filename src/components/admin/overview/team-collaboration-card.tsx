@@ -1,6 +1,7 @@
 import { getTranslations } from "next-intl/server";
 import { Hexagon, Plus } from "lucide-react";
 import Link from "next/link";
+import { getDefaultAvatar } from "@/lib/utils";
 
 interface TeamMember {
   id: string;
@@ -43,8 +44,8 @@ export async function TeamCollaborationCard({
               className="flex items-center justify-between gap-4 p-2 -mx-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors"
             >
               <div className="flex items-center gap-3 overflow-hidden">
-                <div className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center border border-slate-200 dark:border-slate-700 shrink-0 text-slate-400 dark:text-slate-500">
-                  <Hexagon className="w-5 h-5" />
+                <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 border-2 border-white dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-800 overflow-hidden">
+                  <img src={getDefaultAvatar(member.name || member.id || 'default')} alt={member.name || 'Worker'} className="w-full h-full object-cover" />
                 </div>
                 <div className="truncate">
                   <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">

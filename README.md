@@ -129,6 +129,7 @@ For testing the different dashboards, you can use the following pre-configured a
 - **Email:** `admin@crave.com`
 - **Password:** `password123`
 - **Access:** Admin Dashboard (`/admin/applications`)
+- 
 
 ### Worker Account
 - **Email:** `worker@crave.com`

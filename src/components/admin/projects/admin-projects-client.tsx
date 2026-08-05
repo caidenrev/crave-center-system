@@ -68,62 +68,62 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
       case 'REQUESTED':
       case 'Requested':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-600 dark:text-blue-400 border border-blue-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-500 text-white shadow-sm border-none">
             <CircleDashed className="w-3.5 h-3.5" /> {t('statusRequested') || 'Diajukan'}
           </span>
         )
       case 'IN_PROGRESS':
       case 'In Progress':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-sm border-none">
             <PlayCircle className="w-3.5 h-3.5" /> {t('filterInProgress') || 'Berlangsung'}
           </span>
         )
       case 'WORKER_REVIEW':
       case 'Worker Review':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500 text-white shadow-sm border-none">
             <AlertCircle className="w-3.5 h-3.5" /> {t('statusWorkerReview') || 'Review Worker'}
           </span>
         )
       case 'PENDING_DP':
       case 'Pending DP':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-sm border-none">
             <Clock className="w-3.5 h-3.5" /> {t('statusPendingDP') || 'Menunggu DP'}
           </span>
         )
       case 'COMPLETED':
       case 'Completed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white shadow-sm border-none">
             <CheckCircle className="w-3.5 h-3.5" /> {t('filterCompleted') || 'Selesai'}
           </span>
         )
       case 'ON_HOLD':
       case 'Delayed':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-500/10 text-orange-600 dark:text-orange-400 border border-orange-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-sm border-none">
             <Clock className="w-3.5 h-3.5" /> {t('filterOnHold') || 'Tertunda / Jeda'}
           </span>
         )
       case 'IN_WARRANTY':
       case 'Warranty':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 border border-cyan-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-cyan-500 text-white shadow-sm border-none">
             <ShieldCheck className="w-3.5 h-3.5" /> {t('statusInWarranty') || 'Garansi'}
           </span>
         )
       case 'CANCELLED':
       case 'Cancelled':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-500 text-white shadow-sm border-none">
             <AlertCircle className="w-3.5 h-3.5" /> {t('statusCancelled') || 'Dibatalkan'}
           </span>
         )
       default:
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-slate-500 text-white shadow-sm border-none">
             <CircleDashed className="w-3.5 h-3.5" /> {status}
           </span>
         )
@@ -253,7 +253,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                     <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                       <User className="w-3.5 h-3.5 text-primary" /> {t('assignedWorker')}
                     </span>
-                    <span className="font-bold text-slate-800 dark:text-slate-200">{proj.manager}</span>
+                    <span className="font-bold bg-blue-500 text-white px-3 py-1 rounded-full text-[11px] shadow-sm tracking-wider">{proj.manager}</span>
                   </div>
 
                   <div className="flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60">
@@ -302,7 +302,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                   className={`w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
                     proj.status === 'CANCELLED'
                       ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                      : 'bg-purple-500/10 hover:bg-purple-500/20 dark:bg-purple-900/30 dark:hover:bg-purple-900/50 text-purple-600 dark:text-purple-400 border border-purple-500/20 cursor-pointer shadow-2xs'
+                      : 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer shadow-md'
                   }`}
                   title={proj.status === 'CANCELLED' ? "Ketentuan & Kontrak nonaktif untuk proyek yang dibatalkan" : "Ketentuan & Kontrak"}
                 >
@@ -318,7 +318,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                     className={`w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                       proj.status === 'CANCELLED'
                         ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                        : 'bg-blue-500/10 hover:bg-blue-500/20 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 border border-blue-500/20 cursor-pointer shadow-2xs'
+                        : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-md'
                     }`}
                     title={proj.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
                   >

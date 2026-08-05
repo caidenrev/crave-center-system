@@ -34,9 +34,6 @@ export default async function AdminTeamPage() {
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-20">
       <div>
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-2">
-          {t('badge')}
-        </div>
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">{t('title')}</h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">{t('subtitle')}</p>
       </div>

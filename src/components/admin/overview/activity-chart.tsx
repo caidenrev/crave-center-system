@@ -93,7 +93,19 @@ export function AdminActivityChart({
       </div>
 
       {/* Bar Chart Bars Container */}
-      <div className="h-44 md:h-52 flex items-end justify-between gap-2 md:gap-4 pt-4 px-2 overflow-hidden">
+      <div className="relative h-44 md:h-52 flex items-end justify-between gap-2 md:gap-4 pt-4 px-2 overflow-hidden mt-2">
+        {/* Y-Axis Grid Lines */}
+        <div className="absolute left-2 right-2 top-4 bottom-[28px] flex flex-col justify-between pointer-events-none z-0">
+          {[1, 0.75, 0.5, 0.25, 0].map((step, i) => (
+            <div key={i} className="flex items-center w-full gap-2">
+              <span className="w-6 text-right text-[10px] font-medium text-slate-400">
+                {Math.round(maxVal * step)}
+              </span>
+              <div className="flex-1 border-b border-dashed border-slate-200 dark:border-slate-800" />
+            </div>
+          ))}
+        </div>
+
         <AnimatePresence mode="wait">
           <motion.div
             key={viewMode}
@@ -101,7 +113,7 @@ export function AdminActivityChart({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="w-full h-full flex items-end justify-between gap-2 md:gap-4"
+            className="w-full h-full flex items-end justify-between gap-2 md:gap-4 relative z-10 pl-10"
           >
             {currentData.map((item, index) => {
               const reqPct = Math.round((item.req / maxVal) * 100);
