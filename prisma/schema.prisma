@@ -86,6 +86,7 @@ model User {
   email         String   @unique
   phone         String?
   role          Role     @default(CLIENT)
+  image         String?
 
   // Worker Profile Info
   category      String?  // e.g., "IT", "NON_IT"

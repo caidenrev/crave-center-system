@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { FileText, Download, CheckCircle2, Loader2} from "lucide-react"
+import { FileText, Download, CheckCircle2, Loader2, X, ChevronRight } from "lucide-react"
 import { acceptTermsByClient } from "@/app/actions/project"
 import { toast } from "sonner"
 
@@ -19,6 +19,7 @@ interface ContractItem {
 
 export function ClientContractsView({ contracts }: { contracts: ContractItem[] }) {
   const [processingId, setProcessingId] = useState<string | null>(null)
+  const [selectedScope, setSelectedScope] = useState<{title: string, scope: string} | null>(null)
 
   const handleAcceptTerms = async (projectId: string) => {
     setProcessingId(projectId)
@@ -51,10 +52,11 @@ export function ClientContractsView({ contracts }: { contracts: ContractItem[] }
   return (
     <div className="space-y-4">
       <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+        <table className="w-full min-w-[800px] text-left border-collapse">
           <thead>
-            <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-wider">
+            <tr className="border-b border-slate-200 dark:border-slate-800 text-slate-500 text-xs font-bold uppercase tracking-wider whitespace-nowrap">
               <th className="pb-4 font-semibold">Proyek</th>
+              <th className="pb-4 font-semibold">Scope Pekerjaan</th>
               <th className="pb-4 font-semibold">Harga Final</th>
               <th className="pb-4 font-semibold">Status Persetujuan</th>
               <th className="pb-4 font-semibold text-right">Aksi & Dokumen</th>
@@ -75,7 +77,19 @@ export function ClientContractsView({ contracts }: { contracts: ContractItem[] }
                       ID: {item.projectId.substring(0, 8).toUpperCase()}
                     </div>
                   </td>
-                  <td className="py-4 pr-4 font-extrabold text-slate-900 dark:text-white text-sm">
+                  <td className="py-4 pr-4">
+                    {item.scope ? (
+                      <button 
+                        onClick={() => setSelectedScope({ title: item.projectTitle, scope: item.scope! })}
+                        className="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center gap-1 transition-colors bg-indigo-50 dark:bg-indigo-900/30 px-3 py-1.5 rounded-lg shadow-sm w-fit"
+                      >
+                        <FileText className="w-3.5 h-3.5" /> Lihat Detail
+                      </button>
+                    ) : (
+                      <span className="italic text-slate-400 text-xs">Belum ada</span>
+                    )}
+                  </td>
+                  <td className="py-4 pr-4 font-extrabold text-slate-900 dark:text-white text-sm whitespace-nowrap">
                     Rp {Number(item.priceFinal || 0).toLocaleString("id-ID")}
                   </td>
                   <td className="py-4 pr-4">
@@ -100,7 +114,7 @@ export function ClientContractsView({ contracts }: { contracts: ContractItem[] }
                         title="Buka Dokumen Kontrak PDF"
                       >
                         <Download className="w-3.5 h-3.5" />
-                        <span>Cetak / PDF</span>
+                        <span>Cetak</span>
                       </a>
 
                       {/* Accept Terms Button */}
@@ -130,6 +144,38 @@ export function ClientContractsView({ contracts }: { contracts: ContractItem[] }
           </tbody>
         </table>
       </div>
+
+      {/* Scope Detail Modal */}
+      {selectedScope && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 dark:bg-slate-950/60 backdrop-blur-sm" onClick={() => setSelectedScope(null)}>
+          <div 
+            className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-lg shadow-xl flex flex-col max-h-[85vh] overflow-hidden"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800">
+              <div>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Scope Pekerjaan</h3>
+                <p className="text-xs text-slate-500 font-medium mt-0.5">{selectedScope.title}</p>
+              </div>
+              <button onClick={() => setSelectedScope(null)} className="p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 transition-colors rounded-full shrink-0">
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            
+            <div className="p-6 overflow-y-auto custom-scrollbar flex-1 bg-slate-50/50 dark:bg-slate-900/30">
+              <div className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap leading-relaxed">
+                {selectedScope.scope}
+              </div>
+            </div>
+            
+            <div className="p-5 border-t border-slate-100 dark:border-slate-800 flex justify-end bg-white dark:bg-slate-900">
+              <button onClick={() => setSelectedScope(null)} className="px-5 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-bold text-sm rounded-xl hover:opacity-90 transition-opacity cursor-pointer shadow-sm">
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

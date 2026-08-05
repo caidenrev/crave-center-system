@@ -4,6 +4,8 @@ import { createClient } from '@/utils/supabase/server'
 import { AdminProjectsClient, ProjectCardItem } from '@/components/admin/projects/admin-projects-client'
 import { getTranslations } from 'next-intl/server'
 
+export const dynamic = 'force-dynamic'
+
 export default async function AdminProjectsPage() {
   await requireRole(["ADMIN"])
   const t = await getTranslations('AdminProjects')
@@ -21,7 +23,23 @@ export default async function AdminProjectsPage() {
   const initialProjects: ProjectCardItem[] = dbProjects.map((p) => {
     const totalTasks = p.tasks?.length || 0
     const doneTasks = p.tasks?.filter(t => t.status === 'DONE').length || 0
-    const calculatedProgress = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : (p.status === 'COMPLETED' ? 100 : 0)
+    
+    let calculatedProgress = 0
+    if (totalTasks > 0) {
+      calculatedProgress = Math.round((doneTasks / totalTasks) * 100)
+    } else {
+      switch (p.status) {
+        case 'REQUESTED': calculatedProgress = 10; break;
+        case 'WORKER_REVIEW': calculatedProgress = 25; break;
+        case 'PENDING_DP': calculatedProgress = 40; break;
+        case 'IN_PROGRESS': calculatedProgress = 65; break;
+        case 'ON_HOLD': calculatedProgress = 65; break;
+        case 'COMPLETED': calculatedProgress = 100; break;
+        case 'CANCELLED': calculatedProgress = 0; break;
+        case 'IN_WARRANTY': calculatedProgress = 100; break;
+        default: calculatedProgress = 0; break;
+      }
+    }
 
     return {
       id: p.id ? (p.id.includes('-') ? p.id.split('-')[0].toUpperCase() : p.id.substring(0, 8).toUpperCase()) : 'PROJ',

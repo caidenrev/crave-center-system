@@ -20,14 +20,17 @@ export default async function AdminDashboardPage(props: {
   const t = await getTranslations("AdminDashboard");
 
   // 1. Fetch main stats in parallel
-  const [totalUsers, totalProjects, pendingApps, activeRequests, delayedProjects] =
+  const [totalUsers, totalProjects, totalRevenueAgg, pendingApps, activeRequests, delayedProjects] =
     await Promise.all([
       prisma.user.count().catch(() => 0),
       prisma.project.count().catch(() => 0),
+      prisma.project.aggregate({ _sum: { offeredPrice: true }, where: { status: { not: "CANCELLED" } } }).catch(() => ({ _sum: { offeredPrice: 0 } })),
       prisma.workerApplication.count({ where: { status: "PENDING" } }).catch(() => 0),
       prisma.project.count({ where: { status: "REQUESTED" } }).catch(() => 0),
       prisma.project.count({ where: { status: "ON_HOLD" } }).catch(() => 0),
     ]);
+    
+  const totalRevenue = Number(totalRevenueAgg._sum.offeredPrice || 0);
 
   // 2. Worker workload stats
   const totalWorkers = await prisma.user
@@ -129,11 +132,11 @@ export default async function AdminDashboardPage(props: {
     { title: t("totalProjects"), value: totalProjects, badgeIcon: FolderKanban, badgeText: t("activeArchived") },
     { title: t("newRequests"), value: activeRequests, badgeIcon: CheckSquare, badgeText: t("pendingReview") },
     {
-      title: t("pendingApplicants"),
-      value: pendingApps,
-      badgeIcon: ShieldAlert,
-      badgeText: t("applicants"),
-      action: pendingApps > 0 ? { href: `/${locale}/admin/applications`, label: "Review" } : undefined,
+      title: "Total Pendapatan", // Uang yang dihasilkan
+      value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalRevenue),
+      badgeIcon: ShieldAlert, // We will change this to DollarSign or Wallet later if needed, but let's just use what was there or change it
+      badgeText: "Project Value",
+      action: { href: `/${locale}/admin/projects`, label: "Detail" },
     },
   ];
 

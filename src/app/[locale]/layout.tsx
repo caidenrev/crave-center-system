@@ -55,7 +55,7 @@ export default async function RootLayout({
       className={`${jakartaSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" disableTransitionOnChange>
           <NextIntlClientProvider locale={locale} messages={messages}>
             {children}
             <Toaster />

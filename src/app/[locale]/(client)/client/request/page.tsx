@@ -8,14 +8,15 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { createJobRequest } from "@/app/actions/project"
 import { toast } from "sonner"
 import { Loader2 } from "lucide-react"
+import { RichTextEditor } from "@/components/ui/rich-text-editor"
 
 export default function JobRequestPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [description, setDescription] = useState('')
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -34,72 +35,65 @@ export default function JobRequestPage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto py-8">
+    <div className="w-full py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
+        className="w-full"
       >
-        <Card className="border-0 shadow-xl bg-white/80 backdrop-blur-xl dark:bg-zinc-900/80">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold">Buat Job Request Baru</CardTitle>
-            <CardDescription>
-              Ceritakan ide atau kebutuhan IT Anda. Tim kami akan segera meninjaunya.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={onSubmit} className="space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="title">Judul Project <span className="text-red-500">*</span></Label>
-                <Input 
-                  id="title" 
-                  name="title" 
-                  placeholder="Misal: Pembuatan Website E-Commerce" 
-                  required 
-                  className="h-11"
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label htmlFor="description">Deskripsi Detail <span className="text-red-500">*</span></Label>
-                <Textarea 
-                  id="description" 
-                  name="description" 
-                  placeholder="Jelaskan secara detail fitur dan kebutuhan bisnis Anda..." 
-                  required 
-                  className="min-h-[150px] resize-y"
-                />
-              </div>
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2 text-slate-900 dark:text-white">Buat Job Request Baru</h1>
+          <p className="text-slate-500 dark:text-slate-400">
+            Ceritakan ide atau kebutuhan IT Anda. Tim kami akan segera meninjaunya.
+          </p>
+        </div>
 
-              <div className="space-y-2">
-                <Label htmlFor="budgetRange">Estimasi Budget</Label>
-                <Select name="budgetRange">
-                  <SelectTrigger className="h-11">
-                    <SelectValue placeholder="Pilih range budget" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="< 10 Juta">&lt; 10 Juta</SelectItem>
-                    <SelectItem value="10 Juta - 50 Juta">10 Juta - 50 Juta</SelectItem>
-                    <SelectItem value="50 Juta - 100 Juta">50 Juta - 100 Juta</SelectItem>
-                    <SelectItem value="> 100 Juta">&gt; 100 Juta</SelectItem>
-                    <SelectItem value="Belum Tahu">Belum Tahu / Butuh Konsultasi</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
+        <form onSubmit={onSubmit} className="space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="title">Judul Project <span className="text-red-500">*</span></Label>
+            <Input 
+              id="title" 
+              name="title" 
+              placeholder="Misal: Pembuatan Website E-Commerce" 
+              required 
+              className="h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm"
+            />
+          </div>
+          
+          <div className="space-y-2">
+            <Label htmlFor="description">Deskripsi Detail <span className="text-red-500">*</span></Label>
+            <input type="hidden" name="description" value={description} required />
+            <RichTextEditor value={description} onChange={setDescription} placeholder="Jelaskan secara detail fitur dan kebutuhan bisnis Anda..." />
+          </div>
 
-              <Button type="submit" className="w-full h-11" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Mengirim...
-                  </>
-                ) : (
-                  "Kirim Job Request"
-                )}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+          <div className="space-y-2">
+            <Label htmlFor="budgetRange">Estimasi Budget</Label>
+            <Select name="budgetRange">
+              <SelectTrigger className="h-11 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 focus:border-primary/40 focus:ring-4 focus:ring-primary/10 transition-all shadow-sm">
+                <SelectValue placeholder="Pilih range budget" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="< 10 Juta">&lt; 10 Juta</SelectItem>
+                <SelectItem value="10 Juta - 50 Juta">10 Juta - 50 Juta</SelectItem>
+                <SelectItem value="50 Juta - 100 Juta">50 Juta - 100 Juta</SelectItem>
+                <SelectItem value="> 100 Juta">&gt; 100 Juta</SelectItem>
+                <SelectItem value="Belum Tahu">Belum Tahu / Butuh Konsultasi</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Button type="submit" className="w-full h-11 rounded-xl" size="lg" disabled={isSubmitting}>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Mengirim...
+              </>
+            ) : (
+              "Kirim Job Request"
+            )}
+          </Button>
+        </form>
       </motion.div>
     </div>
   )

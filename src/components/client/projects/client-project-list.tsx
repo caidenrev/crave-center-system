@@ -134,7 +134,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
               
               {project.status === "PENDING_DP" && (
                 <Link
-                  href={`/${locale}/client/payments`}
+                  href={`/${locale}/client/billing`}
                   className="px-3.5 py-1.5 bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
                 >
                   <span>Bayar DP</span>

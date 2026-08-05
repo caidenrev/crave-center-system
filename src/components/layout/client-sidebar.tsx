@@ -11,10 +11,14 @@ import { ConfirmModal } from '@/components/ui/confirm-modal'
 
 export function ClientSidebar({ 
   locale,
-  user
+  user,
+  isOpen,
+  onClose
 }: { 
   locale: string;
   user?: { name?: string | null; email?: string | null; image?: string | null } | null;
+  isOpen?: boolean;
+  onClose?: () => void;
 }) {
   const pathname = usePathname()
   const router = useRouter()
@@ -31,7 +35,7 @@ export function ClientSidebar({
         { name: t('requests'), href: `/${locale}/client/request`, icon: FileText },
         { name: t('projects'), href: `/${locale}/client/projects`, icon: CheckSquare },
         { name: t('contracts'), href: `/${locale}/client/contracts`, icon: FileText },
-        { name: t('paymentHistory'), href: `/${locale}/client/payments`, icon: DollarSign },
+        { name: t('paymentHistory'), href: `/${locale}/client/billing`, icon: DollarSign },
       ]
     }
   ]
@@ -63,7 +67,11 @@ export function ClientSidebar({
 
   return (
     <>
-      <aside className="w-64 bg-white dark:bg-[#0B0F19] border-r border-slate-200 dark:border-slate-800 shrink-0 hidden md:flex flex-col">
+      <aside className={cn(
+        "w-64 bg-white dark:bg-[#0B0F19] border-r border-slate-200 dark:border-slate-800 shrink-0 flex flex-col",
+        "fixed inset-y-0 left-0 z-40 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out",
+        isOpen ? "translate-x-0" : "-translate-x-full"
+      )}>
         <TopBrandHeader />
 
         <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-6">
@@ -99,6 +107,7 @@ export function ClientSidebar({
                       <Link
                         key={item.name}
                         href={item.href}
+                        onClick={onClose}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-all duration-200",
                           isActive
@@ -162,7 +171,10 @@ export function ClientSidebar({
                       <Link
                         key={item.name}
                         href={item.href}
-                        onClick={() => setIsProfileOpen(false)}
+                        onClick={() => {
+                          setIsProfileOpen(false)
+                          onClose?.()
+                        }}
                         className={cn(
                           "flex items-center gap-3 px-3 py-2 rounded-lg text-sm transition-all duration-200",
                           pathname === item.href

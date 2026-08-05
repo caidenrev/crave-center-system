@@ -3,6 +3,7 @@
 import { motion } from "framer-motion"
 import { useTranslations } from "next-intl"
 import { Target, Lightbulb} from "lucide-react"
+import { getDefaultAvatar } from "@/lib/utils"
 
 export default function AboutPage() {
   const t = useTranslations("AboutPage")
@@ -127,12 +128,12 @@ export default function AboutPage() {
               <div className="relative w-full h-full transition-all duration-700 [transform-style:preserve-3d] group-hover:[transform:rotateY(180deg)]">
                 
                 {/* Front Side */}
-                <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-card border border-border p-8 rounded-3xl shadow-lg flex flex-col items-center justify-center text-center">
-                  <div className={`w-28 h-28 rounded-full mb-6 flex items-center justify-center bg-linear-to-br ${member.color} text-white text-4xl font-black shadow-inner`}>
-                    {member.initials}
+                <div className="absolute inset-0 w-full h-full [backface-visibility:hidden] bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 p-8 rounded-3xl shadow-sm flex flex-col items-center justify-center text-center">
+                  <div className="w-32 h-32 rounded-full mb-6 flex items-center justify-center shadow-sm overflow-hidden bg-slate-100 dark:bg-slate-800">
+                    <img src={getDefaultAvatar(member.name)} alt={member.name} className="w-full h-full object-cover" />
                   </div>
-                  <h3 className="text-2xl font-bold text-foreground mb-1">{member.name}</h3>
-                  <p className="text-muted-foreground font-medium">{member.role}</p>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{member.name}</h3>
+                  <p className="text-slate-500 dark:text-slate-400 font-medium text-sm">{member.role}</p>
                 </div>
 
                 {/* Back Side */}

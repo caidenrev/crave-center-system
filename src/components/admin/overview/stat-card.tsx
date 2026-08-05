@@ -3,7 +3,7 @@ import Link from "next/link";
 
 interface StatCardProps {
   title: string;
-  value: number;
+  value: number | string;
   badgeIcon: LucideIcon;
   badgeText: string;
   variant?: "primary" | "default";

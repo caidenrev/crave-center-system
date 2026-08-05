@@ -110,7 +110,7 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
           return (
             <div 
               key={member.id} 
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/30 group"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group relative overflow-hidden"
             >
               {/* Top Section - Avatar & Status Badge */}
               <div className="flex items-start justify-between gap-4 mb-4">
@@ -147,7 +147,7 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                 </div>
 
                 {/* Redesigned Active Tasks & Workload Capacity Section */}
-                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="space-y-4 pt-4 border-t-2 border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                       <User className="w-3.5 h-3.5 text-primary" /> Role Ditugaskan

@@ -1,6 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 import {
   PlayCircle,
   CheckCircle,
@@ -42,7 +44,24 @@ interface AdminProjectsClientProps {
 }
 
 export function AdminProjectsClient({ initialProjects, currentUserId }: AdminProjectsClientProps) {
-  const [projects] = useState<ProjectCardItem[]>(initialProjects)
+  const projects = initialProjects
+  const router = useRouter()
+  
+  useEffect(() => {
+    const supabase = createClient()
+    const channel = supabase.channel('realtime_projects_admin')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Task' }, () => {
+        router.refresh()
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'Project' }, () => {
+        router.refresh()
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channel)
+    }
+  }, [router])
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid')
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<string>('ALL')
@@ -229,7 +248,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
           {filteredProjects.map(proj => (
             <div 
               key={proj.id} 
-              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:border-primary/40 group relative overflow-hidden"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col justify-between transition-all duration-300 hover:-translate-y-1 hover:shadow-xl group relative overflow-hidden"
             >
               <div>
                 <div className="flex justify-between items-start mb-4">
@@ -248,7 +267,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                   </p>
                 </div>
 
-                <div className="space-y-4 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+                <div className="space-y-4 pt-4 border-t-2 border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between items-center text-xs">
                     <span className="text-slate-500 flex items-center gap-1.5 font-medium">
                       <User className="w-3.5 h-3.5 text-primary" /> {t('assignedWorker')}
@@ -256,7 +275,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                     <span className="font-bold bg-blue-500 text-white px-3 py-1 rounded-full text-[11px] shadow-sm tracking-wider">{proj.manager}</span>
                   </div>
 
-                  <div className="flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl border border-slate-100 dark:border-slate-800/60">
+                  <div className="flex items-center justify-between bg-slate-50/50 dark:bg-slate-800/30 p-4 rounded-2xl shadow-sm">
                     <div className="flex flex-col">
                       <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">{t('completion')}</span>
                       <span className="text-2xl font-extrabold text-slate-900 dark:text-white mt-1 leading-none">{proj.progress}%</span>
@@ -294,7 +313,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
               </div>
 
               {/* Elegant Action Panel */}
-              <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800/80 space-y-2">
+              <div className="pt-4 mt-4 space-y-2">
                 <button
                   suppressHydrationWarning
                   disabled={proj.status === 'CANCELLED'}

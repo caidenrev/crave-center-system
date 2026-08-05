@@ -142,7 +142,7 @@ export function AdminApplicationsClient({ applications }: { applications: Applic
             return (
               <div
                 key={app.id}
-                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-xl hover:border-primary/30 flex flex-col justify-between"
+                className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xs overflow-hidden transition-all duration-300 hover:shadow-xl flex flex-col justify-between"
               >
                 {/* Card Header */}
                 <div className="p-6 pb-4">
@@ -230,7 +230,7 @@ export function AdminApplicationsClient({ applications }: { applications: Applic
                 )}
 
                 {/* Card Footer - Actions */}
-                <div className="px-6 py-4 border-t border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50">
+                <div className="px-6 py-4 border-t-2 border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/50">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <button
                       onClick={() => setExpandedId(isExpanded ? null : app.id)}
