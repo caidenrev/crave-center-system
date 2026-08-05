@@ -381,4 +381,53 @@ export async function payDPByClient(paymentId: string) {
   }
 }
 
+export async function createMidtransTransaction(paymentId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) throw new Error("Unauthorized")
+
+    const payment = await prisma.payment.findUnique({
+      where: { id: paymentId },
+      include: { project: { include: { client: true } } }
+    })
+    if (!payment) throw new Error("Payment record not found")
+    if (payment.status === "SUCCESS" || payment.status === "PAID") {
+      throw new Error("Payment already completed")
+    }
+
+    const midtransClient = require('midtrans-client');
+    const snap = new midtransClient.Snap({
+      isProduction: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+      serverKey: process.env.MIDTRANS_SERVER_KEY,
+      clientKey: process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY
+    });
+
+    const parameter = {
+      transaction_details: {
+        order_id: payment.id,
+        gross_amount: payment.amount
+      },
+      customer_details: {
+        first_name: payment.project.client.name,
+        email: payment.project.client.email,
+      },
+      item_details: [
+        {
+          id: payment.id,
+          price: payment.amount,
+          quantity: 1,
+          name: `${payment.type} Payment: ${payment.project.title}`
+        }
+      ]
+    };
+
+    const transaction = await snap.createTransaction(parameter);
+    
+    return { success: true, token: transaction.token, redirect_url: transaction.redirect_url }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 

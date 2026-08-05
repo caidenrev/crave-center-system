@@ -16,6 +16,7 @@ import {
   Search,
   ChevronsUpDown,
   Plus,
+  Wallet,
 } from "lucide-react";
 import { cn, getDefaultAvatar } from "@/lib/utils";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -45,6 +46,7 @@ export function AdminSidebar({
         { name: t("overview"), href: `/${locale}/admin`, icon: LayoutDashboard },
         { name: t("requests"), href: `/${locale}/admin/requests`, icon: CheckSquare },
         { name: t("projects"), href: `/${locale}/admin/projects`, icon: FolderKanban },
+        { name: "Keuangan", href: `/${locale}/admin/finance`, icon: Wallet },
         { name: t("team"), href: `/${locale}/admin/team`, icon: Users },
       ],
     },

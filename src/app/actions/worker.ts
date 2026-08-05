@@ -3,6 +3,9 @@
 import { prisma } from "@/lib/db"
 import { createClient } from "@/utils/supabase/server"
 import { revalidatePath } from "next/cache"
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY || 're_mock')
 
 export async function submitWorkerOffer(formData: FormData) {
   try {
@@ -51,6 +54,25 @@ export async function submitWorkerOffer(formData: FormData) {
       type: "INFO",
       link: "/id/client"
     })
+
+    // Send email to client
+    const clientUser = await prisma.user.findUnique({ where: { id: project.clientId } })
+    if (process.env.RESEND_API_KEY && clientUser?.email) {
+      resend.emails.send({
+        from: 'Crave ITSM <onboarding@resend.dev>',
+        to: clientUser.email,
+        subject: `Pekerja merespons proyek Anda: ${project.title}`,
+        html: `
+          <h2>Halo ${clientUser.name},</h2>
+          <p>Pekerja <strong>${project.worker?.name}</strong> telah meninjau permintaan proyek Anda (<strong>${project.title}</strong>) dan memberikan penawaran harga.</p>
+          <ul>
+            <li><strong>Estimasi Harga:</strong> Rp ${parseFloat(offeredPrice).toLocaleString('id-ID')}</li>
+            <li><strong>Estimasi Durasi:</strong> ${offeredDuration} hari</li>
+          </ul>
+          <p>Silakan masuk ke aplikasi Crave untuk menyetujui penawaran ini, atau berdiskusi lebih lanjut dengan Admin.</p>
+        `
+      }).catch((emailErr) => console.error("Email send error:", emailErr))
+    }
 
     revalidatePath("/(worker)")
     return { success: true }

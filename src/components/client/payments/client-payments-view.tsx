@@ -1,8 +1,9 @@
 "use client"
 
 import { useState } from "react"
+import Script from "next/script"
 import { DollarSign, CheckCircle2, CreditCard, Loader2 } from "lucide-react"
-import { payDPByClient } from "@/app/actions/project"
+import { createMidtransTransaction } from "@/app/actions/project"
 import { toast } from "sonner"
 
 interface PaymentItem {
@@ -22,11 +23,32 @@ export function ClientPaymentsView({ payments }: { payments: PaymentItem[] }) {
   const handlePayDP = async (paymentId: string) => {
     setProcessingId(paymentId)
     try {
-      const res = await payDPByClient(paymentId)
-      if (res.success) {
-        toast.success("Pembayaran DP berhasil dikonfirmasi! Proyek resmi dimulai.")
+      const res = await createMidtransTransaction(paymentId)
+      if (res.success && res.token) {
+        // @ts-ignore
+        if (window.snap) {
+          // @ts-ignore
+          window.snap.pay(res.token, {
+            onSuccess: function (result: any) {
+              toast.success("Pembayaran berhasil diproses!")
+              // Optionally trigger a revalidation or status update
+              window.location.reload()
+            },
+            onPending: function (result: any) {
+              toast.info("Menunggu pembayaran Anda.")
+            },
+            onError: function (result: any) {
+              toast.error("Pembayaran gagal. Silakan coba lagi.")
+            },
+            onClose: function () {
+              toast.info("Anda menutup popup sebelum menyelesaikan pembayaran.")
+            }
+          })
+        } else {
+          toast.error("Gagal memuat sistem pembayaran (Midtrans Snap).")
+        }
       } else {
-        toast.error(res.error || "Gagal melakukan konfirmasi pembayaran")
+        toast.error(res.error || "Gagal mendapatkan token pembayaran")
       }
     } catch {
       toast.error("Terjadi kesalahan jaringan")
@@ -40,6 +62,10 @@ export function ClientPaymentsView({ payments }: { payments: PaymentItem[] }) {
 
   return (
     <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-sm border border-slate-100 dark:border-slate-800 w-full overflow-hidden">
+      <Script 
+        src="https://app.sandbox.midtrans.com/snap/snap.js" 
+        data-client-key={process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY}
+      />
       <div className="p-6 md:p-8 space-y-6">
 
         {/* Header row */}

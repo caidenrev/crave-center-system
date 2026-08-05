@@ -136,7 +136,7 @@ export default async function AdminDashboardPage(props: {
       value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalRevenue),
       badgeIcon: ShieldAlert, // We will change this to DollarSign or Wallet later if needed, but let's just use what was there or change it
       badgeText: "Project Value",
-      action: { href: `/${locale}/admin/projects`, label: "Detail" },
+      action: { href: `/${locale}/admin/finance`, label: "Detail" },
     },
   ];
 
@@ -173,7 +173,7 @@ export default async function AdminDashboardPage(props: {
           <AdminActivityChart weeklyData={weeklyData} monthlyData={monthlyData} />
         </div>
         <div className="lg:col-span-3">
-          <PaymentHistoryCard payments={recentPayments} />
+          <PaymentHistoryCard payments={recentPayments} locale={locale} />
         </div>
         <div className="lg:col-span-3">
           <RecentProjectsCard projects={recentProjects} locale={locale} />

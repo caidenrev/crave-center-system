@@ -16,6 +16,7 @@ import {
   ChevronsUpDown,
   Plus,
   X,
+  Wallet,
 } from "lucide-react";
 import { cn, getDefaultAvatar } from "@/lib/utils";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -44,6 +45,7 @@ export function WorkerSidebar({
         { name: t("dashboard"), href: `/${locale}/worker`, icon: LayoutDashboard },
         { name: t("tasks"), href: `/${locale}/worker/tasks`, icon: CheckSquare },
         { name: t("myProjects"), href: `/${locale}/worker/projects`, icon: FolderKanban },
+        { name: "Keuangan", href: `/${locale}/worker/finance`, icon: Wallet },
         { name: t("deliverables"), href: `/${locale}/worker/deliverables`, icon: Package },
       ],
     },

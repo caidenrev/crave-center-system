@@ -10,6 +10,8 @@ import { RealtimeClock } from "@/components/admin/overview/realtime-clock";
 import { WorkerTaskDonut } from "@/components/worker/overview/worker-task-donut";
 import { WorkerActiveProjects } from "@/components/worker/overview/worker-active-projects";
 import { WorkerNewRequests } from "@/components/worker/overview/worker-new-requests";
+import { WorkerIncomeCard } from "@/components/worker/overview/worker-income-card";
+import { DollarSign } from "lucide-react";
 
 export default async function WorkerDashboardPage(props: {
   params: Promise<{ locale: string }>;
@@ -36,6 +38,7 @@ export default async function WorkerDashboardPage(props: {
     allTasks,
     activeProjects,
     pendingRequests,
+    allCompletedProjects,
   ] = await Promise.all([
     // Tasks assigned to this worker
     prisma.task
@@ -67,6 +70,16 @@ export default async function WorkerDashboardPage(props: {
         orderBy: { targetDeliveryDate: "asc" },
       })
       .catch(() => []),
+    // All completed projects to calculate income (Assuming 70% share)
+    prisma.project
+      .findMany({
+        where: {
+          workerId: dbUser.id,
+          status: { in: ["COMPLETED", "IN_WARRANTY"] }
+        },
+        orderBy: { updatedAt: "desc" }
+      })
+      .catch(() => [])
   ]);
 
   // 2. Task stats
@@ -108,6 +121,20 @@ export default async function WorkerDashboardPage(props: {
     },
   }));
 
+  const totalIncome = allCompletedProjects.reduce((acc: number, p: any) => {
+    // 70% share for worker
+    const workerShare = Number(p.offeredPrice || 0) * 0.7;
+    return acc + workerShare;
+  }, 0);
+
+  const recentIncomes = allCompletedProjects.slice(0, 4).map((p: any) => ({
+    id: p.id,
+    amount: Number(p.offeredPrice || 0) * 0.7,
+    type: "Project Revenue (70%)",
+    status: "SUCCESS",
+    project: { title: p.title }
+  }));
+
   // 4. Stats card config
   const statsCards = [
     {
@@ -134,6 +161,13 @@ export default async function WorkerDashboardPage(props: {
       value: activeProjects.length,
       badgeIcon: FolderKanban,
       badgeText: t("assigned"),
+    },
+    {
+      title: "Total Pemasukan",
+      value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalIncome),
+      badgeIcon: DollarSign,
+      badgeText: "Net Income",
+      action: { href: `/${locale}/worker/finance`, label: "Detail" },
     },
   ];
 
@@ -176,6 +210,11 @@ export default async function WorkerDashboardPage(props: {
             reviewTasks={reviewTasks}
             doneTasks={doneTasks}
           />
+        </div>
+
+        {/* Worker Income Card */}
+        <div className="lg:col-span-3">
+          <WorkerIncomeCard incomes={recentIncomes} locale={locale} />
         </div>
 
         {/* Active Projects */}
