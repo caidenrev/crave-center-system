@@ -28,13 +28,13 @@ export async function WorkerIncomeCard({
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-5 md:p-6 shadow-sm h-full flex flex-col group relative">
       <div className="flex justify-between items-center mb-5">
         <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center gap-2">
-          Pemasukan Terakhir
+          {t("lastIncomes")}
         </h3>
         <Link 
           href={`/${locale}/worker/finance`}
           className="text-xs font-semibold text-primary hover:text-primary/80 flex items-center gap-1 transition-colors"
         >
-          Lihat Detail <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
+          {t("detail")} <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
@@ -59,7 +59,11 @@ export async function WorkerIncomeCard({
             </div>
             <div className="text-right shrink-0">
               <p className="text-xs font-bold text-slate-900 dark:text-white">
-                Rp{income.amount.toLocaleString("id-ID")}
+                {new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
+                  style: "currency",
+                  currency: "IDR",
+                  minimumFractionDigits: 0,
+                }).format(income.amount)}
               </p>
               <span
                 className={`text-[9px] font-bold px-1.5 py-0.5 rounded-md mt-0.5 inline-block ${
@@ -75,7 +79,7 @@ export async function WorkerIncomeCard({
         {incomes.length === 0 && (
           <div className="flex flex-col items-center justify-center h-full opacity-50 py-4">
             <Wallet className="w-8 h-8 mb-2" />
-            <p className="text-xs font-medium">Belum ada pemasukan</p>
+            <p className="text-xs font-medium">{t("noIncomes")}</p>
           </div>
         )}
       </div>

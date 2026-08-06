@@ -100,6 +100,7 @@ model User {
   tasks         Task[]        @relation("AssignedTasks")
   deliverables  Deliverable[] @relation("UploadedDeliverables")
   messages      Message[]     @relation("SentMessages")
+  receivedMessages Message[]  @relation("ReceivedMessages")
   applications  WorkerApplication[]
   notifications Notification[]
 
@@ -247,20 +248,24 @@ model Deliverable {
 
 model Message {
   id             String            @id @default(uuid())
-  projectId      String
+  projectId      String?
   senderId       String
+  receiverId     String?
   content        String            @db.Text
   visibility     MessageVisibility @default(CLIENT)
 
-  // Lampiran & Soft Delete
+  // Lampiran, Soft Delete, Edit & Read status
   fileUrl        String?           @db.Text
   fileName       String?
   fileType       String?           // 'IMAGE' | 'FILE'
   isDeleted      Boolean           @default(false)
+  isEdited       Boolean           @default(false)
+  isRead         Boolean           @default(false)
 
   // Relasi
-  project        Project           @relation(fields: [projectId], references: [id])
+  project        Project?          @relation(fields: [projectId], references: [id])
   sender         User              @relation("SentMessages", fields: [senderId], references: [id])
+  receiver       User?             @relation("ReceivedMessages", fields: [receiverId], references: [id])
 
   createdAt      DateTime          @default(now())
 }

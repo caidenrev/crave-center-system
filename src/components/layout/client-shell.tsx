@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { ClientSidebar } from "./client-sidebar"
 import { ClientTopbar } from "./client-topbar"
+import { FloatingChatBubble } from "@/components/chat/floating-widget/floating-chat-bubble"
 
 export function ClientShell({ 
   locale, 
@@ -40,6 +41,7 @@ export function ClientShell({
           </div>
         </main>
       </div>
+      <FloatingChatBubble currentUserId={user?.id} userRole="CLIENT" />
     </div>
   )
 }

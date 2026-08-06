@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { User, Bell, Shield, Key } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
+import { updateUserAvatar } from "@/app/actions/client"
 import { SettingsTabNav, TabType, TabItem } from "./settings-tab-nav"
 import { ProfileTab } from "./tabs/profile-tab"
 import { NotificationsTab } from "./tabs/notifications-tab"
@@ -60,6 +61,7 @@ export function AdminSettingsClient({ user }: AdminSettingsClientProps) {
       await supabase.auth.updateUser({
         data: { avatar_url: publicUrl }
       })
+      await updateUserAvatar(publicUrl)
 
       toast.success(t("avatarUploaded"))
     } catch {

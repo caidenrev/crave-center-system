@@ -145,6 +145,7 @@ export async function updateWorkerProfile(data: {
   phone?: string
   category?: string
   skills?: string[]
+  image?: string | null
 }) {
   try {
     const supabase = await createClient()
@@ -168,7 +169,8 @@ export async function updateWorkerProfile(data: {
         name: data.name,
         phone: data.phone || null,
         category: data.category || null,
-        skills: data.skills || [],
+        ...(data.skills ? { skills: data.skills } : {}),
+        ...(data.image !== undefined ? { image: data.image } : {}),
       }
     })
 
@@ -178,4 +180,172 @@ export async function updateWorkerProfile(data: {
     return { success: false, error: error.message }
   }
 }
+
+export async function updateWorkerTaskStatus(taskId: string, newStatus: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const task = await prisma.task.findUnique({
+      where: { id: taskId },
+      include: { assignee: true, project: { include: { worker: true } } }
+    })
+
+    if (!task) {
+      throw new Error("Task not found")
+    }
+
+    // Verify task belongs to current worker
+    const isAssignee = task.assignee?.email === user.email
+    const isProjectWorker = task.project?.worker?.email === user.email
+
+    if (!isAssignee && !isProjectWorker) {
+      throw new Error("Not authorized to update this task")
+    }
+
+    const validStatuses = ["TO_DO", "IN_PROGRESS", "REVIEW", "DONE"]
+    if (!validStatuses.includes(newStatus)) {
+      throw new Error("Invalid status")
+    }
+
+    await prisma.task.update({
+      where: { id: taskId },
+      data: {
+        status: newStatus as any,
+        completedAt: newStatus === "DONE" ? new Date() : null,
+      }
+    })
+
+    revalidatePath("/(worker)")
+    revalidatePath("/[locale]/(worker)/worker", "layout")
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function uploadWorkerDeliverable(formData: FormData) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const projectId = formData.get("projectId") as string
+    let fileUrl = formData.get("fileUrl") as string
+    let description = (formData.get("description") as string) || ""
+    const uploadedFile = formData.get("file") as File | null
+    const repoUrl = formData.get("repoUrl") as string | null
+
+    // Direct File Upload to Supabase Storage
+    if (uploadedFile && uploadedFile.size > 0 && typeof uploadedFile.name === "string") {
+      const fileExt = uploadedFile.name.split(".").pop() || "png"
+      const fileName = `${projectId}/${Date.now()}-${Math.random().toString(36).substring(2, 7)}.${fileExt}`
+
+      let usedBucket = "project_briefs"
+      let storageRes = await supabase.storage
+        .from("project_briefs")
+        .upload(fileName, uploadedFile, { upsert: true, contentType: uploadedFile.type })
+
+      if (storageRes.error) {
+        usedBucket = "avatars"
+        storageRes = await supabase.storage
+          .from("avatars")
+          .upload(fileName, uploadedFile, { upsert: true, contentType: uploadedFile.type })
+      }
+
+      if (!storageRes.error) {
+        const publicUrlData = supabase.storage.from(usedBucket).getPublicUrl(fileName)
+        fileUrl = publicUrlData.data.publicUrl
+      } else {
+        console.error("Storage upload error:", storageRes.error)
+        throw new Error("Gagal mengunggah berkas ke storage: " + storageRes.error.message)
+      }
+    }
+
+    // If repoUrl is provided alongside file upload, append it to description
+    if (repoUrl && repoUrl.trim().length > 0) {
+      if (fileUrl && fileUrl !== repoUrl) {
+        description = description
+          ? `${description}\n\nLink Repo / External: ${repoUrl}`
+          : `Link Repo / External: ${repoUrl}`
+      } else {
+        fileUrl = repoUrl
+      }
+    }
+
+    if (!projectId || !fileUrl) {
+      throw new Error("Proyek dan Tautan/File Deliverable wajib diisi")
+    }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email }
+    })
+
+    if (!dbUser) throw new Error("User not found")
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId }
+    })
+
+    if (!project) throw new Error("Project not found")
+    if (project.workerId !== dbUser.id) {
+      throw new Error("Anda tidak berhak mengunggah deliverable untuk proyek ini")
+    }
+
+    // Check if a deliverable already exists for this project
+    const existingDeliverable = await prisma.deliverable.findFirst({
+      where: { projectId },
+      orderBy: { createdAt: "desc" },
+    })
+
+    let deliverable;
+    if (existingDeliverable) {
+      deliverable = await prisma.deliverable.update({
+        where: { id: existingDeliverable.id },
+        data: {
+          fileUrl,
+          description: description || null,
+          status: "PENDING_REVIEW",
+          updatedAt: new Date(),
+        },
+      })
+    } else {
+      deliverable = await prisma.deliverable.create({
+        data: {
+          projectId,
+          uploadedById: dbUser.id,
+          fileUrl,
+          description: description || null,
+          status: "PENDING_REVIEW",
+        },
+      })
+    }
+
+    // Create Notification for Client
+    const { createNotification } = await import("@/app/actions/notification")
+    await createNotification({
+      userId: project.clientId,
+      title: "Deliverable Diperbarui",
+      message: `Worker telah mengunggah/memperbarui deliverable untuk proyek: ${project.title}. Menunggu review Anda.`,
+      type: "INFO",
+      link: "/id/client/deliverables"
+    })
+
+    revalidatePath("/(worker)")
+    revalidatePath("/(client)")
+    revalidatePath("/[locale]/(worker)/worker/deliverables", "page")
+    revalidatePath("/[locale]/(client)/client/deliverables", "page")
+    return { success: true, deliverableId: deliverable.id }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 

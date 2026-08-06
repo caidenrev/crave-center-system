@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Script from "next/script"
-import { DollarSign, CheckCircle2, CreditCard, Loader2 } from "lucide-react"
+import { CreditCard, Loader2 } from "lucide-react"
 import { createMidtransTransaction } from "@/app/actions/project"
 import { toast } from "sonner"
 
@@ -25,19 +25,19 @@ export function ClientPaymentsView({ payments }: { payments: PaymentItem[] }) {
     try {
       const res = await createMidtransTransaction(paymentId)
       if (res.success && res.token) {
-        // @ts-ignore
+        // @ts-expect-error - Midtrans Snap is loaded globally from external script
         if (window.snap) {
-          // @ts-ignore
+          // @ts-expect-error - Midtrans Snap is loaded globally from external script
           window.snap.pay(res.token, {
-            onSuccess: function (result: any) {
+            onSuccess: function () {
               toast.success("Pembayaran berhasil diproses!")
               // Optionally trigger a revalidation or status update
               window.location.reload()
             },
-            onPending: function (result: any) {
+            onPending: function () {
               toast.info("Menunggu pembayaran Anda.")
             },
-            onError: function (result: any) {
+            onError: function () {
               toast.error("Pembayaran gagal. Silakan coba lagi.")
             },
             onClose: function () {

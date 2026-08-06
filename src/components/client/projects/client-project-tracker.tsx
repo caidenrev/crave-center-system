@@ -13,11 +13,12 @@ import {
   FileText,
   ChevronRight,
   LayoutGrid,
-  List
+  List,
+  ShieldCheck
 } from 'lucide-react'
 import { useTranslations, useLocale } from 'next-intl'
 import Link from 'next/link'
-import { ProjectChatDrawer } from '@/components/chat/project-chat-drawer'
+import { ProjectChatDrawer } from '@/components/chat/project-chat/project-chat-drawer'
 
 export interface ClientProjectCardItem {
   id: string
@@ -27,6 +28,8 @@ export interface ClientProjectCardItem {
   createdAt?: string
   worker?: { name: string } | null
   offeredPrice?: string | null
+  progress?: number
+  tasks?: { id: string; status: string }[]
 }
 
 interface ClientProjectTrackerProps {
@@ -72,6 +75,12 @@ export function ClientProjectTracker({ projects, currentUserId }: ClientProjectT
             <CheckCircle className="w-3.5 h-3.5" /> {t('statusCompleted') || 'Completed'}
           </span>
         )
+      case 'IN_WARRANTY':
+        return (
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-indigo-600 text-white shadow-sm border-none">
+            <ShieldCheck className="w-3.5 h-3.5" /> Garansi Aktif
+          </span>
+        )
       case 'ON_HOLD':
         return (
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-orange-500 text-white shadow-sm border-none">
@@ -93,9 +102,17 @@ export function ClientProjectTracker({ projects, currentUserId }: ClientProjectT
     }
   }
 
-  // Calculate dummy progress based on status
-  const getProgress = (status: string) => {
-    switch (status) {
+  // Calculate progress based on tasks or fallback to status default
+  const getProgress = (proj: ClientProjectCardItem) => {
+    if (typeof proj.progress === 'number') {
+      return proj.progress
+    }
+    const totalTasks = proj.tasks?.length || 0
+    const doneTasks = proj.tasks?.filter(t => t.status === 'DONE').length || 0
+    if (totalTasks > 0) {
+      return Math.round((doneTasks / totalTasks) * 100)
+    }
+    switch (proj.status) {
       case 'REQUESTED': return 10
       case 'WORKER_REVIEW': return 25
       case 'PENDING_DP': return 40
@@ -103,6 +120,7 @@ export function ClientProjectTracker({ projects, currentUserId }: ClientProjectT
       case 'ON_HOLD': return 65
       case 'COMPLETED': return 100
       case 'CANCELLED': return 0
+      case 'IN_WARRANTY': return 100
       default: return 0
     }
   }
@@ -151,7 +169,7 @@ export function ClientProjectTracker({ projects, currentUserId }: ClientProjectT
       {viewMode === 'grid' ? (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8">
         {projects.map(proj => {
-          const progress = getProgress(proj.status)
+          const progress = getProgress(proj)
           return (
             <div 
               key={proj.id} 
@@ -283,7 +301,7 @@ export function ClientProjectTracker({ projects, currentUserId }: ClientProjectT
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {projects.map((proj) => {
-                  const progress = getProgress(proj.status)
+                  const progress = getProgress(proj)
                   return (
                     <tr 
                       key={proj.id} 

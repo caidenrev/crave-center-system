@@ -7,11 +7,17 @@ export default async function AdminTeamPage() {
   await requireRole(["ADMIN"])
   const t = await getTranslations('AdminTeam')
 
-  // Fetch real team members from database
+  // Fetch real team members from database with active tasks and project details
   const dbTeamMembers = await prisma.user.findMany({
     where: { role: 'TEAM_MEMBER' },
-    include: { tasks: { where: { status: { not: 'DONE' } } } },
-    orderBy: { createdAt: 'desc' }
+    include: {
+      tasks: {
+        where: { status: { not: 'DONE' } },
+        include: { project: { select: { title: true } } },
+        orderBy: { createdAt: 'desc' },
+      },
+    },
+    orderBy: { createdAt: 'desc' },
   }).catch(() => [])
 
   const initialTeam: TeamMemberItem[] = dbTeamMembers.map((user) => {
@@ -23,11 +29,23 @@ export default async function AdminTeamPage() {
       id: user.id,
       name: user.name || 'Unnamed Worker',
       email: user.email,
+      phone: user.phone,
       role: user.category || 'Developer',
       status,
       activeTasks: activeTasksCount,
       maxCapacity: 5,
-      skills: user.skills || []
+      skills: user.skills || [],
+      category: user.category,
+      rating: user.rating || 5.0,
+      totalReviews: user.totalReviews || 0,
+      image: user.image,
+      tasksList: (user.tasks || []).map((t) => ({
+        id: t.id,
+        title: t.title,
+        projectTitle: t.project?.title || 'Generik',
+        status: t.status,
+        deadline: t.deadline ? t.deadline.toISOString() : null,
+      })),
     }
   })
 

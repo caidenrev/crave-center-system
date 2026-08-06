@@ -1,5 +1,5 @@
 import { getTranslations } from "next-intl/server";
-import { Hexagon, Plus } from "lucide-react";
+import { Users } from "lucide-react";
 import Link from "next/link";
 import { getDefaultAvatar } from "@/lib/utils";
 
@@ -28,7 +28,7 @@ export async function TeamCollaborationCard({
           href={`/${locale}/admin/team`}
           className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-primary/20 dark:border-primary/30 text-xs font-semibold text-primary hover:bg-primary/5 dark:hover:bg-primary/10 transition-colors"
         >
-          <Plus className="w-3.5 h-3.5 text-slate-500 dark:text-slate-400 stroke-[2.5]" />{" "}
+          <Users className="w-3.5 h-3.5 text-primary stroke-[2.5]" />{" "}
           {t("addMember")}
         </Link>
       </div>

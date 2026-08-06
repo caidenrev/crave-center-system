@@ -5,6 +5,7 @@ import { Send, Paperclip, X, Image as ImageIcon, FileText, Loader2 } from "lucid
 import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
 import { isImageFile } from "./chat-utils"
+import { useChatTranslations } from "../chat-i18n"
 
 interface ChatInputBarProps {
   onSendMessage: (content: string, fileUrl?: string, fileName?: string, fileType?: string) => Promise<void>
@@ -12,6 +13,7 @@ interface ChatInputBarProps {
 }
 
 export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
+  const { t } = useChatTranslations()
   const [inputText, setInputText] = useState("")
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [isUploading, setIsUploading] = useState(false)
@@ -22,7 +24,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
       const file = e.target.files[0]
       // Max file size 10MB limit check
       if (file.size > 10 * 1024 * 1024) {
-        toast.error("Ukuran file maksimal 10MB")
+        toast.error(t.maxSizeError)
         return
       }
       setSelectedFile(file)
@@ -52,14 +54,14 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
         const cleanName = `${Date.now()}_${Math.random().toString(36).substring(7)}.${fileExt}`
         const storagePath = `chat/${cleanName}`
 
-        // Upload to project_briefs storage bucket (or chat_attachments fallback)
+        // Upload to project_briefs storage bucket
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from("project_briefs")
           .upload(storagePath, selectedFile)
 
         if (uploadError) {
           console.error("Storage upload error:", uploadError)
-          toast.error("Gagal mengunggah file lampiran")
+          toast.error(t.uploadError)
           setIsUploading(false)
           return
         }
@@ -73,7 +75,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
         fileType = isImageFile(selectedFile.name) ? "IMAGE" : "FILE"
       } catch (err: any) {
         console.error("Upload error:", err)
-        toast.error("Error mengunggah file")
+        toast.error(t.genericUploadError)
         setIsUploading(false)
         return
       } finally {
@@ -93,7 +95,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
   const isImageSelected = selectedFile && isImageFile(selectedFile.name)
 
   return (
-    <form onSubmit={handleSubmit} className="p-3 border-t border-slate-200/80 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-md flex flex-col gap-2">
+    <form onSubmit={handleSubmit} className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex flex-col gap-2">
       {/* File Attachment Preview Bar */}
       {selectedFile && (
         <div className="flex items-center justify-between p-2 rounded-xl bg-indigo-50 dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 text-xs">
@@ -113,7 +115,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
           <button
             type="button"
             onClick={handleRemoveFile}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
           </button>
@@ -136,8 +138,8 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isSendingOrUploading}
-          className="p-2.5 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0"
-          title="Lampirkan File / Gambar"
+          className="p-2.5 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer disabled:cursor-not-allowed"
+          title={t.attachFileTooltip}
         >
           <Paperclip className="w-4 h-4" />
         </button>
@@ -147,7 +149,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
           type="text"
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
-          placeholder={selectedFile ? "Tambah pesan (opsional)..." : "Tulis pesan..."}
+          placeholder={selectedFile ? t.addMessageOptional : t.writeMessage}
           className="flex-1 bg-slate-100 dark:bg-slate-800 border-0 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
         />
 

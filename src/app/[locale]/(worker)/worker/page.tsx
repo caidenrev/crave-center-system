@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/utils/supabase/server";
-import { CheckSquare, FolderKanban, Clock, CheckCircle2 } from "lucide-react";
+import { CheckSquare, FolderKanban, Clock, CheckCircle2, DollarSign, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 import { StatCard } from "@/components/admin/overview/stat-card";
@@ -11,7 +11,6 @@ import { WorkerTaskDonut } from "@/components/worker/overview/worker-task-donut"
 import { WorkerActiveProjects } from "@/components/worker/overview/worker-active-projects";
 import { WorkerNewRequests } from "@/components/worker/overview/worker-new-requests";
 import { WorkerIncomeCard } from "@/components/worker/overview/worker-income-card";
-import { DollarSign } from "lucide-react";
 
 export default async function WorkerDashboardPage(props: {
   params: Promise<{ locale: string }>;
@@ -135,7 +134,7 @@ export default async function WorkerDashboardPage(props: {
     project: { title: p.title }
   }));
 
-  // 4. Stats card config
+  // 4. Stats card config — 4 cards matching Admin Dashboard layout
   const statsCards = [
     {
       title: t("activeTasks"),
@@ -162,13 +161,6 @@ export default async function WorkerDashboardPage(props: {
       badgeIcon: FolderKanban,
       badgeText: t("assigned"),
     },
-    {
-      title: "Total Pemasukan",
-      value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalIncome),
-      badgeIcon: DollarSign,
-      badgeText: "Net Income",
-      action: { href: `/${locale}/worker/finance`, label: "Detail" },
-    },
   ];
 
   return (
@@ -191,17 +183,54 @@ export default async function WorkerDashboardPage(props: {
         </Link>
       </div>
 
-      {/* Stats Cards */}
+      {/* 4 Stats Cards — 4-column grid matching Admin Dashboard */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {statsCards.map((card, i) => (
           <StatCard key={i} {...card} />
         ))}
       </div>
 
-      {/* Main Dashboard Grid */}
+      {/* Horizontal Total Income Card Banner */}
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        {/* Left: Icon + Text + Badge */}
+        <div className="flex items-center gap-4 min-w-0">
+          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 shadow-xs">
+            <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+          </div>
+          <div className="flex flex-col gap-1 min-w-0">
+            <span className="font-bold text-xs sm:text-sm text-slate-700 dark:text-slate-300 tracking-tight truncate">
+              {t("totalIncome")}
+            </span>
+            <div>
+              <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20 inline-block">
+                {t("netIncome")}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right: Income Amount + Action Button */}
+        <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800/80">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
+            {new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
+              style: "currency",
+              currency: "IDR",
+              minimumFractionDigits: 0,
+            }).format(totalIncome)}
+          </h3>
+          <Link
+            href={`/${locale}/worker/finance`}
+            className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
+          >
+            {t("detail")} <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+      </div>
+
+      {/* Main Dashboard Grid — balanced 12-column rows */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-        {/* Task Donut */}
-        <div className="lg:col-span-5">
+        {/* Task Donut (6 cols) */}
+        <div className="lg:col-span-6">
           <WorkerTaskDonut
             locale={locale}
             totalTasks={allTasks.length}
@@ -212,25 +241,25 @@ export default async function WorkerDashboardPage(props: {
           />
         </div>
 
-        {/* Worker Income Card */}
+        {/* Worker Income Card (3 cols) */}
         <div className="lg:col-span-3">
           <WorkerIncomeCard incomes={recentIncomes} locale={locale} />
         </div>
 
-        {/* Active Projects */}
-        <div className="lg:col-span-4">
+        {/* Realtime Clock (3 cols) */}
+        <div className="lg:col-span-3">
+          <RealtimeClock />
+        </div>
+
+        {/* Active Projects (12 cols) */}
+        <div className="lg:col-span-12">
           <WorkerActiveProjects
             projects={serializedProjects}
             locale={locale}
           />
         </div>
 
-        {/* Realtime Clock */}
-        <div className="lg:col-span-3">
-          <RealtimeClock />
-        </div>
-
-        {/* New Job Requests — full width */}
+        {/* New Job Requests (12 cols) */}
         <div className="lg:col-span-12">
           <WorkerNewRequests requests={serializedRequests} />
         </div>

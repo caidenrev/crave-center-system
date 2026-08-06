@@ -26,6 +26,7 @@ export function LanguageSwitcher() {
     setIsOpen(false)
     document.cookie = `NEXT_LOCALE=${locale}; path=/; max-age=31536000; SameSite=Lax`
     router.push(newPathname)
+    router.refresh()
   }
 
   return (

@@ -40,9 +40,9 @@ export function WorkerActiveProjects({
       case "IN_PROGRESS":
         return t("inProgress");
       case "ON_HOLD":
-        return "On Hold";
+        return t("statusOnHold");
       case "IN_WARRANTY":
-        return "Warranty";
+        return t("statusInWarranty");
       default:
         return status;
     }

@@ -40,12 +40,15 @@ export interface ApplicationItem {
   createdAt: string
 }
 
+import { ConfirmModal } from '@/components/ui/confirm-modal'
+
 export function AdminApplicationsClient({ applications }: { applications: ApplicationItem[] }) {
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string>('ALL')
   const [loadingId, setLoadingId] = useState<string | null>(null)
   const [loadingAction, setLoadingAction] = useState<string | null>(null)
   const [expandedId, setExpandedId] = useState<string | null>(null)
+  const [rejectingApp, setRejectingApp] = useState<ApplicationItem | null>(null)
   const router = useRouter()
   const t = useTranslations('AdminApplications')
 
@@ -73,6 +76,7 @@ export function AdminApplicationsClient({ applications }: { applications: Applic
     }
     setLoadingId(null)
     setLoadingAction(null)
+    setRejectingApp(null)
   }
 
   const handleInterview = (app: ApplicationItem) => {
@@ -249,9 +253,9 @@ export function AdminApplicationsClient({ applications }: { applications: Applic
                         <MessageCircle className="w-3.5 h-3.5" /> {t('interview')}
                       </button>
 
-                      {/* Reject */}
+                      {/* Reject Button opens ConfirmModal */}
                       <button
-                        onClick={() => handleReview(app.id, 'REJECT')}
+                        onClick={() => setRejectingApp(app)}
                         disabled={isLoading}
                         className="px-3 py-2 rounded-xl border-none bg-rose-500 text-white shadow-md text-xs font-bold hover:bg-rose-600 transition-colors cursor-pointer disabled:opacity-50 flex items-center gap-1.5"
                       >
@@ -276,6 +280,19 @@ export function AdminApplicationsClient({ applications }: { applications: Applic
           })}
         </div>
       )}
+
+      {/* Reject Confirmation Modal */}
+      <ConfirmModal
+        open={Boolean(rejectingApp)}
+        onCancel={() => setRejectingApp(null)}
+        onConfirm={() => rejectingApp && handleReview(rejectingApp.id, 'REJECT')}
+        title={t('rejectConfirmTitle')}
+        description={rejectingApp ? t('rejectConfirmDesc', { name: rejectingApp.userName }) : ''}
+        confirmText={t('reject')}
+        cancelText={t('cancel')}
+        variant="destructive"
+        icon={<XCircle className="w-7 h-7 text-red-600 dark:text-red-400" />}
+      />
     </div>
   )
 }

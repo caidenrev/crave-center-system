@@ -1,7 +1,8 @@
 "use client"
 
 import { motion, AnimatePresence } from "framer-motion"
-import { X, Download, ExternalLink } from "lucide-react"
+import { X, Download } from "lucide-react"
+import { useChatTranslations } from "../chat-i18n"
 
 interface ChatImageModalProps {
   imageUrl: string | null
@@ -10,6 +11,7 @@ interface ChatImageModalProps {
 }
 
 export function ChatImageModal({ imageUrl, fileName, onClose }: ChatImageModalProps) {
+  const { t } = useChatTranslations()
   if (!imageUrl) return null
 
   return (
@@ -32,7 +34,7 @@ export function ChatImageModal({ imageUrl, fileName, onClose }: ChatImageModalPr
           {/* Header */}
           <div className="flex items-center justify-between px-4 py-3 bg-slate-900/90 border-b border-slate-800 text-white">
             <span className="text-xs font-medium truncate max-w-xs text-slate-300">
-              {fileName || "Pratinjau Gambar"}
+              {fileName || t.imagePreview}
             </span>
             <div className="flex items-center gap-2">
               <a
@@ -40,14 +42,16 @@ export function ChatImageModal({ imageUrl, fileName, onClose }: ChatImageModalPr
                 target="_blank"
                 rel="noopener noreferrer"
                 download={fileName || "image"}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
-                title="Unduh / Buka Asli"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                title={t.download}
               >
                 <Download className="w-4 h-4" />
               </a>
               <button
+                type="button"
                 onClick={onClose}
-                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors"
+                className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
+                title={t.close}
               >
                 <X className="w-4 h-4" />
               </button>
@@ -58,7 +62,7 @@ export function ChatImageModal({ imageUrl, fileName, onClose }: ChatImageModalPr
           <div className="p-2 overflow-auto flex items-center justify-center bg-slate-950 min-h-[200px]">
             <img
               src={imageUrl}
-              alt={fileName || "Gambar"}
+              alt={fileName || t.image}
               className="max-h-[80vh] w-auto object-contain rounded-lg"
             />
           </div>
