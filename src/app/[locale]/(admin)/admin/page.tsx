@@ -1,7 +1,7 @@
 import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
-import { FolderKanban, Users, ShieldAlert, CheckSquare } from "lucide-react";
+import { FolderKanban, Users, DollarSign, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { AdminActivityChart } from "@/components/admin/overview/activity-chart";
 import { AdminWorkerDonutChart } from "@/components/admin/overview/worker-donut-chart";
@@ -24,13 +24,13 @@ export default async function AdminDashboardPage(props: {
     await Promise.all([
       prisma.user.count().catch(() => 0),
       prisma.project.count().catch(() => 0),
-      prisma.project.aggregate({ _sum: { offeredPrice: true }, where: { status: { not: "CANCELLED" } } }).catch(() => ({ _sum: { offeredPrice: 0 } })),
+      prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "SUCCESS" } }).catch(() => ({ _sum: { amount: 0 } })),
       prisma.workerApplication.count({ where: { status: "PENDING" } }).catch(() => 0),
       prisma.project.count({ where: { status: "REQUESTED" } }).catch(() => 0),
       prisma.project.count({ where: { status: "ON_HOLD" } }).catch(() => 0),
     ]);
     
-  const totalRevenue = Number(totalRevenueAgg._sum.offeredPrice || 0);
+  const totalRevenue = Number(totalRevenueAgg._sum.amount || 0);
 
   // 2. Worker workload stats
   const totalWorkers = await prisma.user
@@ -134,8 +134,8 @@ export default async function AdminDashboardPage(props: {
     {
       title: "Total Pendapatan", // Uang yang dihasilkan
       value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalRevenue),
-      badgeIcon: ShieldAlert, // We will change this to DollarSign or Wallet later if needed, but let's just use what was there or change it
-      badgeText: "Project Value",
+      badgeIcon: DollarSign,
+      badgeText: "Realized Income",
       action: { href: `/${locale}/admin/finance`, label: "Detail" },
     },
   ];

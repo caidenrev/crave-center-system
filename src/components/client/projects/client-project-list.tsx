@@ -7,7 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { toast } from 'sonner'
-import { ProjectChatDrawer } from '@/components/chat/project-chat-drawer'
+import { ProjectChatDrawer } from '@/components/chat/project-chat/project-chat-drawer'
 
 interface ClientProjectListProps {
   projects: any[]

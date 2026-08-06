@@ -70,3 +70,38 @@ export async function processAutoApproveDeliverables() {
 
   return count
 }
+
+/**
+ * Auto-Complete Warranty Projects Check:
+ * Automatically transitions project status from IN_WARRANTY to COMPLETED
+ * after the warranty duration (14 days for IT, 7 days for Non-IT) has elapsed.
+ */
+export async function processAutoCompleteWarrantyProjects() {
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const fourteenDaysAgo = new Date(Date.now() - 14 * 24 * 60 * 60 * 1000)
+
+  const warrantyProjects = await prisma.project.findMany({
+    where: {
+      status: 'IN_WARRANTY',
+    }
+  })
+
+  let count = 0
+  for (const project of warrantyProjects) {
+    const isIT = project.category === 'IT' || project.category?.includes('IT')
+    const thresholdDate = isIT ? fourteenDaysAgo : sevenDaysAgo
+
+    if (project.updatedAt < thresholdDate) {
+      await prisma.project.update({
+        where: { id: project.id },
+        data: {
+          status: 'COMPLETED'
+        }
+      })
+      count++
+    }
+  }
+
+  return count
+}
+

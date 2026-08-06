@@ -83,3 +83,130 @@ export async function updateClientSettings(formData: FormData) {
     return { success: false, error: err.message }
   }
 }
+
+export async function updateUserAvatar(avatarUrl: string | null) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    await prisma.user.update({
+      where: { email: user.email },
+      data: {
+        image: avatarUrl
+      }
+    })
+
+    revalidatePath("/(admin)", "layout")
+    revalidatePath("/(worker)", "layout")
+    revalidatePath("/(client)", "layout")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function approveClientDeliverable(deliverableId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const deliverable = await prisma.deliverable.findUnique({
+      where: { id: deliverableId },
+      include: { project: { include: { client: true, payments: true } } }
+    })
+
+    if (!deliverable) throw new Error("Deliverable not found")
+    if (deliverable.project.client.email !== user.email) {
+      throw new Error("Not authorized to approve this deliverable")
+    }
+
+    // Update deliverable status to APPROVED
+    await prisma.deliverable.update({
+      where: { id: deliverableId },
+      data: { status: "APPROVED" }
+    })
+
+    // Check project payment status
+    const totalPayments = deliverable.project.payments.filter(p => p.status === "SUCCESS")
+    const isFullPaymentPaid = totalPayments.some(p => p.type === "FULL_PAYMENT" || p.type === "PELUNASAN")
+
+    if (isFullPaymentPaid) {
+      // If 100% paid, transition to IN_WARRANTY
+      await prisma.project.update({
+        where: { id: deliverable.projectId },
+        data: { status: "IN_WARRANTY" }
+      })
+    }
+
+    // Notify Worker
+    if (deliverable.project.workerId) {
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: deliverable.project.workerId,
+        title: "Deliverable Disetujui!",
+        message: `Klien telah menyetujui deliverable proyek: ${deliverable.project.title}.`,
+        type: "SUCCESS",
+        link: "/id/worker/deliverables"
+      })
+    }
+
+    revalidatePath("/(client)")
+    revalidatePath("/(worker)")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function requestClientDeliverableRevision(deliverableId: string, feedback?: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const deliverable = await prisma.deliverable.findUnique({
+      where: { id: deliverableId },
+      include: { project: { include: { client: true } } }
+    })
+
+    if (!deliverable) throw new Error("Deliverable not found")
+    if (deliverable.project.client.email !== user.email) {
+      throw new Error("Not authorized to request revision")
+    }
+
+    await prisma.deliverable.update({
+      where: { id: deliverableId },
+      data: { status: "REVISED" }
+    })
+
+    if (deliverable.project.workerId) {
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: deliverable.project.workerId,
+        title: "Revisi Deliverable Diminta",
+        message: `Klien meminta revisi deliverable proyek: ${deliverable.project.title}.${feedback ? ` Catatan: ${feedback}` : ''}`,
+        type: "WARNING",
+        link: "/id/worker/deliverables"
+      })
+    }
+
+    revalidatePath("/(client)")
+    revalidatePath("/(worker)")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+

@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { MessageSquare, X, Lock, Globe, Loader2, Trash2 } from "lucide-react"
-import { getProjectMessages, sendProjectMessage, deleteProjectMessage } from "@/app/actions/chat"
+import { getProjectMessages, sendProjectMessage, deleteProjectMessage, editChatMessage } from "@/app/actions/chat"
 import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
 import { MessageVisibility } from "@/generated/prisma"
@@ -11,6 +11,7 @@ import { ConfirmModal } from "@/components/ui/confirm-modal"
 import { ChatMessageItem, ChatMessage } from "./chat-message-item"
 import { ChatInputBar } from "./chat-input-bar"
 import { ChatImageModal } from "./chat-image-modal"
+import { useChatTranslations } from "../chat-i18n"
 
 interface ProjectChatDrawerProps {
   isOpen: boolean
@@ -33,6 +34,8 @@ export function ProjectChatDrawer({
   userRole,
   isCancelled = false,
 }: ProjectChatDrawerProps) {
+  const { t } = useChatTranslations()
+
   const getDefaultTab = (): ChatTab => {
     if (userRole === "CLIENT") return "CLIENT_ADMIN"
     if (userRole === "TEAM_MEMBER") return "CLIENT_WORKER"
@@ -130,12 +133,30 @@ export function ProjectChatDrawer({
         setMessages((prev) => [...prev, res.message as ChatMessage])
         setTimeout(scrollToBottom, 100)
       } else {
-        toast.error(res.error || "Gagal mengirim pesan")
+        toast.error(res.error || t.sendError)
       }
     } catch {
-      toast.error("Error jaringan")
+      toast.error(t.networkError)
     } finally {
       setIsSending(false)
+    }
+  }
+
+  const handleEditMessage = async (messageId: string, newContent: string) => {
+    try {
+      const res = await editChatMessage(messageId, newContent)
+      if (res.success) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === messageId ? { ...m, content: newContent, isEdited: true } : m
+          )
+        )
+        toast.success(t.editSuccess)
+      } else {
+        toast.error(res.error || t.editError)
+      }
+    } catch {
+      toast.error(t.editError)
     }
   }
 
@@ -151,7 +172,7 @@ export function ProjectChatDrawer({
               ? {
                   ...m,
                   isDeleted: true,
-                  content: "Pesan ini telah dihapus",
+                  content: t.messageDeleted,
                   fileUrl: null,
                   fileName: null,
                   fileType: null,
@@ -159,12 +180,12 @@ export function ProjectChatDrawer({
               : m
           )
         )
-        toast.success("Pesan berhasil dihapus")
+        toast.success(t.deleteSuccess)
       } else {
-        toast.error(res.error || "Gagal menghapus pesan")
+        toast.error(res.error || t.deleteError)
       }
     } catch {
-      toast.error("Gagal menghapus pesan")
+      toast.error(t.deleteError)
     } finally {
       setIsDeletingMessage(false)
       setDeleteTargetId(null)
@@ -212,7 +233,7 @@ export function ProjectChatDrawer({
                       {projectTitle}
                     </h3>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400">
-                      Channel Diskusi Real-time
+                      {t.channelDiscussion}
                     </p>
                   </div>
                 </div>
@@ -237,7 +258,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Globe className="w-3.5 h-3.5" /> Chat Admin
+                      <Globe className="w-3.5 h-3.5" /> {t.adminClient}
                     </button>
                     <button
                       onClick={() => setActiveTab("CLIENT_WORKER")}
@@ -247,7 +268,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Globe className="w-3.5 h-3.5" /> Chat Worker
+                      <Globe className="w-3.5 h-3.5" /> {t.workerClient}
                     </button>
                   </>
                 )}
@@ -262,7 +283,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Globe className="w-3.5 h-3.5" /> Diskusi Client
+                      <Globe className="w-3.5 h-3.5" /> {t.adminClient}
                     </button>
                     <button
                       onClick={() => setActiveTab("INTERNAL")}
@@ -272,7 +293,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Lock className="w-3.5 h-3.5" /> Chat Internal Tim
+                      <Lock className="w-3.5 h-3.5" /> {t.internalTeam}
                     </button>
                   </>
                 )}
@@ -287,7 +308,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Globe className="w-3.5 h-3.5" /> Diskusi Client
+                      <Globe className="w-3.5 h-3.5" /> {t.workerClient}
                     </button>
                     <button
                       onClick={() => setActiveTab("INTERNAL")}
@@ -297,7 +318,7 @@ export function ProjectChatDrawer({
                           : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                       }`}
                     >
-                      <Lock className="w-3.5 h-3.5" /> Chat Internal Tim
+                      <Lock className="w-3.5 h-3.5" /> {t.internalTeam}
                     </button>
                   </>
                 )}
@@ -312,9 +333,9 @@ export function ProjectChatDrawer({
                 ) : filteredMessages.length === 0 ? (
                   <div className="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400">
                     <MessageSquare className="w-10 h-10 stroke-1 mb-2 opacity-50" />
-                    <p className="text-xs font-medium">Belum ada pesan di channel ini.</p>
+                    <p className="text-xs font-medium">{t.noProjectHistory}</p>
                     <p className="text-[11px] opacity-75 mt-0.5">
-                      Mulaikan diskusi terkait proyek ini di bawah.
+                      {t.startProjectPrompt}
                     </p>
                   </div>
                 ) : (
@@ -325,6 +346,7 @@ export function ProjectChatDrawer({
                       currentUserId={currentUserId}
                       userRole={userRole}
                       onDeleteMessage={(id) => setDeleteTargetId(id)}
+                      onEditMessage={handleEditMessage}
                       onPreviewImage={(url, name) => setPreviewImageUrl({ url, name })}
                     />
                   ))
@@ -359,10 +381,10 @@ export function ProjectChatDrawer({
         open={Boolean(deleteTargetId)}
         onCancel={() => setDeleteTargetId(null)}
         onConfirm={handleConfirmDelete}
-        title="Hapus Pesan"
-        description="Apakah Anda yakin ingin menghapus pesan ini? Pesan yang telah dihapus tidak dapat dikembalikan."
-        confirmText="Hapus"
-        cancelText="Batal"
+        title={t.deleteMessageTitle}
+        description={t.deleteMessageConfirm}
+        confirmText={t.deleteButton}
+        cancelText={t.cancel}
         variant="destructive"
         icon={<Trash2 className="w-7 h-7 text-red-600 dark:text-red-400" />}
       />

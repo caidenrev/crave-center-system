@@ -3,7 +3,7 @@
 import { useState } from "react";
 import {Search, X, ChevronRight, Calendar, MessageSquare,LayoutGrid, List, CircleDashed, PlayCircle,CheckCircle, Clock, AlertCircle, ShieldCheck,} from "lucide-react";
 import { useTranslations } from "next-intl";
-import { ProjectChatDrawer } from "@/components/chat/project-chat-drawer";
+import { ProjectChatDrawer } from "@/components/chat/project-chat/project-chat-drawer";
 
 interface ProjectItem {
   id: string;
@@ -430,4 +430,3 @@ export function WorkerProjectsClient({
     </>
   );
 }
-

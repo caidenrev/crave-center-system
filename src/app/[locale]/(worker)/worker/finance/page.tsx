@@ -1,6 +1,7 @@
 import { requireRole } from "@/lib/auth"
 import { prisma } from "@/lib/db"
 import { createClient } from "@/utils/supabase/server"
+import { getTranslations } from "next-intl/server"
 import { FinanceView, IncomeItem } from "@/components/finance/finance-view"
 import { Info, DollarSign, CheckCircle2, Clock, Wallet } from "lucide-react"
 import { StatCard } from "@/components/admin/overview/stat-card"
@@ -10,6 +11,7 @@ export default async function WorkerFinancePage(props: {
 }) {
   const { locale } = await props.params
   await requireRole(["TEAM_MEMBER"])
+  const t = await getTranslations("Finance")
   
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -49,42 +51,46 @@ export default async function WorkerFinancePage(props: {
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 pb-16">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">
-          Detail Pemasukan (Worker)
+          {t("workerTitle")}
         </h1>
         <p className="text-slate-500 dark:text-slate-400 mt-1">
-          Metrik real-time, riwayat pendapatan dari proyek yang telah Anda selesaikan.
+          {t("workerSubtitle")}
         </p>
       </div>
 
       <div className="mb-4 md:mb-6">
         <StatCard
-          title="Pendapatan Bersih"
-          value={`Rp ${totalIncome.toLocaleString("id-ID")}`}
+          title={t("netIncome")}
+          value={new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
+            style: "currency",
+            currency: "IDR",
+            minimumFractionDigits: 0,
+          }).format(totalIncome)}
           badgeIcon={DollarSign}
-          badgeText="Net Income"
+          badgeText={t("netIncome")}
           variant="primary"
         />
       </div>
 
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8">
         <StatCard
-          title="Total Proyek Selesai"
+          title={t("totalCompletedProjects")}
           value={incomes.length}
           badgeIcon={Wallet}
-          badgeText="Semua Riwayat"
+          badgeText={t("allHistory")}
         />
         <StatCard
-          title="Pencairan Sukses"
+          title={t("payoutSuccess")}
           value={successCount}
           badgeIcon={CheckCircle2}
-          badgeText="Completed"
+          badgeText={t("completed")}
         />
         <div className="col-span-2 lg:col-span-1">
           <StatCard
-            title="Pencairan Tertunda"
+            title={t("payoutPending")}
             value={pendingCount}
             badgeIcon={Clock}
-            badgeText="Outstanding"
+            badgeText={t("outstanding")}
           />
         </div>
       </div>
@@ -92,11 +98,11 @@ export default async function WorkerFinancePage(props: {
       <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-2xl p-4 flex gap-3 text-blue-700 dark:text-blue-300">
         <Info className="w-5 h-5 shrink-0 mt-0.5" />
         <div className="text-sm">
-          <strong>Skema Bagi Hasil:</strong> Anda menerima <strong>70%</strong> dari total nilai kontrak proyek sebagai pendapatan bersih Anda. Sisa 30% dialokasikan untuk operasional platform Crave. Pendapatan akan masuk setelah proyek berstatus selesai.
+          <strong>{t("revenueShareInfoTitle")}</strong> {t("revenueShareInfoText")}
         </div>
       </div>
 
-      <FinanceView incomes={incomes} title="Riwayat Pemasukan" />
+      <FinanceView incomes={incomes} title={t("incomeHistoryTitle")} />
     </div>
   )
 }

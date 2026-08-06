@@ -3,12 +3,23 @@ import { prisma } from '@/lib/db'
 import { createClient } from '@/utils/supabase/server'
 import { AdminProjectsClient, ProjectCardItem } from '@/components/admin/projects/admin-projects-client'
 import { getTranslations } from 'next-intl/server'
+import { autoDeleteCancelledProjects } from '@/app/actions/project'
 
 export const dynamic = 'force-dynamic'
+
+function calculateDaysRemaining(updatedAt: Date | string | null | undefined): number | undefined {
+  if (!updatedAt) return undefined
+  const now = Date.now()
+  const daysElapsed = Math.floor((now - new Date(updatedAt).getTime()) / (1000 * 60 * 60 * 24))
+  return Math.max(0, 28 - daysElapsed)
+}
 
 export default async function AdminProjectsPage() {
   await requireRole(["ADMIN"])
   const t = await getTranslations('AdminProjects')
+
+  // Automatically prune cancelled projects older than 28 days
+  await autoDeleteCancelledProjects().catch((err) => console.error("Auto-delete background run error:", err))
 
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -41,6 +52,12 @@ export default async function AdminProjectsPage() {
       }
     }
 
+    // Calculate remaining days for 28-day auto deletion if CANCELLED
+    let daysRemaining: number | undefined = undefined
+    if (p.status === 'CANCELLED' && p.updatedAt) {
+      daysRemaining = calculateDaysRemaining(p.updatedAt)
+    }
+
     return {
       id: p.id ? (p.id.includes('-') ? p.id.split('-')[0].toUpperCase() : p.id.substring(0, 8).toUpperCase()) : 'PROJ',
       fullProjectId: p.id,
@@ -51,7 +68,9 @@ export default async function AdminProjectsPage() {
       progress: calculatedProgress,
       dueDate: p.targetDeliveryDate ? new Date(p.targetDeliveryDate).toLocaleDateString() : 'TBD',
       description: p.description,
-      budget: p.budgetRange || undefined
+      budget: p.budgetRange || undefined,
+      updatedAt: p.updatedAt ? p.updatedAt.toISOString() : undefined,
+      daysRemaining,
     }
   })
 
@@ -66,3 +85,4 @@ export default async function AdminProjectsPage() {
     </div>
   )
 }
+

@@ -21,6 +21,23 @@ import {
 import { cn, getDefaultAvatar } from "@/lib/utils";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 
+function TopBrandHeader({ locale }: { locale: string }) {
+  return (
+    <div className="h-16 flex items-center justify-between px-4 mt-2">
+      <Link href={`/${locale}/worker`} className="flex items-center gap-3 w-full p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+          <img src="/light-mode-logo.png" alt="Crave" className="h-5 w-auto brightness-0 invert" />
+        </div>
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight">Crave ITSM</span>
+          <span className="text-xs text-slate-500 font-medium">Worker Workspace</span>
+        </div>
+        <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </Link>
+    </div>
+  );
+}
+
 export function WorkerSidebar({
   locale,
   user,
@@ -45,7 +62,7 @@ export function WorkerSidebar({
         { name: t("dashboard"), href: `/${locale}/worker`, icon: LayoutDashboard },
         { name: t("tasks"), href: `/${locale}/worker/tasks`, icon: CheckSquare },
         { name: t("myProjects"), href: `/${locale}/worker/projects`, icon: FolderKanban },
-        { name: "Keuangan", href: `/${locale}/worker/finance`, icon: Wallet },
+        { name: t("finance"), href: `/${locale}/worker/finance`, icon: Wallet },
         { name: t("deliverables"), href: `/${locale}/worker/deliverables`, icon: Package },
       ],
     },
@@ -61,21 +78,6 @@ export function WorkerSidebar({
     onMobileClose?.();
     router.push(`/${locale}/auth/logout`);
   };
-
-  const TopBrandHeader = () => (
-    <div className="h-16 flex items-center justify-between px-4 mt-2">
-      <Link href={`/${locale}/worker`} className="flex items-center gap-3 w-full p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-          <img src="/light-mode-logo.png" alt="Crave" className="h-5 w-auto brightness-0 invert" />
-        </div>
-        <div className="flex flex-col flex-1 min-w-0">
-          <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight">Crave ITSM</span>
-          <span className="text-xs text-slate-500 font-medium">Worker Workspace</span>
-        </div>
-        <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </Link>
-    </div>
-  );
 
   const renderNavContent = () => (
     <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-6">
@@ -210,7 +212,7 @@ export function WorkerSidebar({
     <>
       {/* Desktop Sidebar */}
       <aside className="w-64 bg-white dark:bg-[#0B0F19] border-r border-slate-200 dark:border-slate-800 shrink-0 hidden md:flex flex-col z-20">
-        <TopBrandHeader />
+        <TopBrandHeader locale={locale} />
         {renderNavContent()}
       </aside>
 
@@ -232,7 +234,7 @@ export function WorkerSidebar({
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
               className="relative flex flex-col w-72 max-w-[80vw] bg-white dark:bg-[#0B0F19] shadow-2xl h-full border-r border-slate-200 dark:border-slate-800 z-10"
             >
-              <TopBrandHeader />
+              <TopBrandHeader locale={locale} />
               <button
                 onClick={onMobileClose}
                 className="absolute right-4 top-5 p-1.5 rounded-xl text-slate-400 hover:text-slate-600 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800 z-50 bg-white dark:bg-slate-900 shadow-sm border border-slate-200 dark:border-slate-700"

@@ -57,21 +57,39 @@ export async function POST(request: Request) {
 
     // If payment is SUCCESS, we can trigger additional business logic here
     // For example, update Project status from PENDING_DP to IN_PROGRESS
-    if (internalStatus === 'SUCCESS' && updatedPayment.type === 'DP') {
-      const project = await prisma.project.update({
-        where: { id: updatedPayment.projectId },
-        data: { status: 'IN_PROGRESS' }
-      });
-
-      if (project.workerId) {
-        const { createNotification } = await import("@/app/actions/notification");
-        await createNotification({
-          userId: project.workerId,
-          title: "DP Received & Project Started!",
-          message: `Client has paid DP for "${project.title}". You can start working now.`,
-          type: "SUCCESS",
-          link: "/id/worker/projects"
+    if (internalStatus === 'SUCCESS') {
+      if (updatedPayment.type === 'DP') {
+        const project = await prisma.project.update({
+          where: { id: updatedPayment.projectId },
+          data: { status: 'IN_PROGRESS' }
         });
+
+        if (project.workerId) {
+          const { createNotification } = await import("@/app/actions/notification");
+          await createNotification({
+            userId: project.workerId,
+            title: "DP Received & Project Started!",
+            message: `Client has paid DP for "${project.title}". You can start working now.`,
+            type: "SUCCESS",
+            link: "/id/worker/projects"
+          });
+        }
+      } else if (updatedPayment.type === 'PELUNASAN' || updatedPayment.type === 'FULL_PAYMENT') {
+        const project = await prisma.project.update({
+          where: { id: updatedPayment.projectId },
+          data: { status: 'IN_WARRANTY' }
+        });
+
+        if (project.workerId) {
+          const { createNotification } = await import("@/app/actions/notification");
+          await createNotification({
+            userId: project.workerId,
+            title: "Pelunasan Diterima & Fase Garansi Dimulai!",
+            message: `Klien telah melunasi pembayaran proyek "${project.title}". Proyek memasuki fase garansi.`,
+            type: "SUCCESS",
+            link: "/id/worker/projects"
+          });
+        }
       }
     }
 

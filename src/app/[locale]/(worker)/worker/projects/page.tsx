@@ -2,7 +2,7 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { createClient } from "@/utils/supabase/server";
 import { getTranslations } from "next-intl/server";
-import { WorkerProjectsClient } from "@/components/worker/worker-projects-client";
+import { WorkerProjectsClient } from "@/components/worker/projects/worker-projects-client";
 
 export default async function WorkerProjectsPage(props: {
   params: Promise<{ locale: string }>;

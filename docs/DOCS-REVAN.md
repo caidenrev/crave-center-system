@@ -36,6 +36,38 @@ Kunci API Resend telah sukses diintegrasikan ke sistem utama Crave (`src/app/act
 > **Catatan Mode Produksi (Resend):**
 > Pastikan klien dan pekerja *testing* Anda menggunakan alamat *email* asli milik Anda selama Anda masih memakai batas gratisan Resend tanpa verifikasi nama *domain*. 
 
+## 4. Floating Chat System & Modular Direct/Project Chat 💬
+- **Floating Chat Bubble Widget:** Ikon chat melayang di pojok kanan bawah yang konsisten di semua ruang kerja (Admin, Client, Worker).
+- **Project Chat & Direct Chat:** Obrolan langsung antar pengguna dan per-proyek dengan dukungan i18n (`chat-i18n.ts`).
+- **Kunci Otomatis Chat Proyek Batal:** Kolom input chat terkunci otomatis (*disabled*) apabila proyek dibatalkan (`CANCELLED`).
+
 ---
 
-_Semua fitur di atas telah di-commit ke Git dan di-push ke branch Main di GitHub, sehingga versi terbarunya (termasuk webhook Midtrans) sekarang sudah berjalan penuh secara live di Vercel._
+## 5. Proteksi Hasil Karya (Deliverables & Watermark) 🛡️
+- **Otomatisasi Watermark (`watermark-utils.ts`):** File gambar yang diunggah Worker secara otomatis diberi tanda air (*watermark*) semi-transparan sebelum disetujui/dilunasi Klien.
+- **Client & Worker Deliverables Module:** Halaman pratinjau hasil karya Klien, modal pengajuan revisi (*Revision Modal*), dan modal unggah untuk Worker.
+
+---
+
+## 6. Generator PDF Terms & Conditions 📄
+- **Endpoint PDF (`/api/pdf/terms/[projectId]`):** Render dokumen Syarat & Ketentuan Layanan berbasis proyek secara dinamis.
+- **Admin Terms Modal (`AdminCreateTermsModal`):** Penyesuaian klausul proyek langsung dari dasbor Admin.
+
+---
+
+## 7. Cron Job Cleanup Proyek Batal 🧹
+- **Endpoint Cron (`/api/cron/cleanup-cancelled-projects`):** Otomatisasi arsip/pembersihan berkas dan data dari proyek yang telah dibatalkan.
+
+---
+
+## 8. Restrukturisasi & Polish UI/UX 🎨
+- Folder komponen Worker kini lebih rapi & terstruktur (`projects/`, `tasks/`, `deliverables/`, `settings/`).
+- Penanganan kasus batas (*edge cases*) di `src/lib/edge-cases.ts`.
+- Penyempurnaan kunci kamus lokal `messages/id.json` dan `messages/en.json`.
+
+---
+
+> 📖 **Dokumentasi Lengkap & Panduan Testing:**  
+> Untuk rincian teknis, daftar tugas pending, dan langkah pengujian (*step-by-step testing guide*), silakan buka file:  
+> [DOKUMENTASI-UPDATE-TODAY.md](file:///d:/crave-center-system/docs/DOKUMENTASI-UPDATE-TODAY.md)
+

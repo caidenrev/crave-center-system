@@ -19,11 +19,16 @@ import {
   LayoutGrid,
   List,
   FileText,
+  Trash2,
+  Timer,
 } from 'lucide-react'
 
+import { toast } from 'sonner'
 import { useTranslations } from 'next-intl'
-import { ProjectChatDrawer } from '@/components/chat/project-chat-drawer'
+import { ProjectChatDrawer } from '@/components/chat/project-chat/project-chat-drawer'
 import { AdminCreateTermsModal } from './admin-create-terms-modal'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
+import { deleteProjectPermanently } from '@/app/actions/project'
 
 export interface ProjectCardItem {
   id: string
@@ -36,6 +41,8 @@ export interface ProjectCardItem {
   dueDate: string
   description?: string
   budget?: string
+  updatedAt?: string
+  daysRemaining?: number
 }
 
 interface AdminProjectsClientProps {
@@ -68,7 +75,34 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
   const [selectedProject, setSelectedProject] = useState<ProjectCardItem | null>(null)
   const [chatProject, setChatProject] = useState<ProjectCardItem | null>(null)
   const [termsModalProject, setTermsModalProject] = useState<ProjectCardItem | null>(null)
+  
+  // State for permanent delete modal
+  const [projectToDelete, setProjectToDelete] = useState<ProjectCardItem | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+
   const t = useTranslations('AdminProjects')
+
+  const handleConfirmDelete = async () => {
+    if (!projectToDelete) return
+    setIsDeleting(true)
+    try {
+      const res = await deleteProjectPermanently(projectToDelete.fullProjectId || projectToDelete.id)
+      if (res.success) {
+        toast.success(t('deleteSuccess') || `Proyek "${projectToDelete.name}" berhasil dihapus secara permanen.`)
+        if (selectedProject?.id === projectToDelete.id) {
+          setSelectedProject(null)
+        }
+        setProjectToDelete(null)
+        router.refresh()
+      } else {
+        toast.error(res.error || t('deleteError') || 'Gagal menghapus proyek.')
+      }
+    } catch (err: any) {
+      toast.error(err.message || 'Gagal menghapus proyek.')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
 
   const filteredProjects = projects.filter(p => {
     const matchesSearch = 
@@ -258,7 +292,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                   {getStatusBadge(proj.status)}
                 </div>
 
-                <div className="space-y-1 mb-5">
+                <div className="space-y-1 mb-3">
                   <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug cursor-pointer" onClick={() => setSelectedProject(proj)}>
                     {proj.name}
                   </h3>
@@ -266,6 +300,14 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                     {t('clientLabel')}: <strong className="text-slate-700 dark:text-slate-300 font-semibold">{proj.client}</strong>
                   </p>
                 </div>
+
+                {/* Auto-delete countdown notice for CANCELLED projects */}
+                {proj.status === 'CANCELLED' && typeof proj.daysRemaining === 'number' && (
+                  <div className="mb-4 flex items-center gap-1.5 text-[11px] font-semibold text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 px-2.5 py-1 rounded-xl w-fit">
+                    <Timer className="w-3.5 h-3.5 shrink-0 animate-pulse text-red-500" />
+                    <span>{t('autoDeleteNotice', { days: proj.daysRemaining }) || `Hapus otomatis dlm ${proj.daysRemaining} hari`}</span>
+                  </div>
+                )}
 
                 <div className="space-y-4 pt-4 border-t-2 border-slate-200 dark:border-slate-700">
                   <div className="flex justify-between items-center text-xs">
@@ -312,48 +354,60 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                 </div>
               </div>
 
-              {/* Elegant Action Panel */}
+              {/* Action Panel */}
               <div className="pt-4 mt-4 space-y-2">
-                <button
-                  suppressHydrationWarning
-                  disabled={proj.status === 'CANCELLED'}
-                  onClick={() => proj.status !== 'CANCELLED' && setTermsModalProject(proj)}
-                  className={`w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
-                    proj.status === 'CANCELLED'
-                      ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                      : 'bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer shadow-md'
-                  }`}
-                  title={proj.status === 'CANCELLED' ? "Ketentuan & Kontrak nonaktif untuk proyek yang dibatalkan" : "Ketentuan & Kontrak"}
-                >
-                  <FileText className="w-3.5 h-3.5 shrink-0" />
-                  <span>{t('btnTerms') || 'Ketentuan & Kontrak'}</span>
-                </button>
+                {proj.status === 'CANCELLED' ? (
+                  <div className="space-y-2">
+                    <button
+                      suppressHydrationWarning
+                      onClick={() => setProjectToDelete(proj)}
+                      className="w-full py-2 px-3 rounded-2xl text-xs font-bold bg-red-600 hover:bg-red-700 text-white transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                      title="Hapus proyek ini secara permanen dari database"
+                    >
+                      <Trash2 className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('btnDeletePermanently') || 'Hapus Permanen'}</span>
+                    </button>
+                    <button
+                      suppressHydrationWarning
+                      onClick={() => setSelectedProject(proj)}
+                      className="w-full py-2 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+                    >
+                      <span>{t('btnDetail') || t('view') || 'Detail'}</span>
+                      <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+                    </button>
+                  </div>
+                ) : (
+                  <>
+                    <button
+                      suppressHydrationWarning
+                      onClick={() => setTermsModalProject(proj)}
+                      className="w-full py-2 px-3 rounded-2xl text-xs font-bold bg-emerald-500 hover:bg-emerald-600 text-white cursor-pointer shadow-md transition-all flex items-center justify-center gap-2"
+                    >
+                      <FileText className="w-3.5 h-3.5 shrink-0" />
+                      <span>{t('btnTerms') || 'Ketentuan & Kontrak'}</span>
+                    </button>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    suppressHydrationWarning
-                    disabled={proj.status === 'CANCELLED'}
-                    onClick={() => proj.status !== 'CANCELLED' && setChatProject(proj)}
-                    className={`w-full py-2 px-3 rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
-                      proj.status === 'CANCELLED'
-                        ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                        : 'bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-md'
-                    }`}
-                    title={proj.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
-                  >
-                    <MessageSquare className="w-3.5 h-3.5 shrink-0" />
-                    <span>{t('btnChat') || 'Pesan'}</span>
-                  </button>
+                    <div className="grid grid-cols-2 gap-2">
+                      <button
+                        suppressHydrationWarning
+                        onClick={() => setChatProject(proj)}
+                        className="w-full py-2 px-3 rounded-2xl text-xs font-bold bg-blue-600 hover:bg-blue-700 text-white cursor-pointer shadow-md transition-all flex items-center justify-center gap-1.5"
+                      >
+                        <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                        <span>{t('btnChat') || 'Pesan'}</span>
+                      </button>
 
-                  <button
-                    suppressHydrationWarning
-                    onClick={() => setSelectedProject(proj)}
-                    className="w-full py-2 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
-                  >
-                    <span>{t('btnDetail') || t('view') || 'Detail'}</span>
-                    <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-                  </button>
-                </div>
+                      <button
+                        suppressHydrationWarning
+                        onClick={() => setSelectedProject(proj)}
+                        className="w-full py-2 px-3 rounded-2xl bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/80 text-xs font-bold transition-all flex items-center justify-center gap-1 cursor-pointer shadow-2xs"
+                      >
+                        <span>{t('btnDetail') || t('view') || 'Detail'}</span>
+                        <ChevronRight className="w-3.5 h-3.5 shrink-0" />
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           ))}
@@ -380,39 +434,50 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                     className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors"
                   >
                     <td className="px-6 py-4 font-mono font-bold text-xs text-slate-900 dark:text-slate-200">{p.id}</td>
-                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">{p.name}</td>
+                    <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">
+                      <div>
+                        {p.name}
+                        {p.status === 'CANCELLED' && typeof p.daysRemaining === 'number' && (
+                          <div className="mt-1 flex items-center gap-1 text-[11px] font-semibold text-red-500 dark:text-red-400">
+                            <Timer className="w-3 h-3 animate-pulse" />
+                            <span>{t('autoDeleteNotice', { days: p.daysRemaining }) || `Hapus otomatis dlm ${p.daysRemaining} hari`}</span>
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="px-6 py-4">{p.client}</td>
                     <td className="px-6 py-4 font-semibold">{p.manager}</td>
                     <td className="px-6 py-4">{getStatusBadge(p.status)}</td>
                     <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">{p.progress}%</td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <button
-                          disabled={p.status === 'CANCELLED'}
-                          onClick={() => p.status !== 'CANCELLED' && setTermsModalProject(p)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 ${
-                            p.status === 'CANCELLED'
-                              ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                              : 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-100 cursor-pointer'
-                          }`}
-                          title={p.status === 'CANCELLED' ? "Ketentuan & Kontrak nonaktif untuk proyek yang dibatalkan" : undefined}
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>{t('btnTerms') || 'Ketentuan & Kontrak'}</span>
-                        </button>
-                        <button
-                          disabled={p.status === 'CANCELLED'}
-                          onClick={() => p.status !== 'CANCELLED' && setChatProject(p)}
-                          className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1 ${
-                            p.status === 'CANCELLED'
-                              ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                              : 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 cursor-pointer'
-                          }`}
-                          title={p.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
-                        >
-                          <MessageSquare className="w-3.5 h-3.5" />
-                          <span>{t('btnChat') || 'Pesan'}</span>
-                        </button>
+                        {p.status === 'CANCELLED' ? (
+                          <button
+                            onClick={() => setProjectToDelete(p)}
+                            className="px-3 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-900/50 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            title="Hapus proyek secara permanen"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                            <span>{t('btnDelete') || 'Hapus'}</span>
+                          </button>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => setTermsModalProject(p)}
+                              className="px-3 py-1.5 rounded-xl bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 hover:bg-purple-100 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <FileText className="w-3.5 h-3.5" />
+                              <span>{t('btnTerms') || 'Ketentuan & Kontrak'}</span>
+                            </button>
+                            <button
+                              onClick={() => setChatProject(p)}
+                              className="px-3 py-1.5 rounded-xl bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 hover:bg-blue-100 text-xs font-bold transition-colors flex items-center gap-1 cursor-pointer"
+                            >
+                              <MessageSquare className="w-3.5 h-3.5" />
+                              <span>{t('btnChat') || 'Pesan'}</span>
+                            </button>
+                          </>
+                        )}
                         <button
                           onClick={() => setSelectedProject(p)}
                           className="px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 transition-colors cursor-pointer"
@@ -449,6 +514,13 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
             </div>
 
             <div className="py-4 space-y-3 text-xs">
+              {selectedProject.status === 'CANCELLED' && typeof selectedProject.daysRemaining === 'number' && (
+                <div className="bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/50 p-3 rounded-2xl flex items-center gap-2 text-red-600 dark:text-red-400 font-semibold">
+                  <Timer className="w-4 h-4 shrink-0 animate-pulse text-red-500" />
+                  <span>Proyek ini dibatalkan dan akan dihapus otomatis dari database dalam {selectedProject.daysRemaining} hari.</span>
+                </div>
+              )}
+
               <div className="bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl space-y-2 border border-slate-100 dark:border-slate-800">
                 <div className="flex justify-between">
                   <span className="text-slate-500">{t('assignedWorker')}:</span>
@@ -474,24 +546,28 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
             </div>
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex justify-between gap-3">
-              <button
-                disabled={selectedProject.status === 'CANCELLED'}
-                onClick={() => {
-                  if (selectedProject.status !== 'CANCELLED') {
+              {selectedProject.status === 'CANCELLED' ? (
+                <button
+                  onClick={() => {
+                    const p = selectedProject
+                    setProjectToDelete(p)
+                  }}
+                  className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-md transition-all"
+                >
+                  <Trash2 className="w-4 h-4" /> {t('btnDeletePermanently') || 'Hapus Permanen'}
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
                     const p = selectedProject
                     setSelectedProject(null)
                     setChatProject(p)
-                  }
-                }}
-                className={`px-4 py-2 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-all ${
-                  selectedProject.status === 'CANCELLED'
-                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                    : 'bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 cursor-pointer'
-                }`}
-                title={selectedProject.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
-              >
-                <MessageSquare className="w-4 h-4" /> {t('btnChat') || 'Pesan'}
-              </button>
+                  }}
+                  className="px-4 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer transition-all"
+                >
+                  <MessageSquare className="w-4 h-4" /> {t('btnChat') || 'Pesan'}
+                </button>
+              )}
               <button
                 onClick={() => setSelectedProject(null)}
                 className="px-4 py-2 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold rounded-xl text-xs cursor-pointer"
@@ -525,6 +601,25 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
           projectTitle={termsModalProject.name}
         />
       )}
+
+      {/* Confirm Permanent Delete Modal */}
+      <ConfirmModal
+        open={!!projectToDelete}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => !isDeleting && setProjectToDelete(null)}
+        title={t('deleteConfirmTitle') || "Hapus Proyek Secara Permanen"}
+        description={
+          projectToDelete
+            ? `Apakah Anda yakin ingin menghapus proyek "${projectToDelete.name}" (${projectToDelete.id}) secara permanen? Semua data terkait (tugas, pesan, pembayaran, kontrak) akan dihapus dari database. Tindakan ini tidak dapat dibatalkan.`
+            : (t('deleteConfirmDesc') || "Apakah Anda yakin ingin menghapus proyek ini secara permanen?")
+        }
+        confirmText={t('btnDeletePermanently') || "Hapus Permanen"}
+        cancelText={t('cancel') || "Batal"}
+        variant="destructive"
+        isLoading={isDeleting}
+        icon={<Trash2 className="w-7 h-7 text-red-600 dark:text-red-400" />}
+      />
     </div>
   )
 }
+

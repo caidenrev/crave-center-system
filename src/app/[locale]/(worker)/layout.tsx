@@ -2,8 +2,9 @@ import { ReactNode } from 'react'
 import { WorkerLayoutShell } from '@/components/layout/worker-layout-shell'
 import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-
 import { createClient } from "@/utils/supabase/server"
+import { NextIntlClientProvider } from 'next-intl'
+import { getMessages, setRequestLocale } from 'next-intl/server'
 
 export default async function WorkerLayout(props: {
   children: ReactNode,
@@ -11,7 +12,10 @@ export default async function WorkerLayout(props: {
 }) {
   const { locale } = await props.params
   const { children } = props
+  setRequestLocale(locale)
   await requireRole(["TEAM_MEMBER"])
+  const messages = await getMessages()
+
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   
@@ -31,13 +35,15 @@ export default async function WorkerLayout(props: {
           "Worker",
         email: user.email || "worker@crave.com",
         image:
-          user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
+          dbUser?.image || user.user_metadata?.avatar_url || user.user_metadata?.picture || null,
       }
     : null;
 
   return (
-    <WorkerLayoutShell locale={locale} topbarUser={topbarUser}>
-      {children}
-    </WorkerLayoutShell>
+    <NextIntlClientProvider locale={locale} messages={messages}>
+      <WorkerLayoutShell locale={locale} topbarUser={topbarUser}>
+        {children}
+      </WorkerLayoutShell>
+    </NextIntlClientProvider>
   )
 }

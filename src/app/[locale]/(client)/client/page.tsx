@@ -31,7 +31,7 @@ export default async function ClientDashboard({ params, searchParams }: { params
   if (dbUser) {
     projects = await prisma.project.findMany({
       where: { clientId: dbUser.id },
-      include: { worker: true },
+      include: { worker: true, tasks: true, deliverables: true, terms: true },
       orderBy: { targetDeliveryDate: 'asc' }
     })
     
@@ -160,12 +160,38 @@ export default async function ClientDashboard({ params, searchParams }: { params
           </div>
           
           <ClientProjectTracker
-            projects={filteredProjects.map(p => ({
-              ...p,
-              targetDeliveryDate: p.targetDeliveryDate.toISOString(),
-              createdAt: p.createdAt.toISOString(),
-              offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
-            }))}
+            projects={filteredProjects.map(p => {
+              const totalTasks = p.tasks?.length || 0;
+              const doneTasks = p.tasks?.filter((t: any) => t.status === "DONE").length || 0;
+              let calculatedProgress = 0;
+              if (totalTasks > 0) {
+                calculatedProgress = Math.round((doneTasks / totalTasks) * 100);
+              } else {
+                switch (p.status) {
+                  case 'REQUESTED': calculatedProgress = 10; break;
+                  case 'WORKER_REVIEW': calculatedProgress = 25; break;
+                  case 'PENDING_DP': calculatedProgress = 40; break;
+                  case 'IN_PROGRESS': calculatedProgress = 65; break;
+                  case 'ON_HOLD': calculatedProgress = 65; break;
+                  case 'COMPLETED': calculatedProgress = 100; break;
+                  case 'CANCELLED': calculatedProgress = 0; break;
+                  case 'IN_WARRANTY': calculatedProgress = 100; break;
+                  default: calculatedProgress = 0; break;
+                }
+              }
+
+              return {
+                id: p.id,
+                title: p.title,
+                status: p.status,
+                progress: calculatedProgress,
+                tasks: p.tasks ? p.tasks.map((t: any) => ({ id: t.id, status: t.status })) : [],
+                targetDeliveryDate: p.targetDeliveryDate ? p.targetDeliveryDate.toISOString() : "",
+                createdAt: p.createdAt ? p.createdAt.toISOString() : "",
+                worker: p.worker ? { name: p.worker.name } : null,
+                offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
+              };
+            })}
             currentUserId={dbUser?.id || ""}
           />
         </div>
@@ -178,16 +204,19 @@ export default async function ClientDashboard({ params, searchParams }: { params
                 id: p.id,
                 title: p.title,
                 status: p.status,
-                createdAt: p.createdAt.toISOString(),
+                createdAt: p.createdAt ? p.createdAt.toISOString() : "",
                 targetDeliveryDate: p.targetDeliveryDate ? p.targetDeliveryDate.toISOString() : null
               }))}
             />
             
             <ClientReminders 
               projects={filteredProjects.map(p => ({
-                ...p,
-                targetDeliveryDate: p.targetDeliveryDate.toISOString(),
-                createdAt: p.createdAt.toISOString(),
+                id: p.id,
+                title: p.title,
+                status: p.status,
+                targetDeliveryDate: p.targetDeliveryDate ? p.targetDeliveryDate.toISOString() : "",
+                createdAt: p.createdAt ? p.createdAt.toISOString() : "",
+                worker: p.worker ? { name: p.worker.name } : null,
                 offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
               }))}
             />
@@ -215,7 +244,7 @@ export default async function ClientDashboard({ params, searchParams }: { params
                       </div>
                       <div className="text-right">
                         <p className={`font-bold text-sm ${i % 2 === 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
-                          {i % 2 === 0 ? '+' : ''}Rp {(proj.offeredPrice || Math.floor(Math.random() * 5000000) + 1000000).toLocaleString('id-ID')}
+                          {i % 2 === 0 ? '+' : ''}Rp {(Number(proj.offeredPrice || 0)).toLocaleString('id-ID')}
                         </p>
                         <p className="text-[10px] text-slate-500 font-medium uppercase tracking-wider">{proj.status === 'COMPLETED' ? 'Berhasil' : 'Diproses'}</p>
                       </div>

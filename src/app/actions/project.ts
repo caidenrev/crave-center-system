@@ -249,6 +249,8 @@ export async function createAdminTermsAndContract(data: {
   priceFinal: number
   scope: string
   milestones?: any
+  warrantyDays?: number
+  warrantyTerms?: string
 }) {
   try {
     const supabase = await createClient()
@@ -264,19 +266,24 @@ export async function createAdminTermsAndContract(data: {
     })
     if (!project) throw new Error("Project not found")
 
+    let fullScope = data.scope.trim()
+    if (data.warrantyDays && data.warrantyDays > 0 && !fullScope.toLowerCase().includes("garansi")) {
+      fullScope += `\n\n--- KETENTUAN GARANSI RESMI CRAVE CENTER ---\n• Masa Garansi: ${data.warrantyDays} Hari Kalender (terhitung sejak serah terima proyek).\n• Cakupan Garansi: ${data.warrantyTerms || "Perbaikan bug/kendala teknis, penyesuaian minor, dan bantuan konsultasi sesuai lingkup pengerjaan."}`
+    }
+
     // Upsert Terms
     const terms = await prisma.terms.upsert({
       where: { projectId: data.projectId },
       create: {
         projectId: data.projectId,
-        scope: data.scope,
+        scope: fullScope,
         priceFinal: data.priceFinal,
         milestones: data.milestones || [],
         status: "APPROVED",
         approvedByClient: false,
       },
       update: {
-        scope: data.scope,
+        scope: fullScope,
         priceFinal: data.priceFinal,
         milestones: data.milestones || [],
       }
@@ -484,5 +491,98 @@ export async function createMidtransTransaction(paymentId: string) {
     return { success: false, error: error.message }
   }
 }
+
+export async function deleteProjectPermanently(projectId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) throw new Error("Unauthorized")
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email }
+    })
+
+    if (!dbUser || dbUser.role !== "ADMIN") {
+      throw new Error("Hanya Admin yang memiliki akses untuk menghapus proyek secara permanen")
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId }
+    })
+
+    if (!project) {
+      throw new Error("Proyek tidak ditemukan")
+    }
+
+    if (project.status !== "CANCELLED") {
+      throw new Error("Hanya proyek dengan status Dibatalkan (CANCELLED) yang dapat dihapus secara permanen")
+    }
+
+    // Perform hard delete in transaction to safely remove all related records
+    await prisma.$transaction([
+      prisma.contract.deleteMany({ where: { projectId } }),
+      prisma.terms.deleteMany({ where: { projectId } }),
+      prisma.payment.deleteMany({ where: { projectId } }),
+      prisma.task.deleteMany({ where: { projectId } }),
+      prisma.deliverable.deleteMany({ where: { projectId } }),
+      prisma.message.deleteMany({ where: { projectId } }),
+      prisma.project.delete({ where: { id: projectId } }),
+    ])
+
+    revalidatePath("/(admin)", "layout")
+    revalidatePath("/(worker)", "layout")
+    revalidatePath("/(client)", "layout")
+
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+/**
+ * Automatically delete projects with status CANCELLED that were cancelled/updated > 28 days ago.
+ */
+export async function autoDeleteCancelledProjects() {
+  try {
+    const cutoffDate = new Date(Date.now() - 28 * 24 * 60 * 60 * 1000)
+
+    const expiredProjects = await prisma.project.findMany({
+      where: {
+        status: "CANCELLED",
+        updatedAt: {
+          lte: cutoffDate
+        }
+      },
+      select: { id: true }
+    })
+
+    if (expiredProjects.length === 0) {
+      return { success: true, count: 0 }
+    }
+
+    const expiredIds = expiredProjects.map(p => p.id)
+
+    await prisma.$transaction([
+      prisma.contract.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.terms.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.payment.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.task.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.deliverable.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.message.deleteMany({ where: { projectId: { in: expiredIds } } }),
+      prisma.project.deleteMany({ where: { id: { in: expiredIds } } }),
+    ])
+
+    revalidatePath("/(admin)", "layout")
+    revalidatePath("/(worker)", "layout")
+    revalidatePath("/(client)", "layout")
+
+    return { success: true, count: expiredIds.length }
+  } catch (err: any) {
+    console.error("Auto-delete cancelled projects error:", err)
+    return { success: false, error: err.message, count: 0 }
+  }
+}
+
 
 

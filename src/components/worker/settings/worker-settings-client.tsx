@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { User, Bell, Key, Code2 } from "lucide-react"
 import { toast } from "sonner"
 import { createClient } from "@/utils/supabase/client"
+import { updateUserAvatar } from "@/app/actions/client"
 import { SettingsTabNav, TabItem } from "@/components/admin/settings/settings-tab-nav"
 import { WorkerProfileTab } from "./tabs/worker-profile-tab"
 import { WorkerSkillsTab } from "./tabs/worker-skills-tab"
@@ -61,6 +62,7 @@ export function WorkerSettingsClient({ user }: { user: WorkerUserProps }) {
       await supabase.auth.updateUser({
         data: { avatar_url: publicUrl }
       })
+      await updateUserAvatar(publicUrl)
 
       toast.success(t("avatarUploaded"))
     } catch {

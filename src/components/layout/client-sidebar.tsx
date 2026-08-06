@@ -9,6 +9,23 @@ import { LayoutDashboard, FileText, CheckSquare, Settings, LogOut, Package, Doll
 import { cn, getDefaultAvatar } from '@/lib/utils'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 
+function TopBrandHeader({ locale }: { locale: string }) {
+  return (
+    <div className="h-16 flex items-center justify-between px-4 mt-2">
+      <Link href={`/${locale}/client`} className="flex items-center gap-3 w-full p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
+        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
+          <img src="/light-mode-logo.png" alt="Crave" className="h-5 w-auto brightness-0 invert" />
+        </div>
+        <div className="flex flex-col flex-1 min-w-0">
+          <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight">Crave ITSM</span>
+          <span className="text-xs text-slate-500 font-medium">Client Workspace</span>
+        </div>
+        <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
+      </Link>
+    </div>
+  );
+}
+
 export function ClientSidebar({ 
   locale,
   user,
@@ -34,6 +51,7 @@ export function ClientSidebar({
         { name: "Website", href: `/`, icon: Globe },
         { name: t('requests'), href: `/${locale}/client/request`, icon: FileText },
         { name: t('projects'), href: `/${locale}/client/projects`, icon: CheckSquare },
+        { name: t('deliverables') || 'Deliverables', href: `/${locale}/client/deliverables`, icon: Package },
         { name: t('contracts'), href: `/${locale}/client/contracts`, icon: FileText },
         { name: t('paymentHistory'), href: `/${locale}/client/billing`, icon: DollarSign },
       ]
@@ -50,21 +68,6 @@ export function ClientSidebar({
     router.push(`/${locale}/auth/logout`)
   }
 
-  const TopBrandHeader = () => (
-    <div className="h-16 flex items-center justify-between px-4 mt-2">
-      <Link href={`/${locale}/client`} className="flex items-center gap-3 w-full p-2 rounded-2xl hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shrink-0 shadow-sm">
-          <img src="/light-mode-logo.png" alt="Crave" className="h-5 w-auto brightness-0 invert" />
-        </div>
-        <div className="flex flex-col flex-1 min-w-0">
-          <span className="font-bold text-sm text-slate-900 dark:text-white leading-tight">Crave ITSM</span>
-          <span className="text-xs text-slate-500 font-medium">Client Workspace</span>
-        </div>
-        <ChevronsUpDown className="w-4 h-4 text-slate-400 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity" />
-      </Link>
-    </div>
-  );
-
   return (
     <>
       <aside className={cn(
@@ -72,7 +75,7 @@ export function ClientSidebar({
         "fixed inset-y-0 left-0 z-40 md:relative md:translate-x-0 transition-transform duration-300 ease-in-out",
         isOpen ? "translate-x-0" : "-translate-x-full"
       )}>
-        <TopBrandHeader />
+        <TopBrandHeader locale={locale} />
 
         <div className="flex-1 overflow-y-auto py-4 px-3 flex flex-col gap-6">
           {/* Search Bar */}

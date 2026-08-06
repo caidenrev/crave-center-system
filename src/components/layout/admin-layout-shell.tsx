@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { AdminSidebar } from "./admin-sidebar";
 import { AdminTopbar } from "./admin-topbar";
+import { FloatingChatBubble } from "@/components/chat/floating-widget/floating-chat-bubble";
 
 type UserProps = {
   id?: string;
@@ -39,6 +40,9 @@ export function AdminLayoutShell({
           <div className="mx-auto w-full max-w-7xl">{children}</div>
         </main>
       </div>
+
+      {/* Floating Chat Bubble Widget */}
+      <FloatingChatBubble currentUserId={topbarUser?.id} userRole="ADMIN" />
     </div>
   );
 }

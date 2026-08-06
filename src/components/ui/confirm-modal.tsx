@@ -3,7 +3,7 @@
 import * as React from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { Button } from "@/components/ui/button"
-import { AlertTriangle, X } from "lucide-react"
+import { AlertTriangle, X, Loader2 } from "lucide-react"
 
 interface ConfirmModalProps {
   open: boolean
@@ -15,6 +15,7 @@ interface ConfirmModalProps {
   cancelText?: string
   variant?: "default" | "destructive"
   icon?: React.ReactNode
+  isLoading?: boolean
 }
 
 export function ConfirmModal({
@@ -27,15 +28,16 @@ export function ConfirmModal({
   cancelText = "Cancel",
   variant = "default",
   icon,
+  isLoading = false,
 }: ConfirmModalProps) {
   // Close on Escape key
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && open) onCancel()
+      if (e.key === "Escape" && open && !isLoading) onCancel()
     }
     document.addEventListener("keydown", handleKeyDown)
     return () => document.removeEventListener("keydown", handleKeyDown)
-  }, [open, onCancel])
+  }, [open, onCancel, isLoading])
 
   return (
     <AnimatePresence>
@@ -48,7 +50,7 @@ export function ConfirmModal({
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
-            onClick={onCancel}
+            onClick={() => !isLoading && onCancel()}
           />
           {/* Modal Container */}
           <motion.div
@@ -62,8 +64,9 @@ export function ConfirmModal({
               
               {/* Close button */}
               <button
-                onClick={onCancel}
-                className="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer"
+                onClick={() => !isLoading && onCancel()}
+                disabled={isLoading}
+                className="absolute top-4 right-4 p-1.5 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-100 dark:hover:bg-slate-800 dark:hover:text-slate-200 transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -97,6 +100,7 @@ export function ConfirmModal({
                 <Button
                   variant="outline"
                   onClick={onCancel}
+                  disabled={isLoading}
                   className="flex-1 rounded-xl h-11 cursor-pointer"
                 >
                   {cancelText}
@@ -104,8 +108,10 @@ export function ConfirmModal({
                 <Button
                   variant={variant === "destructive" ? "destructive" : "default"}
                   onClick={onConfirm}
-                  className="flex-1 rounded-xl h-11 cursor-pointer"
+                  disabled={isLoading}
+                  className="flex-1 rounded-xl h-11 cursor-pointer flex items-center justify-center gap-2"
                 >
+                  {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
                   {confirmText}
                 </Button>
               </div>
