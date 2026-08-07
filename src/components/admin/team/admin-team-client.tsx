@@ -181,6 +181,9 @@ export function AdminTeamClient({ initialTeam }: { initialTeam: TeamMemberItem[]
                   >
                     {member.name}
                   </h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono truncate">
+                    {member.email}
+                  </p>
                   <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1 pt-1">
                     {t('skillsLabel')} <strong className="text-slate-700 dark:text-slate-300 font-semibold line-clamp-1">{member.skills.length > 0 ? member.skills.join(', ') : '-'}</strong>
                   </p>
