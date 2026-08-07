@@ -69,10 +69,10 @@ export async function TeamCollaborationCard({
               </div>
 
               <span
-                className={`px-2.5 py-1 rounded-md text-[10px] font-bold border shrink-0 ${
+                className={`px-2.5 py-1 rounded-md text-[10px] font-bold shrink-0 ${
                   isWorking
-                    ? "bg-amber-500/10 text-amber-600 border-amber-500/20"
-                    : "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
+                    ? "bg-amber-500 text-white"
+                    : "bg-emerald-500 text-white"
                 }`}
               >
                 {isWorking ? t("inProgressStatus") : t("availableStatus")}

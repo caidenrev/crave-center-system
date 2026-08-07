@@ -156,7 +156,7 @@ export function FloatingChatBubble({
           {isOpen ? (
             <X className="w-6 h-6" />
           ) : (
-            <MessageSquare className="w-6 h-6" />
+            <img src="/light-mode-logo.png" alt="Crave" className="w-6 h-6 object-contain brightness-0 invert" />
           )}
 
           {/* Unread Counter Red Badge */}

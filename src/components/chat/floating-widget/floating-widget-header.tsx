@@ -23,8 +23,8 @@ export function FloatingWidgetHeader({
       {/* Top Title Bar */}
       <div className="p-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-primary/10 dark:bg-primary/20 border border-primary/20 dark:border-primary/30 flex items-center justify-center text-primary shadow-xs">
-            <MessageSquare className="w-4 h-4" />
+          <div className="w-8 h-8 rounded-xl bg-primary flex items-center justify-center shadow-xs shrink-0">
+            <img src="/light-mode-logo.png" alt="Crave" className="w-4 h-4 object-contain brightness-0 invert" />
           </div>
           <div>
             <h4 className="text-xs font-extrabold tracking-tight text-slate-900 dark:text-white">{t.liveChatSupport}</h4>
@@ -49,8 +49,8 @@ export function FloatingWidgetHeader({
               onClick={() => onTabChange("DIRECT")}
               className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === "DIRECT"
-                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-primary text-white shadow-md border-none"
+                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
               }`}
             >
               <Users className="w-3.5 h-3.5" /> {t.directChat}
@@ -60,8 +60,8 @@ export function FloatingWidgetHeader({
               onClick={() => onTabChange("PROJECTS")}
               className={`py-1.5 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-2 cursor-pointer ${
                 activeTab === "PROJECTS"
-                  ? "bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-xs border border-slate-200 dark:border-slate-700"
-                  : "text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+                  ? "bg-primary text-white shadow-md border-none"
+                  : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
               }`}
             >
               <FolderKanban className="w-3.5 h-3.5" /> {t.projectDiscussion}

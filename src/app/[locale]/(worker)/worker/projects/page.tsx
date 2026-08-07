@@ -33,6 +33,7 @@ export default async function WorkerProjectsPage(props: {
       include: {
         client: true,
         tasks: true,
+        terms: true,
       },
       orderBy: { updatedAt: "desc" },
     })
@@ -41,12 +42,22 @@ export default async function WorkerProjectsPage(props: {
   const serializedProjects = projects.map((p: any) => {
     const totalTasks = p.tasks?.length || 0;
     const doneTasks = p.tasks?.filter((t: any) => t.status === "DONE").length || 0;
-    const progress =
-      totalTasks > 0
-        ? Math.round((doneTasks / totalTasks) * 100)
-        : p.status === "COMPLETED"
-        ? 100
-        : 0;
+    let progress = 0;
+    if (totalTasks > 0) {
+      const taskPct = Math.round((doneTasks / totalTasks) * 100);
+      progress = p.status === "IN_PROGRESS" ? Math.max(50, Math.min(95, taskPct)) : taskPct;
+    } else {
+      switch (p.status) {
+        case "REQUESTED": progress = 10; break;
+        case "WORKER_REVIEW": progress = 25; break;
+        case "PENDING_DP": progress = 40; break;
+        case "IN_PROGRESS": progress = 65; break;
+        case "ON_HOLD": progress = 65; break;
+        case "COMPLETED": progress = 100; break;
+        case "IN_WARRANTY": progress = 100; break;
+        default: progress = 0; break;
+      }
+    }
 
     return {
       id: p.id.split("-")[0].toUpperCase(),
@@ -59,6 +70,18 @@ export default async function WorkerProjectsPage(props: {
         ? new Date(p.targetDeliveryDate).toLocaleDateString()
         : "TBD",
       description: p.description,
+      briefFileUrl: p.briefFileUrl,
+      offeredPrice: p.offeredPrice ? Number(p.offeredPrice) : null,
+      offeredDuration: p.offeredDuration || null,
+      terms: p.terms
+        ? {
+            id: p.terms.id,
+            scope: p.terms.scope,
+            priceFinal: Number(p.terms.priceFinal || 0),
+            status: p.terms.status,
+            approvedByClient: p.terms.approvedByClient,
+          }
+        : null,
       totalTasks,
       doneTasks,
       budget: p.budgetRange || undefined,

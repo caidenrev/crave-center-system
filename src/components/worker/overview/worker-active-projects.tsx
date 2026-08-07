@@ -22,41 +22,84 @@ export function WorkerActiveProjects({
 }) {
   const t = useTranslations("WorkerDashboard");
 
-  const getStatusColor = (status: string) => {
+  const getStatusBadge = (status: string) => {
     switch (status) {
       case "IN_PROGRESS":
-        return "bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-100 dark:border-blue-500/20";
+      case "In Progress":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusInProgress") || t("inProgress") || "Berlangsung"}
+          </span>
+        );
+      case "WORKER_REVIEW":
+      case "Worker Review":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusWorkerReview") || "Worker Review"}
+          </span>
+        );
+      case "PENDING_DP":
+      case "Pending DP":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusPendingDP") || "Menunggu DP"}
+          </span>
+        );
+      case "COMPLETED":
+      case "Completed":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusCompleted") || "Selesai"}
+          </span>
+        );
       case "ON_HOLD":
-        return "bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-500/20";
+      case "On Hold":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusOnHold") || "Tertunda"}
+          </span>
+        );
       case "IN_WARRANTY":
-        return "bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-100 dark:border-emerald-500/20";
+      case "Warranty":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-cyan-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusInWarranty") || "Garansi"}
+          </span>
+        );
+      case "REQUESTED":
+      case "Requested":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusRequested") || "Diajukan"}
+          </span>
+        );
+      case "CANCELLED":
+      case "Cancelled":
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-red-500 text-white shadow-2xs border-none shrink-0">
+            {t("statusCancelled") || "Dibatalkan"}
+          </span>
+        );
       default:
-        return "bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700";
-    }
-  };
-
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case "IN_PROGRESS":
-        return t("inProgress");
-      case "ON_HOLD":
-        return t("statusOnHold");
-      case "IN_WARRANTY":
-        return t("statusInWarranty");
-      default:
-        return status;
+        // Format raw status string cleanly e.g. WORKER_REVIEW -> Worker Review
+        const formatted = status.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, (l) => l.toUpperCase());
+        return (
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-slate-700 text-white shadow-2xs border-none shrink-0">
+            {formatted}
+          </span>
+        );
     }
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-sm flex flex-col h-full">
+    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 shadow-xs flex flex-col h-full">
       <div className="flex items-start justify-between mb-5">
-        <h3 className="text-lg font-medium text-slate-900 dark:text-white tracking-tight">
+        <h3 className="text-lg font-bold text-slate-900 dark:text-white tracking-tight">
           {t("myActiveProjects")}
         </h3>
         <Link
           href={`/${locale}/worker/projects`}
-          className="text-xs font-semibold text-primary hover:underline flex items-center gap-0.5"
+          className="text-xs font-bold text-primary hover:underline flex items-center gap-0.5 cursor-pointer"
         >
           {t("viewAllProjects")} <ChevronRight className="w-3 h-3" />
         </Link>
@@ -75,20 +118,14 @@ export function WorkerActiveProjects({
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1 min-w-0 pr-3">
-                  <h4 className="text-sm font-bold text-slate-900 dark:text-white truncate">
+                  <h4 className="text-sm font-extrabold text-slate-900 dark:text-white truncate">
                     {proj.title}
                   </h4>
                   <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    {t("client")}: {proj.client}
+                    {t("client")}: <strong className="text-slate-700 dark:text-slate-300 font-semibold">{proj.client}</strong>
                   </p>
                 </div>
-                <span
-                  className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold border shrink-0 ${getStatusColor(
-                    proj.status
-                  )}`}
-                >
-                  {getStatusLabel(proj.status)}
-                </span>
+                {getStatusBadge(proj.status)}
               </div>
 
               <div className="flex items-center justify-between">
@@ -97,17 +134,19 @@ export function WorkerActiveProjects({
                   <div className="relative w-8 h-4 flex items-end justify-center shrink-0">
                     <svg className="w-full h-full overflow-visible" viewBox="0 0 100 50">
                       <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" className="stroke-slate-200 dark:stroke-slate-700" strokeWidth="16" strokeLinecap="round" />
-                      <path
-                        d="M 10 50 A 40 40 0 0 1 90 50"
-                        fill="none"
-                        className={proj.progress === 100 ? "stroke-emerald-500" : "stroke-blue-500"}
-                        strokeWidth="16"
-                        strokeLinecap="round"
-                        strokeDasharray={`${(proj.progress / 100) * (Math.PI * 40)} ${Math.PI * 40}`}
-                      />
+                      {proj.progress > 0 && (
+                        <path
+                          d="M 10 50 A 40 40 0 0 1 90 50"
+                          fill="none"
+                          className={proj.progress === 100 ? "stroke-emerald-500" : "stroke-blue-500"}
+                          strokeWidth="16"
+                          strokeLinecap="round"
+                          strokeDasharray={`${(proj.progress / 100) * (Math.PI * 40)} ${Math.PI * 40}`}
+                        />
+                      )}
                     </svg>
                   </div>
-                  <span className="text-xs font-extrabold text-slate-900 dark:text-white">
+                  <span className="text-xs font-black text-slate-900 dark:text-white">
                     {proj.progress}%
                   </span>
                 </div>

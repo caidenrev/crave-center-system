@@ -254,8 +254,8 @@ export function ProjectChatDrawer({
                       onClick={() => setActiveTab("CLIENT_ADMIN")}
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeTab === "CLIENT_ADMIN"
-                          ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs"
-                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
                       }`}
                     >
                       <Globe className="w-3.5 h-3.5" /> {t.adminClient}
@@ -264,8 +264,8 @@ export function ProjectChatDrawer({
                       onClick={() => setActiveTab("CLIENT_WORKER")}
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeTab === "CLIENT_WORKER"
-                          ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs"
-                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
                       }`}
                     >
                       <Globe className="w-3.5 h-3.5" /> {t.workerClient}
@@ -279,8 +279,8 @@ export function ProjectChatDrawer({
                       onClick={() => setActiveTab("CLIENT_ADMIN")}
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeTab === "CLIENT_ADMIN"
-                          ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs"
-                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
                       }`}
                     >
                       <Globe className="w-3.5 h-3.5" /> {t.adminClient}
@@ -289,8 +289,8 @@ export function ProjectChatDrawer({
                       onClick={() => setActiveTab("INTERNAL")}
                       className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
                         activeTab === "INTERNAL"
-                          ? "bg-white dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 shadow-xs"
-                          : "text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                          ? "bg-primary text-white shadow-md"
+                          : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
                       }`}
                     >
                       <Lock className="w-3.5 h-3.5" /> {t.internalTeam}

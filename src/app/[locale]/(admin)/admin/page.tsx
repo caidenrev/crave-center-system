@@ -5,7 +5,7 @@ import { FolderKanban, Users, DollarSign, CheckSquare } from "lucide-react";
 import Link from "next/link";
 import { AdminActivityChart } from "@/components/admin/overview/activity-chart";
 import { AdminWorkerDonutChart } from "@/components/admin/overview/worker-donut-chart";
-import { RealtimeClock } from "@/components/admin/overview/realtime-clock";
+import { AdminCalendar } from "@/components/admin/overview/admin-calendar";
 import { StatCard } from "@/components/admin/overview/stat-card";
 import { PaymentHistoryCard } from "@/components/admin/overview/payment-history-card";
 import { RecentProjectsCard } from "@/components/admin/overview/recent-projects-card";
@@ -191,10 +191,9 @@ export default async function AdminDashboardPage(props: {
           />
         </div>
         <div className="lg:col-span-3">
-          <RealtimeClock />
+          <AdminCalendar projects={recentProjects as any} />
         </div>
       </div>
-
       {/* System Alerts */}
       <SystemAlertsSection
         pendingApps={pendingApps}

@@ -10,13 +10,13 @@ interface ProjectItem {
 }
 
 const statusColors: Record<string, string> = {
-  REQUESTED: "bg-blue-500/10 text-blue-600 border-blue-500/20",
-  WORKER_REVIEW: "bg-violet-500/10 text-violet-600 border-violet-500/20",
-  PENDING_DP: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-  IN_PROGRESS: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-  ON_HOLD: "bg-rose-500/10 text-rose-600 border-rose-500/20",
-  IN_WARRANTY: "bg-cyan-500/10 text-cyan-600 border-cyan-500/20",
-  COMPLETED: "bg-slate-500/10 text-slate-600 border-slate-500/20",
+  REQUESTED: "bg-blue-500 text-white",
+  WORKER_REVIEW: "bg-violet-500 text-white",
+  PENDING_DP: "bg-amber-500 text-white",
+  IN_PROGRESS: "bg-emerald-500 text-white",
+  ON_HOLD: "bg-rose-500 text-white",
+  IN_WARRANTY: "bg-cyan-500 text-white",
+  COMPLETED: "bg-slate-500 text-white",
 };
 
 export async function RecentProjectsCard({
@@ -47,7 +47,7 @@ export async function RecentProjectsCard({
         {projects.map((project) => {
           const colorClass =
             statusColors[project.status] ??
-            "bg-slate-500/10 text-slate-600 border-slate-500/20";
+            "bg-slate-500 text-white";
           const dueDateStr = project.targetDeliveryDate
             ? new Date(project.targetDeliveryDate).toLocaleDateString("id-ID", {
                 day: "numeric",
@@ -58,7 +58,7 @@ export async function RecentProjectsCard({
           return (
             <div key={project.id} className="flex items-center gap-3 group">
               <div
-                className={`w-10 h-10 rounded-full flex items-center justify-center border shrink-0 transition-transform group-hover:scale-105 ${colorClass}`}
+                className={`w-10 h-10 rounded-full flex items-center justify-center shrink-0 transition-transform group-hover:scale-105 ${colorClass}`}
               >
                 <FolderKanban className="w-4 h-4" />
               </div>

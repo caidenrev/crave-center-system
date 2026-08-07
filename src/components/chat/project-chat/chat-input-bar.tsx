@@ -98,12 +98,12 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
     <form onSubmit={handleSubmit} className="p-3 border-t border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md flex flex-col gap-2">
       {/* File Attachment Preview Bar */}
       {selectedFile && (
-        <div className="flex items-center justify-between p-2 rounded-xl bg-indigo-50 dark:bg-slate-800 border border-indigo-200 dark:border-slate-700 text-xs">
+        <div className="flex items-center justify-between p-2 rounded-xl bg-blue-50 dark:bg-slate-800 border border-blue-200 dark:border-slate-700 text-xs">
           <div className="flex items-center gap-2 truncate">
             {isImageSelected ? (
-              <ImageIcon className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              <ImageIcon className="w-4 h-4 text-primary shrink-0" />
             ) : (
-              <FileText className="w-4 h-4 text-indigo-600 dark:text-indigo-400 shrink-0" />
+              <FileText className="w-4 h-4 text-primary shrink-0" />
             )}
             <span className="font-medium text-slate-800 dark:text-slate-200 truncate">
               {selectedFile.name}
@@ -138,7 +138,7 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
           type="button"
           onClick={() => fileInputRef.current?.click()}
           disabled={isSendingOrUploading}
-          className="p-2.5 rounded-xl text-slate-500 hover:text-indigo-600 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer disabled:cursor-not-allowed"
+          className="p-2.5 rounded-xl text-slate-500 hover:text-primary hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shrink-0 cursor-pointer disabled:cursor-not-allowed"
           title={t.attachFileTooltip}
         >
           <Paperclip className="w-4 h-4" />
@@ -150,14 +150,14 @@ export function ChatInputBar({ onSendMessage, isSending }: ChatInputBarProps) {
           value={inputText}
           onChange={(e) => setInputText(e.target.value)}
           placeholder={selectedFile ? t.addMessageOptional : t.writeMessage}
-          className="flex-1 bg-slate-100 dark:bg-slate-800 border-0 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/50"
+          className="flex-1 bg-slate-100 dark:bg-slate-800 border-0 rounded-xl px-4 py-2.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-hidden focus:ring-2 focus:ring-primary/50"
         />
 
         {/* Submit Button */}
         <button
           type="submit"
           disabled={(!inputText.trim() && !selectedFile) || isSendingOrUploading}
-          className="p-2.5 rounded-xl bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white disabled:opacity-50 transition-all shadow-md shadow-indigo-600/20 shrink-0 cursor-pointer disabled:cursor-not-allowed"
+          className="p-2.5 rounded-xl bg-primary hover:bg-primary/90 text-white disabled:opacity-50 transition-all shadow-md shadow-primary/20 shrink-0 cursor-pointer disabled:cursor-not-allowed"
         >
           {isSendingOrUploading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

@@ -11,8 +11,8 @@ interface WorkerIncomeItem {
 }
 
 const statusStyles: Record<string, string> = {
-  SUCCESS: "text-emerald-600 bg-emerald-500/10",
-  PENDING: "text-amber-600 bg-amber-500/10",
+  SUCCESS: "text-white bg-emerald-500",
+  PENDING: "text-white bg-amber-500",
 };
 
 export async function WorkerIncomeCard({
@@ -45,7 +45,7 @@ export async function WorkerIncomeCard({
             className="flex items-center justify-between gap-2 p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800"
           >
             <div className="flex items-center gap-2.5 overflow-hidden">
-              <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-white shrink-0">
                 <Wallet className="w-4 h-4" />
               </div>
               <div className="truncate">

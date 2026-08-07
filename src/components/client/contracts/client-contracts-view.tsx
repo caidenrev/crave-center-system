@@ -122,7 +122,7 @@ export function ClientContractsView({ contracts }: { contracts: ContractItem[] }
                         <button
                           onClick={() => handleAcceptTerms(item.projectId)}
                           disabled={processingId === item.projectId}
-                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-linear-to-r from-indigo-600 to-indigo-500 hover:from-indigo-500 hover:to-indigo-400 text-white font-bold transition-all shadow-md shadow-indigo-600/20 cursor-pointer disabled:opacity-50"
+                          className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary/90 text-white font-bold transition-all shadow-md shadow-primary/20 cursor-pointer disabled:opacity-50"
                         >
                           {processingId === item.projectId ? (
                             <Loader2 className="w-3.5 h-3.5 animate-spin" />

@@ -143,7 +143,7 @@ export function ChatMessageItem({
             msg.isDeleted
               ? "bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-500 italic border border-slate-200/60 dark:border-slate-800"
               : isMe
-              ? "bg-linear-to-r from-indigo-600 to-indigo-500 text-white rounded-tr-xs shadow-md shadow-indigo-600/25"
+              ? "bg-primary text-white rounded-tr-xs shadow-md shadow-primary/25"
               : "bg-white/80 dark:bg-slate-800/80 backdrop-blur-md border border-slate-200/80 dark:border-slate-700/80 text-slate-900 dark:text-white rounded-tl-xs shadow-xs"
           }`}
         >
@@ -219,7 +219,7 @@ export function ChatMessageItem({
                       : "bg-slate-100 dark:bg-slate-700/50 hover:bg-slate-200 dark:hover:bg-slate-700 border-slate-200 dark:border-slate-600 text-slate-900 dark:text-white"
                   }`}
                 >
-                  <div className="p-2 rounded-lg bg-indigo-500/20 text-indigo-300 shrink-0">
+                  <div className={`p-2 rounded-lg shrink-0 ${isMe ? 'bg-white/20 text-white' : 'bg-primary/10 text-primary'}`}>
                     <FileText className="w-4 h-4" />
                   </div>
                   <div className="flex flex-col min-w-0 flex-1">

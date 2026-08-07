@@ -11,7 +11,7 @@ type Project = {
   targetDeliveryDate: string | null
 }
 
-export function ClientCalendar({ projects }: { projects: Project[] }) {
+export function AdminCalendar({ projects }: { projects: Project[] }) {
   const [currentDate, setCurrentDate] = useState(new Date())
   const [time, setTime] = useState<Date | null>(null)
   const [selectedDay, setSelectedDay] = useState<{
@@ -76,50 +76,52 @@ export function ClientCalendar({ projects }: { projects: Project[] }) {
 
   const getPillColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'bg-emerald-100 dark:bg-emerald-500/20'
-      case 'IN_PROGRESS': return 'bg-sky-100 dark:bg-sky-500/20'
-      case 'PENDING_DP': return 'bg-primary/15 dark:bg-primary/20'
+      case 'COMPLETED':
+      case 'IN_WARRANTY': return 'bg-emerald-100 dark:bg-emerald-500/20'
+      case 'IN_PROGRESS': return 'bg-blue-100 dark:bg-blue-500/20'
+      case 'PENDING_DP': return 'bg-purple-100 dark:bg-purple-500/20'
+      case 'WORKER_REVIEW': return 'bg-amber-100 dark:bg-amber-500/20'
       case 'CANCELLED': return 'bg-red-100 dark:bg-red-500/20'
       case 'REQUESTED': return 'bg-indigo-100 dark:bg-indigo-500/20'
-      case 'WORKER_REVIEW': return 'bg-purple-100 dark:bg-purple-500/20'
       default: return 'bg-blue-50 dark:bg-slate-400/20'
     }
   }
 
   const getCircleColor = (status: string) => {
     switch (status) {
-      case 'COMPLETED': return 'bg-emerald-500 text-white shadow-emerald-500/30'
-      case 'IN_PROGRESS': return 'bg-sky-500 text-white shadow-sky-500/30'
-      case 'PENDING_DP': return 'bg-primary text-white shadow-primary/30'
+      case 'COMPLETED':
+      case 'IN_WARRANTY': return 'bg-emerald-500 text-white shadow-emerald-500/30'
+      case 'IN_PROGRESS': return 'bg-blue-500 text-white shadow-blue-500/30'
+      case 'PENDING_DP': return 'bg-purple-500 text-white shadow-purple-500/30'
+      case 'WORKER_REVIEW': return 'bg-amber-400 text-white shadow-amber-400/30'
       case 'CANCELLED': return 'bg-red-500 text-white shadow-red-500/30'
       case 'REQUESTED': return 'bg-indigo-500 text-white shadow-indigo-500/30'
-      case 'WORKER_REVIEW': return 'bg-purple-500 text-white shadow-purple-500/30'
       default: return 'bg-slate-500 text-white shadow-slate-500/30'
     }
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-3 md:p-6 shadow-sm border border-slate-100 dark:border-slate-800 relative">
+    <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-3 md:p-6 shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden relative">
       <div className="flex items-center justify-between mb-5 px-0.5">
-        <button onClick={prevMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+        <button onClick={prevMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
           <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-slate-600 dark:text-slate-400" />
         </button>
-        <div className="flex flex-col items-center flex-1 mx-1 truncate">
-          <h2 className="text-base sm:text-lg md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2">
-            <span className="truncate">{monthNames[month]}</span> <span className="text-primary/80 font-normal">{year}</span>
+        <div className="flex flex-col items-center flex-1 mx-1 min-w-0">
+          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex flex-wrap items-center justify-center gap-1 text-center leading-tight">
+            <span>{monthNames[month]}</span> <span className="text-primary/80 font-normal">{year}</span>
           </h2>
-          <div className="text-[9px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap">
+          <div className="text-[11px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2.5 md:px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap">
             {time ? time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--'}
           </div>
         </div>
-        <button onClick={nextMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">
+        <button onClick={nextMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
           <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-slate-600 dark:text-slate-400" />
         </button>
       </div>
 
       <div className="grid grid-cols-7 gap-y-2 md:gap-y-4 text-center">
         {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-           <div key={day} className="text-[8px] md:text-[11px] uppercase font-bold text-slate-400 mb-0.5">{day}</div>
+           <div key={day} className="text-[9px] md:text-[11px] uppercase font-bold text-slate-400 mb-0.5">{day}</div>
         ))}
         
         {days.map((d, i) => {
@@ -151,13 +153,13 @@ export function ClientCalendar({ projects }: { projects: Project[] }) {
             const connectRight = nextHasProject;
 
             if (!connectLeft && !connectRight) {
-              pillStyle = 'w-7 md:w-9 left-1/2 -translate-x-1/2 rounded-full';
+              pillStyle = 'w-9 md:w-10 left-1/2 -translate-x-1/2 rounded-full';
             } else if (!connectLeft && connectRight) {
-              pillStyle = 'left-[calc(50%-14px)] md:left-[calc(50%-18px)] right-0 rounded-l-full rounded-r-none';
+              pillStyle = 'left-[calc(50%-18px)] md:left-[calc(50%-20px)] -right-[4px] rounded-l-full rounded-r-none';
             } else if (connectLeft && !connectRight) {
-              pillStyle = 'right-[calc(50%-14px)] md:right-[calc(50%-18px)] left-0 rounded-r-full rounded-l-none';
+              pillStyle = 'right-[calc(50%-18px)] md:right-[calc(50%-20px)] -left-[4px] rounded-r-full rounded-l-none';
             } else {
-              pillStyle = 'left-0 right-0 w-full rounded-none';
+              pillStyle = '-left-[4px] -right-[4px] rounded-none';
             }
           }
 
@@ -169,12 +171,12 @@ export function ClientCalendar({ projects }: { projects: Project[] }) {
                   setSelectedDay({ date: d.date, projects: dayProjects });
                 }
               }}
-              className={`flex flex-col items-center justify-center min-h-[40px] md:min-h-[50px] relative group transition-colors ${dayProjects.length > 0 ? 'cursor-pointer hover:opacity-90' : ''}`}
+              className={`flex flex-col items-center justify-center min-h-[44px] md:min-h-[50px] relative group transition-colors overflow-visible ${dayProjects.length > 0 ? 'cursor-pointer hover:opacity-90' : ''}`}
             >
               {bgClass && (
-                <div className={`absolute top-1/2 -translate-y-1/2 h-7 md:h-9 ${bgClass} ${pillStyle}`} />
+                <div className={`absolute top-1/2 -translate-y-1/2 h-6 md:h-7 ${bgClass} ${pillStyle}`} />
               )}
-              <div className={`relative z-10 text-[12px] md:text-[15px] font-medium flex items-center justify-center w-7 h-7 md:w-9 md:h-9 rounded-full transition-all ${
+              <div className={`relative z-10 text-[14px] md:text-base font-medium flex items-center justify-center w-9 h-9 md:w-10 md:h-10 rounded-full transition-all ${
                   circleClass ? circleClass : 
                   isToday ? 'bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 shadow-md shadow-slate-900/30' : 
                   d.isCurrentMonth ? 'text-slate-700 dark:text-slate-200' : 'text-slate-300 dark:text-slate-600'
@@ -223,13 +225,14 @@ export function ClientCalendar({ projects }: { projects: Project[] }) {
               {selectedDay.projects.map((proj) => {
                 const getStatusBadge = (status: string) => {
                   switch (status) {
-                    case 'COMPLETED': return { label: 'Selesai', color: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300' }
-                    case 'IN_PROGRESS': return { label: 'Berjalan', color: 'bg-sky-100 text-sky-700 dark:bg-sky-500/20 dark:text-sky-300' }
-                    case 'PENDING_DP': return { label: 'Menunggu DP', color: 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300' }
-                    case 'WORKER_REVIEW': return { label: 'Review Worker', color: 'bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-300' }
-                    case 'REQUESTED': return { label: 'Pengajuan', color: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-300' }
-                    case 'CANCELLED': return { label: 'Dibatalkan', color: 'bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-300' }
-                    default: return { label: status, color: 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300' }
+                    case 'COMPLETED': return { label: 'Selesai', color: 'bg-emerald-500 text-white font-bold shadow-xs' }
+                    case 'IN_WARRANTY': return { label: 'Garansi', color: 'bg-cyan-500 text-white font-bold shadow-xs' }
+                    case 'IN_PROGRESS': return { label: 'Berlangsung', color: 'bg-blue-500 text-white font-bold shadow-xs' }
+                    case 'PENDING_DP': return { label: 'Menunggu DP', color: 'bg-purple-500 text-white font-bold shadow-xs' }
+                    case 'WORKER_REVIEW': return { label: 'Worker Review', color: 'bg-amber-500 text-white font-bold shadow-xs' }
+                    case 'REQUESTED': return { label: 'Diajukan', color: 'bg-blue-500 text-white font-bold shadow-xs' }
+                    case 'CANCELLED': return { label: 'Dibatalkan', color: 'bg-red-500 text-white font-bold shadow-xs' }
+                    default: return { label: status, color: 'bg-slate-700 text-white font-bold shadow-xs' }
                   }
                 }
                 const badge = getStatusBadge(proj.status)

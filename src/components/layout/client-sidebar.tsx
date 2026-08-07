@@ -48,7 +48,7 @@ export function ClientSidebar({
       title: "",
       items: [
         { name: t('dashboard'), href: `/${locale}/client`, icon: LayoutDashboard },
-        { name: "Website", href: `/`, icon: Globe },
+        { name: "Website", href: `/${locale}`, icon: Globe },
         { name: t('requests'), href: `/${locale}/client/request`, icon: FileText },
         { name: t('projects'), href: `/${locale}/client/projects`, icon: CheckSquare },
         { name: t('deliverables') || 'Deliverables', href: `/${locale}/client/deliverables`, icon: Package },
@@ -105,7 +105,8 @@ export function ClientSidebar({
                 )}
                 <div className="flex flex-col gap-0.5">
                   {group.items.map((item) => {
-                    const isActive = pathname === item.href
+                    const isDashboardOrHome = item.href === `/${locale}/client` || item.href === `/${locale}`;
+                    const isActive = isDashboardOrHome ? pathname === item.href : pathname.startsWith(item.href);
                     return (
                       <Link
                         key={item.name}

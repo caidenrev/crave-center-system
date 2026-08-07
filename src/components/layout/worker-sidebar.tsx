@@ -17,6 +17,7 @@ import {
   Plus,
   X,
   Wallet,
+  FileText,
 } from "lucide-react";
 import { cn, getDefaultAvatar } from "@/lib/utils";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
@@ -62,6 +63,7 @@ export function WorkerSidebar({
         { name: t("dashboard"), href: `/${locale}/worker`, icon: LayoutDashboard },
         { name: t("tasks"), href: `/${locale}/worker/tasks`, icon: CheckSquare },
         { name: t("myProjects"), href: `/${locale}/worker/projects`, icon: FolderKanban },
+        { name: t("contracts") || "Kontrak & Terms", href: `/${locale}/worker/contracts`, icon: FileText },
         { name: t("finance"), href: `/${locale}/worker/finance`, icon: Wallet },
         { name: t("deliverables"), href: `/${locale}/worker/deliverables`, icon: Package },
       ],
@@ -108,7 +110,8 @@ export function WorkerSidebar({
             )}
             <div className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isDashboard = item.href === `/${locale}/worker`;
+                const isActive = isDashboard ? pathname === item.href : pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.name}

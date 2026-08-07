@@ -90,7 +90,8 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
       const res = await createJobRequest(formData)
       if (res.success) {
         toast.success(t.success || "Request berhasil dikirim!")
-        router.push('/client')
+        const locale = window.location.pathname.split('/')[1] || 'id'
+        router.push(`/${locale}/client`)
       } else {
         toast.error(res.error || "Gagal mengirim permintaan")
       }

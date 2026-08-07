@@ -115,7 +115,8 @@ export function AdminSidebar({
             )}
             <div className="flex flex-col gap-0.5">
               {group.items.map((item) => {
-                const isActive = pathname === item.href;
+                const isDashboard = item.href === `/${locale}/admin`;
+                const isActive = isDashboard ? pathname === item.href : pathname.startsWith(item.href);
                 return (
                   <Link
                     key={item.name}

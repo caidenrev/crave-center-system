@@ -71,7 +71,10 @@ export function ClientTopbar({ user, onMenuToggle }: { user?: UserProps | null; 
         <ThemeToggle />
         {user?.id && <NotificationBell userId={user.id} />}
         <button 
-          onClick={() => router.push('/client/settings')}
+          onClick={() => {
+            const locale = pathname.split('/')[1] || 'id';
+            router.push(`/${locale}/client/settings`);
+          }}
           className="flex items-center gap-3 ml-2 pl-4 border-l border-slate-200 dark:border-slate-700 cursor-pointer"
         >
           <div className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden border-2 border-slate-100 dark:border-slate-800 shadow-sm bg-slate-100 dark:bg-slate-800">

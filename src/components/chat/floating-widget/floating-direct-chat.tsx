@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import {
   ArrowLeft,
   Loader2,
-  Sparkles,
+  MessageSquare,
   ChevronRight,
   ShieldCheck,
   Image as ImageIcon,
@@ -384,12 +384,12 @@ export function FloatingDirectChat({
           </div>
         ) : messages.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-full text-center p-6 text-slate-400 space-y-2">
-            <Sparkles className="w-8 h-8 opacity-40 text-primary" />
-            <p className="text-xs font-medium text-slate-300">
+            <MessageSquare className="w-8 h-8 text-slate-400 dark:text-slate-500 mb-1" />
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">
               {t.noDirectHistory}{" "}
-              <strong className="text-white">{selectedContact.name}</strong>.
+              <strong className="text-slate-900 dark:text-white font-extrabold">{selectedContact.name}</strong>.
             </p>
-            <p className="text-[10px] text-slate-500">{t.startDirectPrompt}</p>
+            <p className="text-[11px] text-slate-400 dark:text-slate-500">{t.startDirectPrompt}</p>
           </div>
         ) : (
           messages.map((msg) => (

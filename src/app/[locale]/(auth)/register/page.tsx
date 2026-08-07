@@ -13,9 +13,11 @@ import { PasswordInput } from "@/components/ui/password-input"
 import { GoogleAuthButton } from "@/components/auth/google-auth-button"
 import Link from "next/link"
 import { useTranslations } from "next-intl"
+import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
   const t = useTranslations("RegisterPage")
+  const router = useRouter()
   const [isEmailLoading, setIsEmailLoading] = useState(false)
 
   const handleEmailRegister = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -24,16 +26,22 @@ export default function RegisterPage() {
     const formData = new FormData(e.currentTarget)
 
     try {
-      const result = await registerWithEmail(formData)
+      const result: any = await registerWithEmail(formData)
       if (result?.error) {
-        toast.error(result.error)
+        const errMsg = typeof result.error === "string"
+          ? result.error
+          : (result.error && typeof result.error === "object" && "message" in result.error
+              ? String(result.error.message)
+              : "Gagal melakukan pendaftaran")
+        toast.error(errMsg)
         setIsEmailLoading(false)
       } else if (result?.success) {
-        toast.success("Registration successful! Please check your email to verify.")
-        setIsEmailLoading(false)
+        toast.success("Pendaftaran berhasil! Mengalihkan...")
+        router.push("/auth/callback")
       }
-    } catch {
-      toast.error("An unexpected error occurred")
+    } catch (err: any) {
+      const catchMsg = err?.message || String(err)
+      toast.error(catchMsg && catchMsg !== "[object Object]" ? catchMsg : "Terjadi kesalahan tidak terduga")
       setIsEmailLoading(false)
     }
   }

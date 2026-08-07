@@ -348,4 +348,48 @@ export async function uploadWorkerDeliverable(formData: FormData) {
   }
 }
 
+export async function getWorkerTaskStats() {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user?.email) return { success: false, error: "Unauthorized" }
+
+    const dbUser = await prisma.user.findUnique({
+      where: { email: user.email },
+      select: { id: true }
+    })
+    if (!dbUser) return { success: false, error: "User not found" }
+
+    const tasks = await prisma.task.findMany({
+      where: {
+        OR: [
+          { assigneeId: dbUser.id },
+          { project: { workerId: dbUser.id } }
+        ]
+      },
+      select: { id: true, status: true }
+    })
+
+    const todo = tasks.filter(t => t.status === "TO_DO").length
+    const inProgress = tasks.filter(t => t.status === "IN_PROGRESS").length
+    const review = tasks.filter(t => t.status === "REVIEW").length
+    const done = tasks.filter(t => t.status === "DONE").length
+    const total = tasks.length
+
+    return {
+      success: true,
+      stats: {
+        total,
+        todo,
+        inProgress,
+        review,
+        done,
+      }
+    }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+
 

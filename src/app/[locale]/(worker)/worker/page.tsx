@@ -2,15 +2,16 @@ import { requireRole } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getTranslations } from "next-intl/server";
 import { createClient } from "@/utils/supabase/server";
-import { CheckSquare, FolderKanban, Clock, CheckCircle2, DollarSign, ChevronRight } from "lucide-react";
+import { CheckSquare, FolderKanban, Clock, CheckCircle2, Wallet, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 import { StatCard } from "@/components/admin/overview/stat-card";
-import { RealtimeClock } from "@/components/admin/overview/realtime-clock";
+import { AdminCalendar } from "@/components/admin/overview/admin-calendar";
 import { WorkerTaskDonut } from "@/components/worker/overview/worker-task-donut";
 import { WorkerActiveProjects } from "@/components/worker/overview/worker-active-projects";
 import { WorkerNewRequests } from "@/components/worker/overview/worker-new-requests";
 import { WorkerIncomeCard } from "@/components/worker/overview/worker-income-card";
+import { WorkerReminders } from "@/components/worker/overview/worker-reminders";
 
 export default async function WorkerDashboardPage(props: {
   params: Promise<{ locale: string }>;
@@ -39,10 +40,15 @@ export default async function WorkerDashboardPage(props: {
     pendingRequests,
     allCompletedProjects,
   ] = await Promise.all([
-    // Tasks assigned to this worker
+    // Tasks assigned to this worker or in worker projects
     prisma.task
       .findMany({
-        where: { assigneeId: dbUser.id },
+        where: {
+          OR: [
+            { assigneeId: dbUser.id },
+            { project: { workerId: dbUser.id } },
+          ],
+        },
         select: { id: true, status: true },
       })
       .catch(() => []),
@@ -92,7 +98,23 @@ export default async function WorkerDashboardPage(props: {
   const serializedProjects = activeProjects.map((p: any) => {
     const totalTasks = p.tasks?.length || 0;
     const doneTasksCount = p.tasks?.filter((t: any) => t.status === "DONE").length || 0;
-    const progress = totalTasks > 0 ? Math.round((doneTasksCount / totalTasks) * 100) : 0;
+    
+    let progress = 0;
+    if (totalTasks > 0) {
+      const taskPct = Math.round((doneTasksCount / totalTasks) * 100);
+      progress = p.status === "IN_PROGRESS" ? Math.max(50, Math.min(95, taskPct)) : taskPct;
+    } else {
+      switch (p.status) {
+        case "REQUESTED": progress = 10; break;
+        case "WORKER_REVIEW": progress = 25; break;
+        case "PENDING_DP": progress = 40; break;
+        case "IN_PROGRESS": progress = 65; break;
+        case "ON_HOLD": progress = 65; break;
+        case "COMPLETED": progress = 100; break;
+        case "IN_WARRANTY": progress = 100; break;
+        default: progress = 0; break;
+      }
+    }
 
     return {
       id: p.id.split("-")[0].toUpperCase(),
@@ -114,6 +136,8 @@ export default async function WorkerDashboardPage(props: {
     targetDeliveryDate: r.targetDeliveryDate
       ? r.targetDeliveryDate.toISOString()
       : null,
+    offeredPrice: r.offeredPrice ? Number(r.offeredPrice) : null,
+    offeredDuration: r.offeredDuration || null,
     client: {
       name: r.client.name,
       email: r.client.email,
@@ -191,38 +215,38 @@ export default async function WorkerDashboardPage(props: {
       </div>
 
       {/* Horizontal Total Income Card Banner */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 md:p-6 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        {/* Left: Icon + Text + Badge */}
-        <div className="flex items-center gap-4 min-w-0">
-          <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20 shadow-xs">
-            <DollarSign className="w-5 h-5 sm:w-6 sm:h-6" />
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-4 sm:p-5 md:p-6 shadow-xs flex flex-row items-center justify-between gap-4">
+        {/* Left Side: Wallet Icon + Total Income Title + Amount */}
+        <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+          <div className="w-11 h-11 sm:w-14 sm:h-14 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-600/25 border-none">
+            <Wallet className="w-5 h-5 sm:w-7 sm:h-7 text-white" />
           </div>
-          <div className="flex flex-col gap-1 min-w-0">
-            <span className="font-bold text-xs sm:text-sm text-slate-700 dark:text-slate-300 tracking-tight truncate">
+
+          <div className="flex flex-col min-w-0">
+            <span className="font-extrabold text-[11px] sm:text-sm text-slate-500 dark:text-slate-400 tracking-tight uppercase">
               {t("totalIncome")}
             </span>
-            <div>
-              <span className="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-0.5 rounded-md border border-emerald-500/20 inline-block">
-                {t("netIncome")}
-              </span>
-            </div>
+            <h3 className="text-xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight truncate mt-0.5">
+              {new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
+                style: "currency",
+                currency: "IDR",
+                minimumFractionDigits: 0,
+              }).format(totalIncome)}
+            </h3>
           </div>
         </div>
 
-        {/* Right: Income Amount + Action Button */}
-        <div className="flex items-center justify-between sm:justify-end gap-4 sm:gap-6 pt-3 sm:pt-0 border-t sm:border-t-0 border-slate-100 dark:border-slate-800/80">
-          <h3 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight truncate">
-            {new Intl.NumberFormat(locale === "en" ? "en-US" : "id-ID", {
-              style: "currency",
-              currency: "IDR",
-              minimumFractionDigits: 0,
-            }).format(totalIncome)}
-          </h3>
+        {/* Right Side: Net Income Badge + Details Button (Stacked Atas-Bawah) */}
+        <div className="flex flex-col items-end justify-center gap-2 shrink-0">
+          <span className="text-[10px] sm:text-xs font-bold text-white bg-emerald-600 px-3 py-0.5 sm:py-1 rounded-full shadow-xs border-none inline-block">
+            {t("netIncome")}
+          </span>
+
           <Link
             href={`/${locale}/worker/finance`}
-            className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-xs shrink-0 cursor-pointer"
+            className="px-3.5 py-1.5 sm:px-4 sm:py-2 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold flex items-center gap-1 transition-all shadow-xs cursor-pointer"
           >
-            {t("detail")} <ChevronRight className="w-4 h-4" />
+            {t("detail")} <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </Link>
         </div>
       </div>
@@ -246,9 +270,8 @@ export default async function WorkerDashboardPage(props: {
           <WorkerIncomeCard incomes={recentIncomes} locale={locale} />
         </div>
 
-        {/* Realtime Clock (3 cols) */}
         <div className="lg:col-span-3">
-          <RealtimeClock />
+          <AdminCalendar projects={activeProjects as any} />
         </div>
 
         {/* Active Projects (12 cols) */}

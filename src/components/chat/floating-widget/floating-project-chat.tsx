@@ -280,8 +280,8 @@ export function FloatingProjectChat({
           onClick={() => setProjectTab("CLIENT_ADMIN")}
           className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
             projectTab === "CLIENT_ADMIN"
-              ? "bg-slate-800 text-white shadow-xs border border-slate-700"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-primary text-white shadow-md"
+              : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
           }`}
         >
           <Globe className="w-3 h-3" /> {t.adminClient}
@@ -291,8 +291,8 @@ export function FloatingProjectChat({
           onClick={() => setProjectTab("INTERNAL")}
           className={`flex-1 py-1.5 px-2 rounded-lg text-[10px] font-bold transition-all flex items-center justify-center gap-1 cursor-pointer ${
             projectTab === "INTERNAL"
-              ? "bg-slate-800 text-white shadow-xs border border-slate-700"
-              : "text-slate-400 hover:text-slate-200"
+              ? "bg-primary text-white shadow-md"
+              : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-100"
           }`}
         >
           <Lock className="w-3 h-3" /> {t.internalTeam}
@@ -306,9 +306,9 @@ export function FloatingProjectChat({
             <Loader2 className="w-5 h-5 animate-spin text-primary" />
           </div>
         ) : filteredMessages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-center p-4 text-slate-400">
-            <MessageSquare className="w-8 h-8 opacity-40 mb-1" />
-            <p className="text-xs font-medium">{t.noProjectHistory}</p>
+          <div className="flex flex-col items-center justify-center h-full text-center p-4 text-slate-400 space-y-1">
+            <MessageSquare className="w-8 h-8 text-slate-400 dark:text-slate-500 mb-1" />
+            <p className="text-xs font-semibold text-slate-600 dark:text-slate-300">{t.noProjectHistory}</p>
           </div>
         ) : (
           filteredMessages.map((msg) => (
