@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { FileText, Download, Calendar, User, Loader2 } from 'lucide-react'
 import { submitWorkerOffer } from '@/app/actions/worker'
 import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
@@ -25,11 +26,11 @@ export function WorkerDashboardClient({ requests, t }: { requests: any[], t: any
     setIsSubmitting(false)
     
     if (res.success) {
-      alert("Quote submitted successfully!")
+      toast.success("Quote submitted successfully!")
       setSelectedReq(null)
       router.refresh()
     } else {
-      alert("Error: " + res.error)
+      toast.error("Error: " + res.error)
     }
   }
 

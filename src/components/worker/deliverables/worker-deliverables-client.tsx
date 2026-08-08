@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search, X, FileText, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import { uploadWorkerDeliverable } from "@/app/actions/worker";
 import { DeliverableItem, ActiveProjectItem } from "./deliverable-types";
 import { WorkerDeliverableCard } from "./worker-deliverable-card";
@@ -51,7 +52,7 @@ export function WorkerDeliverablesClient({
       setResubmitProjectId(null);
       router.refresh();
     } else {
-      alert("Gagal mengunggah deliverable: " + res.error);
+      toast.error("Gagal mengunggah deliverable: " + res.error);
     }
   }
 

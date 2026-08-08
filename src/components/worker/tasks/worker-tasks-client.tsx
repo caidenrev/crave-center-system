@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Search, X, Plus } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { createWorkerTask, updateWorkerTaskStatus } from "@/app/actions/worker";
 
 import { TaskItem, TaskItemCard } from "./task-item-card";
@@ -65,7 +66,7 @@ export function WorkerTasksClient({
       }
       router.refresh();
     } else {
-      alert("Error updating status: " + res.error);
+      toast.error("Error updating status: " + res.error);
     }
   }
 
@@ -92,7 +93,7 @@ export function WorkerTasksClient({
       setShowCreateModal(false);
       router.refresh();
     } else {
-      alert("Error creating task: " + res.error);
+      toast.error("Error creating task: " + res.error);
     }
   }
 

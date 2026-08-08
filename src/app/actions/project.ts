@@ -449,8 +449,45 @@ export async function createMidtransTransaction(paymentId: string) {
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error("Unauthorized")
 
+    let paymentIdToUse = paymentId;
+
+    if (paymentId.startsWith("temp-payment-")) {
+      const projectId = paymentId.replace("temp-payment-", "");
+      
+      const project = await prisma.project.findUnique({
+        where: { id: projectId },
+        include: { terms: true, client: true }
+      });
+      if (!project) throw new Error("Project not found");
+
+      // Check if DP already exists
+      const existingDp = await prisma.payment.findFirst({
+        where: { projectId, type: "DP" }
+      });
+      
+      if (existingDp) {
+        paymentIdToUse = existingDp.id;
+      } else {
+        const price = project.terms?.priceFinal 
+          ? Number(project.terms.priceFinal) 
+          : Number(project.offeredPrice || 0);
+        
+        const dpAmount = price * 0.5;
+
+        const newPayment = await prisma.payment.create({
+          data: {
+            projectId,
+            amount: dpAmount,
+            type: "DP",
+            status: "PENDING",
+          }
+        });
+        paymentIdToUse = newPayment.id;
+      }
+    }
+
     const payment = await prisma.payment.findUnique({
-      where: { id: paymentId },
+      where: { id: paymentIdToUse },
       include: { project: { include: { client: true } } }
     })
     if (!payment) throw new Error("Payment record not found")

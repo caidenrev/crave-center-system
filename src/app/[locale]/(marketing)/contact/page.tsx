@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Mail, MapPin, Phone, Loader2 } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 
 export default function ContactPage() {
   const t = useTranslations("ContactPage")
@@ -18,7 +19,7 @@ export default function ContactPage() {
     setIsSubmitting(true)
     // Simulate submission
     await new Promise(resolve => setTimeout(resolve, 1500))
-    alert(t("success"))
+    toast.success(t("success"))
     setIsSubmitting(false)
   }
 

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { toast } from 'sonner'
 import { changeUserRole } from '@/app/actions/dev'
 import { Role } from '@/generated/prisma'
 
@@ -11,10 +12,12 @@ export function DevPanel({ currentUser }: { currentUser: any }) {
     setLoading(role)
     const res = await changeUserRole(role)
     if (res.success) {
-      alert(`Role successfully changed to ${role}! Please refresh or go to your dashboard.`)
-      window.location.href = '/' // Force a full reload to reset auth layout states
+      toast.success(`Role successfully changed to ${role}! Please refresh or go to your dashboard.`)
+      setTimeout(() => {
+        window.location.href = '/' // Force a full reload to reset auth layout states
+      }, 1000)
     } else {
-      alert("Error: " + res.error)
+      toast.error("Error: " + res.error)
     }
     setLoading(null)
   }

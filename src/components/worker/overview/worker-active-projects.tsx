@@ -149,6 +149,15 @@ export function WorkerActiveProjects({
                   <span className="text-xs font-black text-slate-900 dark:text-white">
                     {proj.progress}%
                   </span>
+                  
+                  {proj.status === "WORKER_REVIEW" && (
+                    <Link
+                      href={`/${locale}/worker/projects`}
+                      className="ml-2 px-2 py-1 bg-amber-500 hover:bg-amber-600 text-white text-[10px] font-bold rounded-md transition-colors"
+                    >
+                      Ubah Penawaran
+                    </Link>
+                  )}
                 </div>
 
                 {proj.dueDate && (

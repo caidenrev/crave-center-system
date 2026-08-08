@@ -27,13 +27,29 @@ export async function approveProjectQuote(projectId: string) {
       throw new Error("Project is not in a reviewable state")
     }
 
-    // Ubah status ke PENDING_DP dan generate terms/contract (disini disimulasikan)
+    // Ubah status ke PENDING_DP dan generate terms secara otomatis
     await prisma.project.update({
       where: { id: projectId },
       data: {
         status: "PENDING_DP"
       }
     })
+
+    // Cek apakah terms sudah ada
+    const existingTerms = await prisma.terms.findUnique({
+      where: { projectId }
+    })
+
+    if (!existingTerms) {
+      await prisma.terms.create({
+        data: {
+          projectId,
+          scope: project.description,
+          priceFinal: project.offeredPrice || 0,
+          status: "DRAFT",
+        }
+      })
+    }
 
     // Create Notification for Worker
     const { createNotification } = await import("@/app/actions/notification")

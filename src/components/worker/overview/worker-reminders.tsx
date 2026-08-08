@@ -4,6 +4,7 @@ import { AlertCircle, Clock, ChevronRight, CheckCircle2, FileText, Send, X } fro
 import { useState } from "react";
 import { submitWorkerOffer } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export interface WorkerReminderItem {
   id: string;
@@ -43,7 +44,7 @@ export function WorkerReminders({ requests }: { requests: WorkerReminderItem[] }
       setSelectedReq(null);
       router.refresh();
     } else {
-      alert("Error: " + res.error);
+      toast.error("Error: " + res.error);
     }
   }
 

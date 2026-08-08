@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { WorkerReviewAlert } from "@/components/worker/alerts/worker-review-alert";
 import { ProjectChatDrawer } from "@/components/chat/project-chat/project-chat-drawer";
 import { submitWorkerOffer } from "@/app/actions/worker";
@@ -91,12 +92,12 @@ export function WorkerProjectsClient({
     setIsSubmittingOffer(false);
 
     if (res.success) {
-      alert("Penawaran berhasil dikirim/diperbarui!");
+      toast.success("Penawaran berhasil dikirim/diperbarui!");
       setShowOfferForm(false);
       setSelectedProject(null);
       router.refresh();
     } else {
-      alert("Error: " + res.error);
+      toast.error("Error: " + res.error);
     }
   }
 

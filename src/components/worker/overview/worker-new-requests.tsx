@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Calendar, User, Download, Loader2, X, FileText, ChevronRight, AlertCircle, Send } from "lucide-react";
 import { submitWorkerOffer } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { useTranslations } from "next-intl";
 
 interface RequestItem {
@@ -39,7 +40,7 @@ export function WorkerNewRequests({ requests }: { requests: RequestItem[] }) {
       setSelectedReq(null);
       router.refresh();
     } else {
-      alert("Error: " + res.error);
+      toast.error("Error: " + res.error);
     }
   }
 

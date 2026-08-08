@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare, Trash2, XCircle } from 'lucide-react'
+import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare, Trash2, XCircle, LayoutList, LayoutGrid } from 'lucide-react'
 import { approveProjectQuote, cancelProjectByClient, deleteProjectByClient } from '@/app/actions/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -21,6 +21,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
   const t = useTranslations('ClientProjects')
   const [isApproving, setIsApproving] = useState<string | null>(null)
   const [chatProject, setChatProject] = useState<any | null>(null)
+  const [viewMode, setViewMode] = useState<'list' | 'card'>('list')
 
   const [modalConfig, setModalConfig] = useState<{
     open: boolean
@@ -141,104 +142,150 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
 
   return (
     <div className="flex flex-col gap-4">
-      {projects.map((project) => {
-        const config = getStatusConfig(project)
-        
-        return (
-          <div key={project.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs transition-all hover:shadow-md">
-            <div className="flex items-center gap-4 mb-4 md:mb-0">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${config.bg.split(' ').slice(0, 2).join(' ')}`}>
-                {config.icon}
+      {/* View Toggle */}
+      <div className="flex justify-end mb-2">
+        <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl shadow-inner border border-slate-200 dark:border-slate-700">
+          <button
+            onClick={() => setViewMode('list')}
+            className={`p-2 rounded-lg flex items-center justify-center transition-all ${
+              viewMode === 'list' 
+                ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' 
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+            }`}
+            title="List View"
+          >
+            <LayoutList className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => setViewMode('card')}
+            className={`p-2 rounded-lg flex items-center justify-center transition-all ${
+              viewMode === 'card' 
+                ? 'bg-white dark:bg-slate-700 shadow-sm text-primary' 
+                : 'text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200'
+            }`}
+            title="Card View"
+          >
+            <LayoutGrid className="w-4 h-4" />
+          </button>
+        </div>
+      </div>
+
+      <div className={viewMode === 'list' ? "flex flex-col gap-4" : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"}>
+        {projects.map((project) => {
+          const config = getStatusConfig(project)
+          
+          return (
+            <div key={project.id} className={`flex ${viewMode === 'list' ? 'flex-col md:flex-row md:items-center justify-between' : 'flex-col'} p-5 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs transition-all hover:shadow-md group`}>
+              <div className={`flex ${viewMode === 'card' ? 'flex-col' : 'items-center'} gap-4 mb-4 md:mb-0 w-full`}>
+                <div className={`flex items-center justify-between w-full`}>
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center shrink-0 ${config.bg.split(' ').slice(0, 2).join(' ')}`}>
+                    {config.icon}
+                  </div>
+                  {viewMode === 'card' && (
+                     <div className={`px-3 py-1 text-xs font-medium rounded-full shrink-0 ${config.bg}`}>
+                       {config.label}
+                     </div>
+                  )}
+                </div>
+                
+                <div className={`${viewMode === 'card' ? 'mt-2 mb-2' : ''}`}>
+                  <h4 className="font-semibold text-slate-900 dark:text-white line-clamp-1" title={project.title}>{project.title}</h4>
+                  <p className="text-xs text-slate-500 mt-1.5 flex flex-col gap-1">
+                    <span>{project.worker ? `${t('workerLabel')}: ${project.worker.name}` : t('awaitingWorker')}</span>
+                    {project.offeredPrice && (
+                      <span className="font-medium text-slate-700 dark:text-slate-300">
+                        {t('offerLabel')}: Rp {Number(project.offeredPrice).toLocaleString('id-ID')}
+                      </span>
+                    )}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="font-semibold text-slate-900 dark:text-white">{project.title}</h4>
-                <p className="text-xs text-slate-500 mt-1">
-                  {project.worker ? `${t('workerLabel')}: ${project.worker.name}` : t('awaitingWorker')} 
-                  {project.offeredPrice && ` • ${t('offerLabel')}: Rp${Number(project.offeredPrice).toLocaleString('id-ID')}`}
-                </p>
-              </div>
-            </div>
             
-            <div className="flex items-center gap-3">
-              <button
-                disabled={project.status === 'CANCELLED'}
-                onClick={() => project.status !== 'CANCELLED' && setChatProject(project)}
-                className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 ${
-                  project.status === 'CANCELLED'
-                    ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
-                    : 'bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 cursor-pointer'
-                }`}
-                title={project.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
-              >
-                <MessageSquare className="w-3.5 h-3.5" />
-                <span>{t('btnChat') || 'Pesan'}</span>
-              </button>
+              <div className={`flex items-center ${viewMode === 'card' ? 'justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-800' : 'gap-3'} flex-wrap w-full`}>
+                {/* Status label (only in list mode) */}
+                {viewMode === 'list' && (
+                  <div className={`px-3 py-1 text-xs font-medium rounded-full ${config.bg}`}>
+                    {config.label}
+                  </div>
+                )}
+                
+                <div className={`flex items-center gap-2 ${viewMode === 'card' ? 'w-full justify-between' : ''}`}>
+                  <button
+                    disabled={project.status === 'CANCELLED'}
+                    onClick={() => project.status !== 'CANCELLED' && setChatProject(project)}
+                    className={`px-3.5 py-1.5 text-xs font-bold rounded-xl transition-colors flex items-center gap-1.5 ${
+                      project.status === 'CANCELLED'
+                        ? 'bg-slate-100 dark:bg-slate-800/50 text-slate-400 dark:text-slate-600 cursor-not-allowed border border-slate-200/50 dark:border-slate-800'
+                        : 'bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 text-blue-600 dark:text-blue-400 cursor-pointer'
+                    }`}
+                    title={project.status === 'CANCELLED' ? "Pesan nonaktif untuk proyek yang dibatalkan" : undefined}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span className={viewMode === 'card' ? 'hidden sm:inline' : ''}>{t('btnChat') || 'Pesan'}</span>
+                  </button>
+                  
+                  <div className="flex items-center gap-2">
+                    {project.status === "PENDING_DP" && (
+                      <Link
+                        href={`/${locale}/client/billing`}
+                        className="px-3.5 py-1.5 bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+                      >
+                        <span>Bayar DP</span>
+                      </Link>
+                    )}
 
-              <div className={`px-3 py-1 text-xs font-medium rounded-full ${config.bg}`}>
-                {config.label}
+                    {project.status === "WORKER_REVIEW" && project.offeredPrice != null && (
+                      <button 
+                        onClick={() => handleApprove(project.id)}
+                        disabled={isApproving === project.id}
+                        className="px-4 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-2 whitespace-nowrap"
+                      >
+                        {isApproving === project.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          t('acceptOffer')
+                        )}
+                      </button>
+                    )}
+
+                    {['REQUESTED', 'WORKER_REVIEW', 'PENDING_DP'].includes(project.status) && (
+                      <button
+                        onClick={() => setModalConfig({ open: true, type: 'cancel', projectId: project.id })}
+                        disabled={isCancelling === project.id}
+                        className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                        title="Batalkan Proyek"
+                      >
+                        {isCancelling === project.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <XCircle className="w-4 h-4" />
+                        )}
+                        <span className="hidden sm:inline">Batal</span>
+                      </button>
+                    )}
+
+                    {project.status === 'CANCELLED' && (
+                      <button
+                        onClick={() => setModalConfig({ open: true, type: 'delete', projectId: project.id })}
+                        disabled={isDeleting === project.id}
+                        className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                        title="Hapus Permanen"
+                      >
+                        {isDeleting === project.id ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Trash2 className="w-4 h-4" />
+                        )}
+                        <span className="hidden sm:inline">Hapus</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
               </div>
-              
-              {project.status === "PENDING_DP" && (
-                <Link
-                  href={`/${locale}/client/billing`}
-                  className="px-3.5 py-1.5 bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-                >
-                  <span>Bayar DP</span>
-                </Link>
-              )}
-
-              {project.status === "WORKER_REVIEW" && project.offeredPrice != null && (
-                <button 
-                  onClick={() => handleApprove(project.id)}
-                  disabled={isApproving === project.id}
-                  className="px-4 py-1.5 bg-primary text-white text-sm font-medium rounded-lg hover:bg-primary/90 transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-2 whitespace-nowrap"
-                >
-                  {isApproving === project.id ? (
-                    <>
-                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      {t('processing')}
-                    </>
-                  ) : (
-                    t('acceptOffer')
-                  )}
-                </button>
-              )}
-
-              {['REQUESTED', 'WORKER_REVIEW', 'PENDING_DP'].includes(project.status) && (
-                <button
-                  onClick={() => setModalConfig({ open: true, type: 'cancel', projectId: project.id })}
-                  disabled={isCancelling === project.id}
-                  className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-                  title="Batalkan Proyek"
-                >
-                  {isCancelling === project.id ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <XCircle className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">Batal</span>
-                </button>
-              )}
-
-              {project.status === 'CANCELLED' && (
-                <button
-                  onClick={() => setModalConfig({ open: true, type: 'delete', projectId: project.id })}
-                  disabled={isDeleting === project.id}
-                  className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-                  title="Hapus Permanen"
-                >
-                  {isDeleting === project.id ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                  ) : (
-                    <Trash2 className="w-4 h-4" />
-                  )}
-                  <span className="hidden sm:inline">Hapus</span>
-                </button>
-              )}
             </div>
-          </div>
         )
       })}
+      </div>
 
       {/* Project Chat Drawer for Client */}
       {chatProject && (
