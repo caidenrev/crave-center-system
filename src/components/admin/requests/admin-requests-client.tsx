@@ -110,7 +110,7 @@ export function AdminRequestsClient({ initialRequests, teamWorkers = [] }: Admin
       case 'Worker Review':
       case 'WORKER_REVIEW':
         return (
-          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-purple-50 dark:bg-purple-500/10 text-purple-600 dark:text-purple-400 border border-purple-100 dark:border-purple-500/20 whitespace-nowrap">
+          <span className="inline-flex items-center justify-center px-3 py-1 rounded-full text-xs font-bold bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-100 dark:border-amber-500/20 whitespace-nowrap">
             {t('filterWorker')}
           </span>
         )

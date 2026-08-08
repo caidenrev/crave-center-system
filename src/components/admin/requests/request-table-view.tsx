@@ -115,10 +115,10 @@ export function RequestTableView({
                     </button>
                     <button
                       onClick={() => onAssignModal(req)}
-                      className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs"
+                      className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer whitespace-nowrap shadow-xs ${req.assignedWorker ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
                     >
                       <UserPlus className="w-3.5 h-3.5 shrink-0" />
-                      <span>{t('btnAssignWorker')}</span>
+                      <span>{req.assignedWorker ? t('btnReassignWorker') : t('btnAssignWorker')}</span>
                     </button>
                     <button
                       onClick={() => onRejectRequest(req.id)}

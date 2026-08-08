@@ -132,11 +132,11 @@ export default async function AdminDashboardPage(props: {
     { title: t("totalProjects"), value: totalProjects, badgeIcon: FolderKanban, badgeText: t("activeArchived") },
     { title: t("newRequests"), value: activeRequests, badgeIcon: CheckSquare, badgeText: t("pendingReview") },
     {
-      title: "Total Pendapatan", // Uang yang dihasilkan
-      value: new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalRevenue),
+      title: t("totalRevenue") || "Total Pendapatan",
+      value: new Intl.NumberFormat(locale === 'id' ? 'id-ID' : 'en-US', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(totalRevenue),
       badgeIcon: DollarSign,
-      badgeText: "Realized Income",
-      action: { href: `/${locale}/admin/finance`, label: "Detail" },
+      badgeText: t("realizedIncome") || "Realized Income",
+      action: { href: `/${locale}/admin/finance`, label: t("detailBtn") || "Detail" },
     },
   ];
 

@@ -79,6 +79,10 @@ export const chatTranslations = {
     deleteError: "Gagal menghapus pesan",
     editSuccess: "Pesan berhasil diperbarui",
     editError: "Gagal mengedit pesan",
+
+    // Status Notices
+    projectCompletedNotice: "Proyek telah selesai. Ruang obrolan ini telah diarsipkan (Read-Only).",
+    projectCancelledNotice: "Diskusi proyek ini telah ditutup karena status proyek dibatalkan / ditolak.",
   },
   en: {
     // Header & Tabs
@@ -154,6 +158,10 @@ export const chatTranslations = {
     deleteError: "Failed to delete message",
     editSuccess: "Message updated successfully",
     editError: "Failed to edit message",
+
+    // Status Notices
+    projectCompletedNotice: "Project completed. This chat channel has been archived (Read-Only).",
+    projectCancelledNotice: "Discussion closed because project status was cancelled or rejected.",
   },
 }
 

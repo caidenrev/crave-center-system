@@ -135,7 +135,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
       case 'WORKER_REVIEW':
       case 'Worker Review':
         return (
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-purple-500 text-white shadow-sm border-none">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-500 text-white shadow-sm border-none">
             <AlertCircle className="w-3.5 h-3.5" /> {t('statusWorkerReview') || 'Review Worker'}
           </span>
         )
@@ -293,7 +293,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
                 </div>
 
                 <div className="space-y-1 mb-3">
-                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug cursor-pointer" onClick={() => setSelectedProject(proj)}>
+                  <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug cursor-pointer line-clamp-2 min-h-[3.5rem]" onClick={() => setSelectedProject(proj)}>
                     {proj.name}
                   </h3>
                   <p className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
@@ -589,6 +589,7 @@ export function AdminProjectsClient({ initialProjects, currentUserId }: AdminPro
           currentUserId={currentUserId || ""}
           userRole="ADMIN"
           isCancelled={chatProject.status === "CANCELLED"}
+          isCompleted={chatProject.status === "COMPLETED"}
         />
       )}
 

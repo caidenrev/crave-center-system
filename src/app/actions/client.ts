@@ -27,29 +27,13 @@ export async function approveProjectQuote(projectId: string) {
       throw new Error("Project is not in a reviewable state")
     }
 
-    // Ubah status ke PENDING_DP dan generate terms secara otomatis
+    // Ubah status ke PENDING_DP
     await prisma.project.update({
       where: { id: projectId },
       data: {
         status: "PENDING_DP"
       }
     })
-
-    // Cek apakah terms sudah ada
-    const existingTerms = await prisma.terms.findUnique({
-      where: { projectId }
-    })
-
-    if (!existingTerms) {
-      await prisma.terms.create({
-        data: {
-          projectId,
-          scope: project.description,
-          priceFinal: project.offeredPrice || 0,
-          status: "DRAFT",
-        }
-      })
-    }
 
     // Create Notification for Worker
     const { createNotification } = await import("@/app/actions/notification")
@@ -311,6 +295,82 @@ export async function deleteProjectByClient(projectId: string) {
     revalidatePath("/(client)")
     revalidatePath("/(worker)")
     revalidatePath("/(admin)")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function submitProjectRating({
+  projectId,
+  rating,
+  feedback,
+}: {
+  projectId: string
+  rating: number
+  feedback?: string
+}) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: { client: true, worker: true }
+    })
+
+    if (!project) throw new Error("Proyek tidak ditemukan")
+    if (project.client.email !== user.email) {
+      throw new Error("Anda tidak memiliki akses untuk memberi ulasan pada proyek ini")
+    }
+
+    if (project.status !== "COMPLETED") {
+      throw new Error("Hanya proyek yang telah selesai (Completed) yang dapat diberi ulasan")
+    }
+
+    // 1. Update rating pada proyek
+    await prisma.project.update({
+      where: { id: projectId },
+      data: {
+        clientRating: rating,
+        clientFeedback: feedback || null,
+      }
+    })
+
+    // 2. Update rating & totalReviews milik Worker jika ada
+    if (project.workerId && project.worker) {
+      const worker = project.worker
+      const currentRating = worker.rating || 5.0
+      const currentReviews = worker.totalReviews || 0
+      const newTotalReviews = currentReviews + 1
+      const newRating = Number((((currentRating * currentReviews) + rating) / newTotalReviews).toFixed(1))
+
+      await prisma.user.update({
+        where: { id: project.workerId },
+        data: {
+          rating: newRating,
+          totalReviews: newTotalReviews,
+        }
+      })
+
+      // 3. Buat notifikasi untuk worker
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: project.workerId,
+        title: "Ulasan Proyek Baru!",
+        message: `Klien ${project.client.name || 'Client'} memberikan ulasan ⭐ ${rating}/5 untuk proyek "${project.title}".`,
+        type: "SUCCESS",
+      })
+    }
+
+    revalidatePath("/(client)")
+    revalidatePath("/(worker)")
+    revalidatePath("/(admin)")
+
     return { success: true }
   } catch (err: any) {
     return { success: false, error: err.message }

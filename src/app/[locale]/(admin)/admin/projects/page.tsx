@@ -39,16 +39,10 @@ export default async function AdminProjectsPage() {
     if (totalTasks > 0) {
       calculatedProgress = Math.round((doneTasks / totalTasks) * 100)
     } else {
-      switch (p.status) {
-        case 'REQUESTED': calculatedProgress = 10; break;
-        case 'WORKER_REVIEW': calculatedProgress = 25; break;
-        case 'PENDING_DP': calculatedProgress = 40; break;
-        case 'IN_PROGRESS': calculatedProgress = 65; break;
-        case 'ON_HOLD': calculatedProgress = 65; break;
-        case 'COMPLETED': calculatedProgress = 100; break;
-        case 'CANCELLED': calculatedProgress = 0; break;
-        case 'IN_WARRANTY': calculatedProgress = 100; break;
-        default: calculatedProgress = 0; break;
+      if (p.status === 'COMPLETED' || p.status === 'IN_WARRANTY') {
+        calculatedProgress = 100
+      } else {
+        calculatedProgress = 0
       }
     }
 

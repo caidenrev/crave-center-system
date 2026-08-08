@@ -17,6 +17,18 @@
     "getStarted": "Get Started",
     "joinAsWorker": "Join as Worker"
   },
+  "Footer": {
+    "desc": "Modern B2B ITSM platform to manage your IT projects from request to delivery with full transparency.",
+    "platform": "Platform",
+    "mainFeatures": "Main Features",
+    "startNewProject": "Start New Project",
+    "clientPortal": "Client Portal",
+    "company": "Company",
+    "contactUs": "Contact Us",
+    "privacyPolicy": "Privacy Policy",
+    "termsConditions": "Terms & Conditions",
+    "copyright": "All rights reserved."
+  },
   "Hero": {
     "badge": "Crave Client Portal 1.0",
     "title1": "Bring Your Digital Vision",
@@ -289,16 +301,21 @@
     "s9F3": "Basic Grammar Checks",
 
     "ctaTitle": "Need a specific custom service?",
-    "ctaBtn": "Discuss Your Needs"
-},
+    "ctaBtn": "Discuss Your Needs",
+    "overview": "Overview",
+    "keyFeatures": "Key Features",
+    "orderService": "Order this service"
+  },
   "ClientSidebar": {
     "menu": "MENU",
     "dashboard": "Dashboard",
+    "website": "Website",
     "requests": "My Requests",
     "projects": "Active Projects",
     "deliverables": "Deliverables",
     "contracts": "Contracts & Terms",
-    "paymentHistory": "Payment History",
+    "paymentHistory": "Finance",
+    "searchPlaceholder": "Search...",
     "general": "GENERAL",
     "settings": "Settings",
     "logout": "Log out",
@@ -442,7 +459,13 @@
     "cancelError": "Failed to cancel project",
     "confirmDelete": "Are you sure you want to permanently delete this project?",
     "projectDeleted": "Project successfully deleted",
-    "deleteError": "Failed to delete project"
+    "deleteError": "Failed to delete project",
+    "btnCancel": "Cancel",
+    "btnDelete": "Delete",
+    "btnDeletePermanently": "Delete Permanently",
+    "btnPayDP": "Pay DP",
+    "btnTerms": "Terms & Contract",
+    "btnDetail": "Details"
   },
 
   "JobRequestForm": {
@@ -536,7 +559,27 @@
     "statusInProgress": "In Progress",
     "statusCompleted": "Completed",
     "filterAll": "All",
-    "searchPlaceholder": "Search project title, client, or ID..."
+    "searchPlaceholder": "Search project title, client, or ID...",
+    "reviewStageTitle": "Project in Worker Review Stage",
+    "reviewStageDesc": "Client & Admin are awaiting your price and timeline estimate.",
+    "noOfferYet": "You haven't submitted a price quote yet.",
+    "registeredOffer": "Submitted Quote:",
+    "fillOfferTitle": "Submit Price & Timeline Offer",
+    "updateOfferTitle": "Update Price & Timeline Offer",
+    "offerPriceLabel": "Offer Price (IDR)",
+    "durationDaysLabel": "Duration (Days)",
+    "sendOfferBtn": "Send Offer",
+    "downloadBriefBtn": "Download Brief Attachment (PDF/Document)",
+    "briefTitle": "Description / Brief",
+    "scopeTitle": "Scope of Work & Terms",
+    "clientApproved": "Approved by Client",
+    "pendingApproval": "Draft / Pending Approval",
+    "finalPriceLabel": "Final Agreed Price:",
+    "close": "Close",
+    "makeOfferBtn": "Submit Quote",
+    "editOfferBtn": "Edit Quote",
+    "offerSubmittedStatus": "Quote Submitted",
+    "offerNotSubmittedStatus": "Quote Not Submitted Yet"
   },
 
   "Finance": {
@@ -583,16 +626,59 @@
   },
   "ClientPayments": {
     "title": "Payment History",
+    "headerTitle": "Payments",
     "subtitle": "Track invoices and payment status.",
     "noPayments": "No payment history yet.",
+    "allPayments": "All payments",
+    "last30Days": "Last 30 days",
+    "allMethods": "All methods",
     "thDate": "Date",
     "thProject": "Project",
-    "thType": "Type",
-    "thAmount": "Amount",
-    "thStatus": "Status",
+    "thType": "Billing Type",
+    "thAmount": "Amount (IDR)",
+    "thStatus": "Status & Payment",
+    "colDate": "Date",
+    "colProject": "Project",
+    "colBillingType": "Billing Type",
+    "colAmount": "Amount (IDR)",
+    "colStatus": "Status & Payment",
     "btnPayDP": "Pay DP Now",
+    "payBtn": "Pay",
     "paid": "Paid",
-    "pending": "Pending DP"
+    "completed": "Completed",
+    "outstanding": "Outstanding",
+    "typeDP": "Down Payment",
+    "typeFull": "Final Payment",
+    "emptyHistory": "No transaction history yet.",
+    "totalPaid": "Total Paid",
+    "totalPaidSub": "Verified completed payments",
+    "totalOutstanding": "Outstanding",
+    "totalOutstandingSub": "Awaiting your payment",
+    "totalTransactions": "Total Transactions",
+    "totalTransactionsSub": "DP & final billing history",
+    "invoicesUnit": "Invoices",
+    "headerTitleFull": "Payment & Invoice History",
+    "headerDesc": "Manage invoices, DP completion, and payment history."
+  },
+  "WorkerContracts": {
+    "title": "Contracts & Terms",
+    "emptyTitle": "No Active Contracts Yet",
+    "emptyDesc": "Your project terms and contracts will appear here once Admin processes and drafts an official offer.",
+    "searchPlaceholder": "Search project or client name...",
+    "totalContracts": "Total: {count} Contracts",
+    "colProjectClient": "Project & Client",
+    "colScope": "Job Scope",
+    "colFinalPrice": "Final Price",
+    "colClientApproval": "Client Approval",
+    "colPdfDoc": "PDF Document",
+    "clientLabel": "Client:",
+    "viewScope": "View Scope",
+    "notSet": "Not set",
+    "approvedByClient": "Client Approved",
+    "awaitingApproval": "Awaiting Approval",
+    "pdfDocument": "PDF Document",
+    "scopeModalTitle": "Job Scope",
+    "closeBtn": "Close"
   },
   "ClientSettings": {
     "title": "Client Account Settings",
@@ -754,7 +840,20 @@
     "delayedProjectsTitle": "Delayed Projects ({count})",
     "delayedProjectsDesc": "Projects that are delayed or on hold require admin attention.",
     "reviewProjectsBtn": "Review Projects ({count})",
-    "testAlertsInfo": "How to test System Alerts: Register a new worker application or submit a project request at /client/request/new. The alerts above will trigger automatically based on the database."
+    "testAlertsInfo": "How to test System Alerts: Register a new worker application or submit a project request at /client/request/new. The alerts above will trigger automatically based on the database.",
+    "totalRevenue": "Total Revenue",
+    "realizedIncome": "Realized Income",
+    "detailBtn": "Detail"
+  },
+  "AdminCalendar": {
+    "detailTitle": "Project Details",
+    "statusCompleted": "Completed",
+    "statusWarranty": "Warranty",
+    "statusInProgress": "In Progress",
+    "statusPendingDP": "Pending DP",
+    "statusWorkerReview": "Worker Review",
+    "statusRequested": "Requested",
+    "statusCancelled": "Cancelled"
   },
   "AdminActivity": {
     "title": "Platform Activity",
@@ -981,6 +1080,7 @@
     "btnViewBrief": "View Brief",
     "assign": "Assign",
     "btnAssignWorker": "Assign Worker",
+    "btnReassignWorker": "Reassign Worker",
 
     "reject": "Reject Request",
     "options": "Options",
@@ -1058,5 +1158,36 @@
     "deleteSuccess": "Project was permanently deleted from database.",
     "deleteError": "Failed to delete project.",
     "cancel": "Cancel"
+  },
+  "Notifications": {
+    "title": "Notifications",
+    "detailTitle": "Notification Details",
+    "markAllRead": "Read",
+    "markAllReadTooltip": "Mark all as read",
+    "clearAll": "Clear",
+    "clearAllTooltip": "Clear all notifications",
+    "empty": "No notifications yet",
+    "openLink": "Open Link",
+    "deletedToast": "Notification deleted",
+    "clearedToast": "All notifications cleared",
+    "deleteTooltip": "Delete notification",
+    "timeAt": "at"
+  },
+  "WorkerRating": {
+    "modalTitle": "Rate Worker Performance",
+    "ratePrompt": "How was your experience working with {workerName} for project \"{projectTitle}\"?",
+    "rate5": "Very Satisfied ⭐⭐⭐⭐⭐",
+    "rate4": "Satisfied ⭐⭐⭐⭐",
+    "rate3": "Fair ⭐⭐⭐",
+    "rate2": "Dissatisfied ⭐⭐",
+    "rate1": "Disappointed ⭐",
+    "feedbackLabel": "Additional Feedback / Notes (Optional)",
+    "feedbackPlaceholder": "Share your experience regarding speed, communication, and work quality...",
+    "cancel": "Cancel",
+    "submit": "Submit Review",
+    "rateBtn": "Rate Worker",
+    "yourRating": "Your Review: ⭐ {rating}/5",
+    "successToast": "Thank you for your rating and review!",
+    "errorToast": "Failed to save review"
   }
 }

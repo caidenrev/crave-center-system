@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useTranslations } from 'next-intl'
 import { motion } from "framer-motion"
-import { LayoutDashboard, FileText, CheckSquare, Settings, LogOut, Package, DollarSign, Globe, Search, ChevronsUpDown, Plus } from 'lucide-react'
+import { LayoutDashboard, FileText, CheckSquare, Settings, LogOut, Package, DollarSign, Wallet, Globe, Search, ChevronsUpDown, Plus } from 'lucide-react'
 import { cn, getDefaultAvatar } from '@/lib/utils'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 
@@ -48,12 +48,12 @@ export function ClientSidebar({
       title: "",
       items: [
         { name: t('dashboard'), href: `/${locale}/client`, icon: LayoutDashboard },
-        { name: "Website", href: `/${locale}`, icon: Globe },
+        { name: t('website') || "Website", href: `/${locale}`, icon: Globe },
         { name: t('requests'), href: `/${locale}/client/request`, icon: FileText },
         { name: t('projects'), href: `/${locale}/client/projects`, icon: CheckSquare },
         { name: t('deliverables') || 'Deliverables', href: `/${locale}/client/deliverables`, icon: Package },
         { name: t('contracts'), href: `/${locale}/client/contracts`, icon: FileText },
-        { name: t('paymentHistory'), href: `/${locale}/client/billing`, icon: DollarSign },
+        { name: t('paymentHistory') || 'Finance', href: `/${locale}/client/billing`, icon: Wallet },
       ]
     }
   ]
@@ -84,7 +84,7 @@ export function ClientSidebar({
               <Search className="w-4 h-4 shrink-0" />
               <input 
                 type="text" 
-                placeholder="Search" 
+                placeholder={t('searchPlaceholder') || "Search..."} 
                 className="bg-transparent border-none outline-none text-sm w-full placeholder:text-slate-400 text-slate-900 dark:text-white"
               />
             </div>

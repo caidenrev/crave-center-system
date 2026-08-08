@@ -9,7 +9,23 @@ export default async function NewRequestPage() {
   
   const workers = await prisma.user.findMany({
     where: { role: "TEAM_MEMBER" },
-    select: { id: true, name: true, category: true, skills: true, rating: true, totalReviews: true, image: true }
+    select: {
+      id: true,
+      name: true,
+      category: true,
+      skills: true,
+      rating: true,
+      totalReviews: true,
+      image: true,
+      workerProjects: {
+        where: { status: { notIn: ["COMPLETED", "CANCELLED"] } },
+        select: { id: true },
+      },
+      tasks: {
+        where: { status: { not: "DONE" } },
+        select: { id: true },
+      },
+    },
   })
   
   const dict = {

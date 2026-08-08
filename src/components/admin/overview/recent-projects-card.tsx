@@ -49,7 +49,7 @@ export async function RecentProjectsCard({
             statusColors[project.status] ??
             "bg-slate-500 text-white";
           const dueDateStr = project.targetDeliveryDate
-            ? new Date(project.targetDeliveryDate).toLocaleDateString("id-ID", {
+            ? new Date(project.targetDeliveryDate).toLocaleDateString(locale === "id" ? "id-ID" : "en-US", {
                 day: "numeric",
                 month: "short",
               })

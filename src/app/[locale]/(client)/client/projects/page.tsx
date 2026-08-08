@@ -1,7 +1,7 @@
 import { getTranslations } from 'next-intl/server'
 import { prisma } from '@/lib/db'
 import { requireRole } from '@/lib/auth'
-import { ClientProjectList } from '@/components/client/projects/client-project-list'
+import { ClientProjectTracker } from '@/components/client/projects/client-project-tracker'
 import { createClient } from "@/utils/supabase/server"
 
 export default async function ClientProjectsPage() {
@@ -18,7 +18,7 @@ export default async function ClientProjectsPage() {
   if (dbUser) {
     projects = await prisma.project.findMany({
       where: { clientId: dbUser.id },
-      include: { worker: true },
+      include: { worker: true, tasks: true },
       orderBy: { createdAt: 'desc' }
     })
   }
@@ -33,14 +33,13 @@ export default async function ClientProjectsPage() {
       </div>
 
       <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 md:p-8 shadow-sm">
-        <ClientProjectList
+        <ClientProjectTracker
           projects={projects.map(p => ({
             ...p,
             offeredPrice: p.offeredPrice ? p.offeredPrice.toString() : null
           }))}
           currentUserId={dbUser?.id || ""}
         />
-
       </div>
     </div>
   )

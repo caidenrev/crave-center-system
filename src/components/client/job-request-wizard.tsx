@@ -20,6 +20,8 @@ type Worker = {
   rating: number
   totalReviews: number
   image?: string | null
+  workerProjects?: { id: string }[]
+  tasks?: { id: string }[]
 }
 
 type Dictionary = {
@@ -45,7 +47,10 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
   const [file, setFile] = useState<File | null>(null)
   const [description, setDescription] = useState('')
 
-  const filteredWorkers = workers.filter(w => w.category === category)
+  const filteredWorkers = workers.filter(w => {
+    if (!w.category) return category === 'IT'
+    return w.category === category
+  })
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -168,33 +173,62 @@ export function JobRequestWizard({ workers, t }: { workers: Worker[], t: Diction
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
           <h2 className="text-xl font-bold mb-6 text-slate-900 dark:text-white">{t.step2}</h2>
           <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
-            {filteredWorkers.map(w => (
-              <div 
-                key={w.id} 
-                onClick={() => setWorkerId(w.id)} 
-                className={`p-4 md:p-5 rounded-3xl cursor-pointer flex items-center justify-between transition-all duration-300 ${workerId === w.id ? 'bg-white dark:bg-slate-900 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-primary/30 dark:border-primary/40' : 'bg-slate-100 dark:bg-slate-800/60 border-2 border-transparent hover:bg-slate-200 dark:hover:bg-slate-800'}`}
-              >
-                <div className="flex items-center gap-5 w-full">
-                  <div className="w-16 h-16 shrink-0 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center overflow-hidden">
-                    <img 
-                      src={w.image || getDefaultAvatar(w.id)} 
-                      alt={w.name} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1 truncate">{w.name}</h4>
-                    <p className="text-sm text-slate-500 dark:text-slate-400 truncate">
-                      <span className="inline-flex items-center mr-2">
-                        <Star className="w-3.5 h-3.5 fill-amber-500 mr-1" />
-                        <span className="font-medium text-amber-600 dark:text-amber-500">{w.rating}</span>
-                      </span>
-                      {w.skills.slice(0, 3).join(', ')}
-                    </p>
+            {filteredWorkers.map(w => {
+              const activeWorkload = (w.workerProjects?.length || 0) + (w.tasks?.length || 0)
+              let statusText = "Tersedia"
+              let statusBg = "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20"
+              let statusDot = "bg-emerald-500"
+
+              if (activeWorkload >= 4) {
+                statusText = "Kapasitas Penuh"
+                statusBg = "bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20"
+                statusDot = "bg-rose-500"
+              } else if (activeWorkload >= 2) {
+                statusText = "Sibuk"
+                statusBg = "bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20"
+                statusDot = "bg-amber-500"
+              }
+
+              return (
+                <div 
+                  key={w.id} 
+                  onClick={() => setWorkerId(w.id)} 
+                  className={`p-4 md:p-5 rounded-3xl cursor-pointer flex items-center justify-between transition-all duration-300 ${workerId === w.id ? 'bg-white dark:bg-slate-900 shadow-[0_4px_25px_-5px_rgba(0,0,0,0.12)] border-2 border-primary/30 dark:border-primary/40' : 'bg-slate-100 dark:bg-slate-800/60 border-2 border-transparent hover:bg-slate-200 dark:hover:bg-slate-800'}`}
+                >
+                  <div className="flex items-center gap-5 w-full">
+                    <div className="w-16 h-16 shrink-0 rounded-2xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center overflow-hidden">
+                      <img 
+                        src={w.image || getDefaultAvatar(w.id)} 
+                        alt={w.name} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <h4 className="font-bold text-lg text-slate-900 dark:text-white truncate">{w.name}</h4>
+                        <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold border ${statusBg}`}>
+                          <span className={`w-1.5 h-1.5 rounded-full ${statusDot}`} />
+                          {statusText}
+                        </span>
+                      </div>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 truncate flex items-center gap-2">
+                        <span className="inline-flex items-center">
+                          <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500 mr-1" />
+                          <span className="font-semibold text-amber-600 dark:text-amber-400">
+                            {w.rating > 0 ? w.rating.toFixed(1) : "5.0"}
+                          </span>
+                          <span className="text-slate-400 text-xs ml-1 font-normal">
+                            ({w.totalReviews || 0})
+                          </span>
+                        </span>
+                        <span>•</span>
+                        <span>{w.skills.slice(0, 3).join(', ')}</span>
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             {filteredWorkers.length === 0 && (
               <div className="text-center py-10 text-slate-500">
                 {t.noWorkers || 'No workers found for this category.'}
