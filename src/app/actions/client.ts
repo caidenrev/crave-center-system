@@ -209,4 +209,96 @@ export async function requestClientDeliverableRevision(deliverableId: string, fe
   }
 }
 
+export async function cancelProjectByClient(projectId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: { client: true }
+    })
+
+    if (!project) throw new Error("Project not found")
+    if (project.client.email !== user.email) {
+      throw new Error("Not authorized to cancel this project")
+    }
+
+    const cancellableStatuses = ["REQUESTED", "WORKER_REVIEW", "PENDING_DP"]
+    if (!cancellableStatuses.includes(project.status)) {
+      throw new Error("Proyek sudah berjalan atau tidak bisa dibatalkan")
+    }
+
+    await prisma.project.update({
+      where: { id: projectId },
+      data: { status: "CANCELLED" }
+    })
+
+    // Notify Worker
+    if (project.workerId) {
+      const { createNotification } = await import("@/app/actions/notification")
+      await createNotification({
+        userId: project.workerId,
+        title: "Project Cancelled by Client",
+        message: `Client ${project.client.name} has cancelled the project: ${project.title}.`,
+        type: "WARNING",
+        link: "/id/worker/projects"
+      })
+    }
+
+    revalidatePath("/(client)")
+    revalidatePath("/(worker)")
+    revalidatePath("/(admin)")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
+export async function deleteProjectByClient(projectId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user || !user.email) {
+      throw new Error("Unauthorized")
+    }
+
+    const project = await prisma.project.findUnique({
+      where: { id: projectId },
+      include: { client: true }
+    })
+
+    if (!project) throw new Error("Project not found")
+    if (project.client.email !== user.email) {
+      throw new Error("Not authorized to delete this project")
+    }
+
+    if (project.status !== "CANCELLED") {
+      throw new Error("Hanya proyek yang dibatalkan yang dapat dihapus")
+    }
+
+    await prisma.$transaction([
+      prisma.contract.deleteMany({ where: { projectId } }),
+      prisma.terms.deleteMany({ where: { projectId } }),
+      prisma.payment.deleteMany({ where: { projectId } }),
+      prisma.task.deleteMany({ where: { projectId } }),
+      prisma.deliverable.deleteMany({ where: { projectId } }),
+      prisma.message.deleteMany({ where: { projectId } }),
+      prisma.project.delete({ where: { id: projectId } }),
+    ])
+
+    revalidatePath("/(client)")
+    revalidatePath("/(worker)")
+    revalidatePath("/(admin)")
+    return { success: true }
+  } catch (err: any) {
+    return { success: false, error: err.message }
+  }
+}
+
 

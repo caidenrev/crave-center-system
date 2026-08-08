@@ -421,7 +421,7 @@
     "title": "Proyek Saya",
     "subtitle": "Daftar seluruh proyek yang Anda ajukan beserta status terkininya.",
     "statusOfferReceived": "Penawaran Masuk",
-
+    "statusWorkerReviewing": "Menunggu Penawaran",
     "statusPendingDP": "Menunggu DP",
     "statusInProgress": "Berlangsung",
     "statusCompleted": "Selesai",

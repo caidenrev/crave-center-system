@@ -59,7 +59,7 @@ export async function createJobRequest(formData: FormData) {
         budgetRange,
         briefFileUrl,
         targetDeliveryDate,
-        status: "REQUESTED",
+        status: "WORKER_REVIEW",
       }
     })
 
@@ -71,9 +71,9 @@ export async function createJobRequest(formData: FormData) {
       await createNotification({
         userId: admin.id,
         title: "New Job Request",
-        message: `${dbUser.name} submitted a new project request: ${title}`,
+        message: `${dbUser.name} submitted a new project request assigned to a worker: ${title}`,
         type: "INFO",
-        link: "/id/admin/requests"
+        link: "/id/admin/projects"
       })
     }
 
@@ -81,7 +81,7 @@ export async function createJobRequest(formData: FormData) {
     await createNotification({
       userId: worker.id,
       title: "Klien Memilih Anda!",
-      message: `${dbUser.name} telah meminta Anda untuk mengerjakan proyek: ${title}. Menunggu persetujuan Admin.`,
+      message: `${dbUser.name} telah meminta Anda untuk mengerjakan proyek: ${title}. Silakan tinjau dan berikan penawaran.`,
       type: "INFO",
       link: "/id/worker/projects"
     })
@@ -104,7 +104,7 @@ export async function createJobRequest(formData: FormData) {
           <h3>Deskripsi / Permintaan Klien:</h3>
           <p>${description}</p>
           <br/>
-          <p>Saat ini permintaan sedang direview oleh pihak Admin. Anda akan diberitahu kembali setelah Admin secara resmi menugaskan proyek ini kepada Anda.</p>
+          <p>Klien telah memilih Anda secara langsung. Silakan masuk ke Dashboard Pekerja Crave untuk meninjau detailnya secara lengkap dan menyusun penawaran (harga & estimasi waktu) untuk dikirim kembali ke klien.</p>
         `
       }).catch((err) => console.error("Email send error to worker (Request):", err))
     }

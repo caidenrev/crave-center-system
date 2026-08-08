@@ -421,7 +421,7 @@
     "title": "My Projects",
     "subtitle": "List of all projects you submitted along with their current status.",
     "statusOfferReceived": "Offer Received",
-
+    "statusWorkerReviewing": "Worker Reviewing",
     "statusPendingDP": "Pending DP",
     "statusInProgress": "In Progress",
     "statusCompleted": "Completed",

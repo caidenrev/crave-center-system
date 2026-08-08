@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare } from 'lucide-react'
-import { approveProjectQuote } from '@/app/actions/client'
+import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare, Trash2, XCircle } from 'lucide-react'
+import { approveProjectQuote, cancelProjectByClient, deleteProjectByClient } from '@/app/actions/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
@@ -38,13 +38,52 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
     }
   }
 
-  const getStatusConfig = (status: string) => {
-    switch (status) {
+  const [isCancelling, setIsCancelling] = useState<string | null>(null)
+  const [isDeleting, setIsDeleting] = useState<string | null>(null)
+
+  async function handleCancel(projectId: string) {
+    if (!confirm(t('confirmCancel') || 'Apakah Anda yakin ingin membatalkan proyek ini?')) return
+    setIsCancelling(projectId)
+    try {
+      const res = await cancelProjectByClient(projectId)
+      if (res.success) {
+        toast.success(t('projectCancelled') || 'Proyek berhasil dibatalkan')
+        router.refresh()
+      } else {
+        toast.error(res.error || t('cancelError') || 'Gagal membatalkan proyek')
+      }
+    } catch {
+      toast.error(t('cancelError') || 'Gagal membatalkan proyek')
+    } finally {
+      setIsCancelling(null)
+    }
+  }
+
+  async function handleDelete(projectId: string) {
+    if (!confirm(t('confirmDelete') || 'Apakah Anda yakin ingin menghapus proyek ini secara permanen?')) return
+    setIsDeleting(projectId)
+    try {
+      const res = await deleteProjectByClient(projectId)
+      if (res.success) {
+        toast.success(t('projectDeleted') || 'Proyek berhasil dihapus')
+        router.refresh()
+      } else {
+        toast.error(res.error || t('deleteError') || 'Gagal menghapus proyek')
+      }
+    } catch {
+      toast.error(t('deleteError') || 'Gagal menghapus proyek')
+    } finally {
+      setIsDeleting(null)
+    }
+  }
+
+  const getStatusConfig = (project: any) => {
+    switch (project.status) {
       case 'WORKER_REVIEW':
         return {
           icon: <AlertCircle className="w-6 h-6 text-amber-600" />,
           bg: 'bg-amber-50 dark:bg-amber-900/20 text-amber-600',
-          label: t('statusOfferReceived'),
+          label: project.offeredPrice != null ? t('statusOfferReceived') : (t('statusWorkerReviewing') || 'Menunggu Penawaran'),
         }
       case 'PENDING_DP':
         return {
@@ -96,7 +135,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
   return (
     <div className="flex flex-col gap-4">
       {projects.map((project) => {
-        const config = getStatusConfig(project.status)
+        const config = getStatusConfig(project)
         
         return (
           <div key={project.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xs transition-all hover:shadow-md">
@@ -141,7 +180,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
                 </Link>
               )}
 
-              {project.status === "WORKER_REVIEW" && (
+              {project.status === "WORKER_REVIEW" && project.offeredPrice != null && (
                 <button 
                   onClick={() => handleApprove(project.id)}
                   disabled={isApproving === project.id}
@@ -155,6 +194,38 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
                   ) : (
                     t('acceptOffer')
                   )}
+                </button>
+              )}
+
+              {['REQUESTED', 'WORKER_REVIEW', 'PENDING_DP'].includes(project.status) && (
+                <button
+                  onClick={() => handleCancel(project.id)}
+                  disabled={isCancelling === project.id}
+                  className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                  title="Batalkan Proyek"
+                >
+                  {isCancelling === project.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <XCircle className="w-4 h-4" />
+                  )}
+                  <span className="hidden sm:inline">Batal</span>
+                </button>
+              )}
+
+              {project.status === 'CANCELLED' && (
+                <button
+                  onClick={() => handleDelete(project.id)}
+                  disabled={isDeleting === project.id}
+                  className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                  title="Hapus Permanen"
+                >
+                  {isDeleting === project.id ? (
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  ) : (
+                    <Trash2 className="w-4 h-4" />
+                  )}
+                  <span className="hidden sm:inline">Hapus</span>
                 </button>
               )}
             </div>

@@ -26,7 +26,7 @@ export default async function AdminDashboardPage(props: {
       prisma.project.count().catch(() => 0),
       prisma.payment.aggregate({ _sum: { amount: true }, where: { status: "SUCCESS" } }).catch(() => ({ _sum: { amount: 0 } })),
       prisma.workerApplication.count({ where: { status: "PENDING" } }).catch(() => 0),
-      prisma.project.count({ where: { status: "REQUESTED" } }).catch(() => 0),
+      prisma.project.count({ where: { status: "WORKER_REVIEW" } }).catch(() => 0),
       prisma.project.count({ where: { status: "ON_HOLD" } }).catch(() => 0),
     ]);
     
