@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight, X, Calendar as CalendarIcon, Clock } from 'lucide-react'
+import { useTranslations, useLocale } from 'next-intl'
 
 type Project = {
   id: string
@@ -12,15 +13,20 @@ type Project = {
 }
 
 export function AdminCalendar({ projects }: { projects: Project[] }) {
+  const t = useTranslations('AdminCalendar')
+  const locale = useLocale()
+  const localeTag = locale === 'id' ? 'id-ID' : 'en-US'
+
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [time, setTime] = useState<Date | null>(null)
+  const [time, setTime] = useState<Date>(() => new Date())
+  const [mounted, setMounted] = useState(false)
   const [selectedDay, setSelectedDay] = useState<{
     date: Date;
     projects: Project[];
   } | null>(null)
 
   useEffect(() => {
-    setTime(new Date())
+    setMounted(true)
     const interval = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
@@ -34,7 +40,7 @@ export function AdminCalendar({ projects }: { projects: Project[] }) {
   const daysInMonth = getDaysInMonth(year, month)
   const firstDay = getFirstDayOfMonth(year, month)
 
-  const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  const monthName = currentDate.toLocaleDateString(localeTag, { month: 'long' })
 
   const prevMonth = () => setCurrentDate(new Date(year, month - 1, 1))
   const nextMonth = () => setCurrentDate(new Date(year, month + 1, 1))
@@ -103,18 +109,18 @@ export function AdminCalendar({ projects }: { projects: Project[] }) {
   return (
     <div className="bg-white dark:bg-slate-900 rounded-[2rem] p-3 md:p-6 shadow-sm border border-slate-100 dark:border-slate-800 overflow-hidden relative">
       <div className="flex items-center justify-between mb-5 px-0.5">
-        <button onClick={prevMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
+        <button onClick={prevMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0 cursor-pointer">
           <ChevronLeft className="w-4 h-4 md:w-5 md:h-5 text-slate-600 dark:text-slate-400" />
         </button>
         <div className="flex flex-col items-center flex-1 mx-1 min-w-0">
           <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-slate-800 dark:text-white flex flex-wrap items-center justify-center gap-1 text-center leading-tight">
-            <span>{monthNames[month]}</span> <span className="text-primary/80 font-normal">{year}</span>
+            <span className="capitalize">{monthName}</span> <span className="text-primary/80 font-normal">{year}</span>
           </h2>
-          <div className="text-[11px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2.5 md:px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap">
-            {time ? time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--'}
+          <div className="text-[11px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2.5 md:px-3 py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap" suppressHydrationWarning>
+            {mounted && time ? time.toLocaleTimeString(localeTag, { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--'}
           </div>
         </div>
-        <button onClick={nextMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0">
+        <button onClick={nextMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors shrink-0 cursor-pointer">
           <ChevronRight className="w-4 h-4 md:w-5 md:h-5 text-slate-600 dark:text-slate-400" />
         </button>
       </div>
@@ -206,16 +212,16 @@ export function AdminCalendar({ projects }: { projects: Project[] }) {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-800 dark:text-white text-base leading-tight">
-                    Detail Projek
+                    {t('detailTitle')}
                   </h3>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-                    {selectedDay.date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-medium" suppressHydrationWarning>
+                    {selectedDay.date.toLocaleDateString(localeTag, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
                   </p>
                 </div>
               </div>
               <button 
                 onClick={() => setSelectedDay(null)}
-                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors"
+                className="p-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -225,19 +231,19 @@ export function AdminCalendar({ projects }: { projects: Project[] }) {
               {selectedDay.projects.map((proj) => {
                 const getStatusBadge = (status: string) => {
                   switch (status) {
-                    case 'COMPLETED': return { label: 'Selesai', color: 'bg-emerald-500 text-white font-bold shadow-xs' }
-                    case 'IN_WARRANTY': return { label: 'Garansi', color: 'bg-cyan-500 text-white font-bold shadow-xs' }
-                    case 'IN_PROGRESS': return { label: 'Berlangsung', color: 'bg-blue-500 text-white font-bold shadow-xs' }
-                    case 'PENDING_DP': return { label: 'Menunggu DP', color: 'bg-purple-500 text-white font-bold shadow-xs' }
-                    case 'WORKER_REVIEW': return { label: 'Worker Review', color: 'bg-amber-500 text-white font-bold shadow-xs' }
-                    case 'REQUESTED': return { label: 'Diajukan', color: 'bg-blue-500 text-white font-bold shadow-xs' }
-                    case 'CANCELLED': return { label: 'Dibatalkan', color: 'bg-red-500 text-white font-bold shadow-xs' }
+                    case 'COMPLETED': return { label: t('statusCompleted'), color: 'bg-emerald-500 text-white font-bold shadow-xs' }
+                    case 'IN_WARRANTY': return { label: t('statusWarranty'), color: 'bg-cyan-500 text-white font-bold shadow-xs' }
+                    case 'IN_PROGRESS': return { label: t('statusInProgress'), color: 'bg-blue-500 text-white font-bold shadow-xs' }
+                    case 'PENDING_DP': return { label: t('statusPendingDP'), color: 'bg-purple-500 text-white font-bold shadow-xs' }
+                    case 'WORKER_REVIEW': return { label: t('statusWorkerReview'), color: 'bg-amber-500 text-white font-bold shadow-xs' }
+                    case 'REQUESTED': return { label: t('statusRequested'), color: 'bg-blue-500 text-white font-bold shadow-xs' }
+                    case 'CANCELLED': return { label: t('statusCancelled'), color: 'bg-red-500 text-white font-bold shadow-xs' }
                     default: return { label: status, color: 'bg-slate-700 text-white font-bold shadow-xs' }
                   }
                 }
                 const badge = getStatusBadge(proj.status)
-                const startDateStr = proj.createdAt ? new Date(proj.createdAt).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
-                const endDateStr = proj.targetDeliveryDate ? new Date(proj.targetDeliveryDate).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
+                const startDateStr = proj.createdAt ? new Date(proj.createdAt).toLocaleDateString(localeTag, { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
+                const endDateStr = proj.targetDeliveryDate ? new Date(proj.targetDeliveryDate).toLocaleDateString(localeTag, { day: 'numeric', month: 'short', year: 'numeric' }) : '-'
 
                 return (
                   <div key={proj.id} className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 flex flex-col gap-2">
@@ -254,7 +260,7 @@ export function AdminCalendar({ projects }: { projects: Project[] }) {
 
                     <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       <Clock className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                      <span>{startDateStr} &mdash; {endDateStr}</span>
+                      <span suppressHydrationWarning>{startDateStr} &mdash; {endDateStr}</span>
                     </div>
                   </div>
                 )

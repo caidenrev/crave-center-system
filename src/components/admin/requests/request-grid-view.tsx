@@ -33,7 +33,7 @@ export function RequestGridView({
               {getStatusBadge(req.status)}
             </div>
             
-            <h4 className="font-bold text-base text-slate-900 dark:text-white leading-snug">
+            <h4 className="font-bold text-base text-slate-900 dark:text-white leading-snug line-clamp-2 min-h-[3rem]">
               {req.service}
             </h4>
             <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 font-medium">
@@ -59,9 +59,9 @@ export function RequestGridView({
               </button>
               <button
                 onClick={() => onAssignModal(req)}
-                className="flex-1 py-2.5 px-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm"
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap shadow-sm ${req.assignedWorker ? 'bg-indigo-600 hover:bg-indigo-700 text-white' : 'bg-blue-600 hover:bg-blue-700 text-white'}`}
               >
-                <UserPlus className="w-3.5 h-3.5 shrink-0" /> <span className="whitespace-nowrap">{t('btnAssignWorker')}</span>
+                <UserPlus className="w-3.5 h-3.5 shrink-0" /> <span className="whitespace-nowrap">{req.assignedWorker ? t('btnReassignWorker') : t('btnAssignWorker')}</span>
               </button>
             </div>
             <button

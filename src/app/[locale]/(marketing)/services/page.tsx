@@ -200,14 +200,14 @@ export default function ServicesPage() {
 
                   <div className="space-y-8 flex-grow">
                     <div>
-                      <h4 className="text-lg font-bold mb-3 text-foreground">Overview</h4>
+                      <h4 className="text-lg font-bold mb-3 text-foreground">{t("overview")}</h4>
                       <p className="text-muted-foreground leading-relaxed text-lg">
                         {selectedService.overview}
                       </p>
                     </div>
 
                     <div>
-                       <h4 className="text-lg font-bold mb-4 text-foreground">Key Features</h4>
+                       <h4 className="text-lg font-bold mb-4 text-foreground">{t("keyFeatures")}</h4>
                        <ul className="space-y-3">
                          {selectedService.features.map((feature, idx) => (
                            <li key={idx} className="flex items-start gap-3">
@@ -222,7 +222,7 @@ export default function ServicesPage() {
                   <div className="mt-10 pt-8 border-t border-border">
                     <Link href="/request">
                        <Button className="w-full sm:w-auto h-12 px-8 rounded-xl font-bold group">
-                         Order this service
+                         {t("orderService")}
                          <ArrowRight className="ml-2 w-4 h-4 group-hover:translate-x-1 transition-transform" />
                        </Button>
                     </Link>

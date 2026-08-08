@@ -4,6 +4,7 @@ import { AlertCircle, Clock, ChevronRight, CheckCircle2, FileText, Send, X } fro
 import { useState } from "react";
 import { submitWorkerOffer } from "@/app/actions/worker";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 export interface WorkerReminderItem {
@@ -21,6 +22,7 @@ export interface WorkerReminderItem {
 }
 
 export function WorkerReminders({ requests }: { requests: WorkerReminderItem[] }) {
+  const t = useTranslations("WorkerDashboard");
   const [selectedReq, setSelectedReq] = useState<WorkerReminderItem | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
@@ -101,11 +103,11 @@ export function WorkerReminders({ requests }: { requests: WorkerReminderItem[] }
                   {hasSubmittedOffer ? (
                     <div className="flex items-center gap-1.5 text-xs text-emerald-600 dark:text-emerald-400 font-semibold">
                       <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Sudah Beri Penawaran</span>
+                      <span>{t("offerSubmittedStatus")}</span>
                     </div>
                   ) : (
                     <span className="text-[11px] text-amber-600 dark:text-amber-400 font-medium">
-                      Belum Beri Penawaran
+                      {t("offerNotSubmittedStatus")}
                     </span>
                   )}
 
@@ -113,7 +115,7 @@ export function WorkerReminders({ requests }: { requests: WorkerReminderItem[] }
                     onClick={() => setSelectedReq(req)}
                     className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
                   >
-                    <span>{hasSubmittedOffer ? "Ubah Penawaran" : "Beri Penawaran"}</span>
+                    <span>{hasSubmittedOffer ? t("editOfferBtn") : t("makeOfferBtn")}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

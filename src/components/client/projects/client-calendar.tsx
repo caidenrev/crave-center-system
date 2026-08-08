@@ -13,14 +13,15 @@ type Project = {
 
 export function ClientCalendar({ projects }: { projects: Project[] }) {
   const [currentDate, setCurrentDate] = useState(new Date())
-  const [time, setTime] = useState<Date | null>(null)
+  const [time, setTime] = useState<Date>(() => new Date())
+  const [mounted, setMounted] = useState(false)
   const [selectedDay, setSelectedDay] = useState<{
     date: Date;
     projects: Project[];
   } | null>(null)
 
   useEffect(() => {
-    setTime(new Date())
+    setMounted(true)
     const interval = setInterval(() => setTime(new Date()), 1000)
     return () => clearInterval(interval)
   }, [])
@@ -108,8 +109,8 @@ export function ClientCalendar({ projects }: { projects: Project[] }) {
           <h2 className="text-base sm:text-lg md:text-2xl font-bold text-slate-800 dark:text-white flex items-center gap-1 md:gap-2">
             <span className="truncate">{monthNames[month]}</span> <span className="text-primary/80 font-normal">{year}</span>
           </h2>
-          <div className="text-[9px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap">
-            {time ? time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--'}
+          <div suppressHydrationWarning className="text-[9px] md:text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1 md:mt-1.5 bg-slate-50 dark:bg-slate-800/60 px-2 md:px-3 py-0.5 md:py-1 rounded-full border border-slate-100 dark:border-slate-700/50 tabular-nums tracking-wider whitespace-nowrap">
+            {mounted && time ? time.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : '--:--:--'}
           </div>
         </div>
         <button onClick={nextMonth} className="p-1 md:p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors">

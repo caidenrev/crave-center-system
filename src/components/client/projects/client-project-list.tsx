@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare, Trash2, XCircle, LayoutList, LayoutGrid } from 'lucide-react'
+import { CheckCircle2, Clock, CircleDashed, AlertCircle, Loader2, MessageSquare, Trash2, XCircle, LayoutList, LayoutGrid, Star } from 'lucide-react'
 import { approveProjectQuote, cancelProjectByClient, deleteProjectByClient } from '@/app/actions/client'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -9,6 +9,7 @@ import { useTranslations, useLocale } from 'next-intl'
 import { toast } from 'sonner'
 import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { ProjectChatDrawer } from '@/components/chat/project-chat/project-chat-drawer'
+import { WorkerRatingModal } from './worker-rating-modal'
 
 interface ClientProjectListProps {
   projects: any[]
@@ -19,8 +20,10 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
   const router = useRouter()
   const locale = useLocale()
   const t = useTranslations('ClientProjects')
+  const tRating = useTranslations('WorkerRating')
   const [isApproving, setIsApproving] = useState<string | null>(null)
   const [chatProject, setChatProject] = useState<any | null>(null)
+  const [ratingProject, setRatingProject] = useState<any | null>(null)
   const [viewMode, setViewMode] = useState<'list' | 'card'>('list')
 
   const [modalConfig, setModalConfig] = useState<{
@@ -230,7 +233,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
                         href={`/${locale}/client/billing`}
                         className="px-3.5 py-1.5 bg-linear-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white text-xs font-bold rounded-xl transition-all shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
                       >
-                        <span>Bayar DP</span>
+                        <span>{t('btnPayDP') || 'Bayar DP'}</span>
                       </Link>
                     )}
 
@@ -251,32 +254,32 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
                     {['REQUESTED', 'WORKER_REVIEW', 'PENDING_DP'].includes(project.status) && (
                       <button
                         onClick={() => setModalConfig({ open: true, type: 'cancel', projectId: project.id })}
-                        disabled={isCancelling === project.id}
-                        className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-                        title="Batalkan Proyek"
+                        className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                        title={t('btnCancel') || "Batalkan Proyek"}
                       >
-                        {isCancelling === project.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <XCircle className="w-4 h-4" />
-                        )}
-                        <span className="hidden sm:inline">Batal</span>
+                        <XCircle className="w-4 h-4" />
+                        <span className="hidden sm:inline">{t('btnCancel') || "Batal"}</span>
                       </button>
                     )}
 
                     {project.status === 'CANCELLED' && (
                       <button
                         onClick={() => setModalConfig({ open: true, type: 'delete', projectId: project.id })}
-                        disabled={isDeleting === project.id}
-                        className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
-                        title="Hapus Permanen"
+                        className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                        title={t('btnDelete') || "Hapus Permanen"}
                       >
-                        {isDeleting === project.id ? (
-                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                        ) : (
-                          <Trash2 className="w-4 h-4" />
-                        )}
-                        <span className="hidden sm:inline">Hapus</span>
+                        <Trash2 className="w-4 h-4" />
+                        <span className="hidden sm:inline">{t('btnDelete') || "Hapus"}</span>
+                      </button>
+                    )}
+                    
+                    {project.status === 'COMPLETED' && (
+                      <button
+                        onClick={() => setRatingProject(project)}
+                        className="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-lg transition-colors cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+                      >
+                        <Star className="w-3.5 h-3.5 fill-white" />
+                        <span>{project.clientRating ? tRating("yourRating", { rating: project.clientRating }) : tRating("rateBtn")}</span>
                       </button>
                     )}
                   </div>
@@ -297,6 +300,20 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
           currentUserId={currentUserId || ""}
           userRole="CLIENT"
           isCancelled={chatProject.status === "CANCELLED"}
+          isCompleted={chatProject.status === "COMPLETED"}
+        />
+      )}
+
+      {/* Worker Rating Modal */}
+      {ratingProject && (
+        <WorkerRatingModal
+          isOpen={!!ratingProject}
+          onClose={() => setRatingProject(null)}
+          projectId={ratingProject.id}
+          projectTitle={ratingProject.title}
+          workerName={ratingProject.worker?.name || "Worker"}
+          existingRating={ratingProject.clientRating}
+          existingFeedback={ratingProject.clientFeedback}
         />
       )}
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { MessageSquare, X, Lock, Globe, Loader2, Trash2 } from "lucide-react"
+import { MessageSquare, X, Lock, Globe, Loader2, Trash2, CheckCircle2 } from "lucide-react"
 import { getProjectMessages, sendProjectMessage, deleteProjectMessage, editChatMessage } from "@/app/actions/chat"
 import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
@@ -21,6 +21,7 @@ interface ProjectChatDrawerProps {
   currentUserId: string
   userRole: "CLIENT" | "ADMIN" | "TEAM_MEMBER"
   isCancelled?: boolean
+  isCompleted?: boolean
 }
 
 type ChatTab = "CLIENT_ADMIN" | "CLIENT_WORKER" | "INTERNAL"
@@ -33,6 +34,7 @@ export function ProjectChatDrawer({
   currentUserId,
   userRole,
   isCancelled = false,
+  isCompleted = false,
 }: ProjectChatDrawerProps) {
   const { t } = useChatTranslations()
 
@@ -358,7 +360,13 @@ export function ProjectChatDrawer({
               {isCancelled ? (
                 <div className="p-4 bg-slate-100 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 text-center">
                   <p className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                    Diskusi proyek ini telah ditutup karena status proyek dibatalkan / ditolak.
+                    {t.projectCancelledNotice}
+                  </p>
+                </div>
+              ) : isCompleted ? (
+                <div className="p-4 bg-emerald-50/50 dark:bg-emerald-950/30 border-t border-emerald-100 dark:border-emerald-900/50 text-center">
+                  <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-400 flex items-center justify-center gap-1.5">
+                    <CheckCircle2 className="w-4 h-4 shrink-0" /> {t.projectCompletedNotice}
                   </p>
                 </div>
               ) : (

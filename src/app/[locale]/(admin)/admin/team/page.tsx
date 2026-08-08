@@ -7,10 +7,14 @@ export default async function AdminTeamPage() {
   await requireRole(["ADMIN"])
   const t = await getTranslations('AdminTeam')
 
-  // Fetch real team members from database with active tasks and project details
+  // Fetch real team members from database with active projects and active tasks
   const dbTeamMembers = await prisma.user.findMany({
     where: { role: 'TEAM_MEMBER' },
     include: {
+      workerProjects: {
+        where: { status: { notIn: ['COMPLETED', 'CANCELLED'] } },
+        select: { id: true, title: true, status: true },
+      },
       tasks: {
         where: { status: { not: 'DONE' } },
         include: { project: { select: { title: true } } },
@@ -21,9 +25,34 @@ export default async function AdminTeamPage() {
   }).catch(() => [])
 
   const initialTeam: TeamMemberItem[] = dbTeamMembers.map((user) => {
+    const activeProjectsCount = user.workerProjects?.length || 0
     const activeTasksCount = user.tasks?.length || 0
+    const totalWorkload = activeProjectsCount + activeTasksCount
+
     let status: 'Available' | 'Busy' | 'Away' = 'Available'
-    if (activeTasksCount >= 4) status = 'Busy'
+    if (totalWorkload >= 4) {
+      status = 'Busy'
+    } else if (totalWorkload >= 2) {
+      status = 'Busy'
+    } else {
+      status = 'Available'
+    }
+
+    const projectTaskList = (user.workerProjects || []).map((p) => ({
+      id: p.id,
+      title: `Proyek: ${p.title}`,
+      projectTitle: p.title,
+      status: p.status,
+      deadline: null,
+    }))
+
+    const standaloneTaskList = (user.tasks || []).map((t) => ({
+      id: t.id,
+      title: t.title,
+      projectTitle: t.project?.title || 'Generik',
+      status: t.status,
+      deadline: t.deadline ? t.deadline.toISOString() : null,
+    }))
 
     return {
       id: user.id,
@@ -32,20 +61,14 @@ export default async function AdminTeamPage() {
       phone: user.phone,
       role: user.category || 'Developer',
       status,
-      activeTasks: activeTasksCount,
+      activeTasks: totalWorkload,
       maxCapacity: 5,
       skills: user.skills || [],
       category: user.category,
       rating: user.rating || 5.0,
       totalReviews: user.totalReviews || 0,
       image: user.image,
-      tasksList: (user.tasks || []).map((t) => ({
-        id: t.id,
-        title: t.title,
-        projectTitle: t.project?.title || 'Generik',
-        status: t.status,
-        deadline: t.deadline ? t.deadline.toISOString() : null,
-      })),
+      tasksList: [...projectTaskList, ...standaloneTaskList],
     }
   })
 

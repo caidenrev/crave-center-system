@@ -105,7 +105,7 @@ export function WorkerNewRequests({ requests }: { requests: RequestItem[] }) {
                     }}
                     className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold transition-all shadow-xs flex items-center gap-1 cursor-pointer shrink-0"
                   >
-                    <span>Beri Penawaran</span>
+                    <span>{t("makeOfferBtn")}</span>
                     <ChevronRight className="w-3.5 h-3.5" />
                   </button>
                 </div>

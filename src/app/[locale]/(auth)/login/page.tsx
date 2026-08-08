@@ -12,11 +12,12 @@ import { Loader2 } from "lucide-react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { GoogleAuthButton } from "@/components/auth/google-auth-button"
 import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 
 export default function LoginPage() {
   const t = useTranslations("LoginPage")
+  const locale = useLocale()
   const router = useRouter()
   const [isEmailLoading, setIsEmailLoading] = useState(false)
 
@@ -31,7 +32,7 @@ export default function LoginPage() {
         toast.error(result.error)
         setIsEmailLoading(false)
       } else if (result?.success) {
-        toast.success("Login successful!")
+        toast.success(t("title") + " OK")
         router.push("/auth/callback")
       }
     } catch {
@@ -118,7 +119,7 @@ export default function LoginPage() {
         <CardFooter className="flex flex-col gap-4 text-center">
           <div className="text-sm text-zinc-500">
             {t("noAccount")}{" "}
-            <Link href="/register" className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">
+            <Link href={`/${locale}/register`} className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">
               {t("register")}
             </Link>
           </div>

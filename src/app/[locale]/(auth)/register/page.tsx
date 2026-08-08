@@ -12,11 +12,12 @@ import { Loader2 } from "lucide-react"
 import { PasswordInput } from "@/components/ui/password-input"
 import { GoogleAuthButton } from "@/components/auth/google-auth-button"
 import Link from "next/link"
-import { useTranslations } from "next-intl"
+import { useTranslations, useLocale } from "next-intl"
 import { useRouter } from "next/navigation"
 
 export default function RegisterPage() {
   const t = useTranslations("RegisterPage")
+  const locale = useLocale()
   const router = useRouter()
   const [isEmailLoading, setIsEmailLoading] = useState(false)
 
@@ -128,7 +129,7 @@ export default function RegisterPage() {
         <CardFooter className="flex flex-col gap-3 md:gap-4 text-center p-4 pt-0 md:p-6 md:pt-0">
           <div className="text-sm text-zinc-500">
             {t("hasAccount")}{" "}
-            <Link href="/login" className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">
+            <Link href={`/${locale}/login`} className="font-semibold text-zinc-900 dark:text-zinc-100 hover:underline">
               {t("signIn")}
             </Link>
           </div>

@@ -68,6 +68,46 @@ export async function markAllAsRead() {
   }
 }
 
+export async function deleteNotification(notificationId: string) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { success: false, error: "Unauthorized" }
+
+    const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
+    if (!dbUser) return { success: false, error: "User not found" }
+
+    await prisma.notification.deleteMany({
+      where: { id: notificationId, userId: dbUser.id }
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
+export async function clearAllNotifications() {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) return { success: false, error: "Unauthorized" }
+
+    const dbUser = await prisma.user.findUnique({ where: { id: user.id } })
+    if (!dbUser) return { success: false, error: "User not found" }
+
+    await prisma.notification.deleteMany({
+      where: { userId: dbUser.id }
+    })
+
+    return { success: true }
+  } catch (error: any) {
+    return { success: false, error: error.message }
+  }
+}
+
 import { NotificationType } from '@/generated/prisma'
 import { Resend } from 'resend'
 

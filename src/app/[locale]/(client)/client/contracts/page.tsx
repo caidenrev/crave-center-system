@@ -32,20 +32,20 @@ export default async function ClientContractsPage() {
     contractList = projects.map(p => {
       const contract = p.contracts[0]
       const terms = p.terms
-      const price = terms?.priceFinal
-        ? Number(terms.priceFinal)
-        : Number(p.offeredPrice || 0)
+      // Term/Contract hanya dianggap terbit jika Admin sudah rilis contract / terms resmi (bukan draf otomatis)
+      const hasOfficialContract = Boolean(contract || (terms && terms.scope && Number(terms.priceFinal) > 0 && terms.status === "APPROVED"))
 
       return {
         id: contract?.id || `temp-contract-${p.id}`,
         projectId: p.id,
-        contractDocumentUrl: contract?.contractDocumentUrl || `/api/pdf/terms/${p.id}`,
+        contractDocumentUrl: hasOfficialContract ? (contract?.contractDocumentUrl || `/api/pdf/terms/${p.id}`) : null,
         signedAt: contract?.signedAt ? contract.signedAt.toISOString() : null,
         projectTitle: p.title,
         projectStatus: p.status,
-        priceFinal: price,
-        scope: terms?.scope || p.description,
-        approvedByClient: terms?.approvedByClient || Boolean(contract?.signedAt)
+        priceFinal: hasOfficialContract ? Number(terms?.priceFinal || 0) : 0,
+        scope: hasOfficialContract ? (terms?.scope || null) : null,
+        approvedByClient: Boolean(terms?.approvedByClient || contract?.signedAt),
+        hasOfficialContract
       }
     })
   }

@@ -282,7 +282,7 @@ export function WorkerProjectsClient({
                   </div>
 
                   <div className="space-y-1 mb-5">
-                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug">
+                    <h3 className="text-lg font-extrabold text-slate-900 dark:text-white group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[3.5rem]">
                       {proj.name}
                     </h3>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -348,7 +348,7 @@ export function WorkerProjectsClient({
                               : "bg-slate-100 dark:bg-slate-800/80 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200/80 dark:border-slate-700/80"
                           }`}
                         >
-                          <span>{isWorkerReview ? "Beri Penawaran" : t("btnDetail") || t("viewProject") || "Detail"}</span>
+                          <span>{isWorkerReview ? t("makeOfferBtn") : t("btnDetail") || t("viewProject") || "Detail"}</span>
                           <ChevronRight className="w-3.5 h-3.5 shrink-0" />
                         </button>
                       </div>
@@ -412,7 +412,7 @@ export function WorkerProjectsClient({
                                 : "bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200"
                             }`}
                           >
-                            {isWorkerReview ? "Penawaran" : t("btnDetail") || t("viewProject") || "Detail"}
+                            {isWorkerReview ? t("makeOfferBtn") : t("btnDetail") || t("viewProject") || "Detail"}
                           </button>
                         </div>
                       </td>
@@ -465,15 +465,15 @@ export function WorkerProjectsClient({
               <div className="bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200/80 dark:border-indigo-900/50 p-4 rounded-2xl mb-5 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-extrabold text-indigo-900 dark:text-indigo-300 flex items-center gap-1.5">
-                    <FileText className="w-4 h-4 text-indigo-600" /> Scope Pekerjaan & Kontrak (Terms)
+                    <FileText className="w-4 h-4 text-indigo-600" /> {t("scopeTitle")}
                   </span>
                   {selectedProject.terms.approvedByClient ? (
                     <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-600 text-white shadow-xs flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Disetujui Klien
+                      <CheckCircle2 className="w-3 h-3" /> {t("clientApproved")}
                     </span>
                   ) : (
                     <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-amber-500 text-white shadow-xs">
-                      Draft / Menunggu Persetujuan
+                      {t("pendingApproval")}
                     </span>
                   )}
                 </div>
@@ -481,7 +481,7 @@ export function WorkerProjectsClient({
                   {selectedProject.terms.scope?.replace(/<[^>]*>?/gm, "").trim()}
                 </p>
                 <div className="pt-2 border-t border-indigo-200/80 dark:border-indigo-900/50 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Harga Kesepakatan Final:</span>
+                  <span className="text-slate-500">{t("finalPriceLabel")}</span>
                   <strong className="text-slate-900 dark:text-white font-black text-sm">
                     Rp {Number(selectedProject.terms.priceFinal).toLocaleString("id-ID")}
                   </strong>
@@ -508,7 +508,7 @@ export function WorkerProjectsClient({
 
             {selectedProject.description && (
               <div className="mb-5">
-                <p className="text-xs font-bold text-slate-400 uppercase mb-1">Deskripsi / Brief</p>
+                <p className="text-xs font-bold text-slate-400 uppercase mb-1">{t("briefTitle")}</p>
                 <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
                   {selectedProject.description.replace(/<[^>]*>?/gm, "").trim()}
                 </p>
@@ -522,7 +522,7 @@ export function WorkerProjectsClient({
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-4 py-2.5 mb-5 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 font-bold rounded-xl text-xs hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors cursor-pointer w-fit border border-blue-200 dark:border-blue-900/50"
               >
-                <Download className="w-4 h-4" /> Unduh Lampiran Brief (PDF/Dokumen)
+                <Download className="w-4 h-4" /> {t("downloadBriefBtn")}
               </a>
             )}
 
@@ -531,14 +531,14 @@ export function WorkerProjectsClient({
               <div className="mb-5 border-t border-slate-100 dark:border-slate-800 pt-4">
                 <div className="flex items-center justify-between mb-3">
                   <h4 className="text-sm font-extrabold text-slate-900 dark:text-white">
-                    {selectedProject.offeredPrice ? "Perbarui Penawaran Harga & Waktu" : "Isi Penawaran Harga & Waktu"}
+                    {selectedProject.offeredPrice ? t("updateOfferTitle") : t("fillOfferTitle")}
                   </h4>
                 </div>
 
                 <form onSubmit={handleQuoteSubmit} className="space-y-4 bg-slate-50 dark:bg-slate-800/40 p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Harga Penawaran (Rp)</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{t("offerPriceLabel")}</label>
                       <div className="relative">
                         <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs font-semibold">Rp</span>
                         <input
@@ -554,7 +554,7 @@ export function WorkerProjectsClient({
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase">Durasi (Hari)</label>
+                      <label className="text-[10px] font-bold text-slate-500 uppercase">{t("durationDaysLabel")}</label>
                       <input
                         required
                         name="offeredDuration"
@@ -575,12 +575,12 @@ export function WorkerProjectsClient({
                       {isSubmittingOffer ? (
                         <>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                          <span>Mengirim...</span>
+                          <span>Sending...</span>
                         </>
                       ) : (
                         <>
                           <Send className="w-3.5 h-3.5" />
-                          <span>{selectedProject.offeredPrice ? "Simpan Perubahan" : "Kirim Penawaran"}</span>
+                          <span>{t("sendOfferBtn")}</span>
                         </>
                       )}
                     </button>
@@ -610,7 +610,7 @@ export function WorkerProjectsClient({
                 }}
                 className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-bold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
               >
-                Tutup
+                {t("close") || "Tutup"}
               </button>
             </div>
 
@@ -628,6 +628,7 @@ export function WorkerProjectsClient({
           currentUserId={currentUserId || ""}
           userRole="TEAM_MEMBER"
           isCancelled={chatProject.status === "CANCELLED"}
+          isCompleted={chatProject.status === "COMPLETED"}
         />
       )}
     </>

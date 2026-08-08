@@ -44,18 +44,12 @@ export default async function WorkerProjectsPage(props: {
     const doneTasks = p.tasks?.filter((t: any) => t.status === "DONE").length || 0;
     let progress = 0;
     if (totalTasks > 0) {
-      const taskPct = Math.round((doneTasks / totalTasks) * 100);
-      progress = p.status === "IN_PROGRESS" ? Math.max(50, Math.min(95, taskPct)) : taskPct;
+      progress = Math.round((doneTasks / totalTasks) * 100);
     } else {
-      switch (p.status) {
-        case "REQUESTED": progress = 10; break;
-        case "WORKER_REVIEW": progress = 25; break;
-        case "PENDING_DP": progress = 40; break;
-        case "IN_PROGRESS": progress = 65; break;
-        case "ON_HOLD": progress = 65; break;
-        case "COMPLETED": progress = 100; break;
-        case "IN_WARRANTY": progress = 100; break;
-        default: progress = 0; break;
+      if (p.status === "COMPLETED" || p.status === "IN_WARRANTY") {
+        progress = 100;
+      } else {
+        progress = 0;
       }
     }
 
