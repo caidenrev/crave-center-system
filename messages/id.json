@@ -436,7 +436,13 @@
     "processing": "Memproses...",
     "offerApproved": "Penawaran disetujui! Memproses ke Kontrak.",
     "approveError": "Gagal menyetujui penawaran. Silakan coba lagi.",
-    "btnChat": "Pesan"
+    "btnChat": "Pesan",
+    "confirmCancel": "Apakah Anda yakin ingin membatalkan proyek ini?",
+    "projectCancelled": "Proyek berhasil dibatalkan",
+    "cancelError": "Gagal membatalkan proyek",
+    "confirmDelete": "Apakah Anda yakin ingin menghapus proyek ini secara permanen?",
+    "projectDeleted": "Proyek berhasil dihapus",
+    "deleteError": "Gagal menghapus proyek"
   },
 
   "JobRequestForm": {

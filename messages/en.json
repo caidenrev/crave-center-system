@@ -436,7 +436,13 @@
     "processing": "Processing...",
     "offerApproved": "Offer accepted! Proceeding to contract.",
     "approveError": "Failed to accept offer. Please try again.",
-    "btnChat": "Chat"
+    "btnChat": "Chat",
+    "confirmCancel": "Are you sure you want to cancel this project?",
+    "projectCancelled": "Project successfully cancelled",
+    "cancelError": "Failed to cancel project",
+    "confirmDelete": "Are you sure you want to permanently delete this project?",
+    "projectDeleted": "Project successfully deleted",
+    "deleteError": "Failed to delete project"
   },
 
   "JobRequestForm": {

@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
 import { toast } from 'sonner'
+import { ConfirmModal } from '@/components/ui/confirm-modal'
 import { ProjectChatDrawer } from '@/components/chat/project-chat/project-chat-drawer'
 
 interface ClientProjectListProps {
@@ -20,6 +21,12 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
   const t = useTranslations('ClientProjects')
   const [isApproving, setIsApproving] = useState<string | null>(null)
   const [chatProject, setChatProject] = useState<any | null>(null)
+
+  const [modalConfig, setModalConfig] = useState<{
+    open: boolean
+    type: 'cancel' | 'delete' | null
+    projectId: string | null
+  }>({ open: false, type: null, projectId: null })
 
   async function handleApprove(projectId: string) {
     setIsApproving(projectId)
@@ -41,8 +48,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
   const [isCancelling, setIsCancelling] = useState<string | null>(null)
   const [isDeleting, setIsDeleting] = useState<string | null>(null)
 
-  async function handleCancel(projectId: string) {
-    if (!confirm(t('confirmCancel') || 'Apakah Anda yakin ingin membatalkan proyek ini?')) return
+  async function performCancel(projectId: string) {
     setIsCancelling(projectId)
     try {
       const res = await cancelProjectByClient(projectId)
@@ -56,11 +62,11 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
       toast.error(t('cancelError') || 'Gagal membatalkan proyek')
     } finally {
       setIsCancelling(null)
+      setModalConfig({ open: false, type: null, projectId: null })
     }
   }
 
-  async function handleDelete(projectId: string) {
-    if (!confirm(t('confirmDelete') || 'Apakah Anda yakin ingin menghapus proyek ini secara permanen?')) return
+  async function performDelete(projectId: string) {
     setIsDeleting(projectId)
     try {
       const res = await deleteProjectByClient(projectId)
@@ -74,6 +80,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
       toast.error(t('deleteError') || 'Gagal menghapus proyek')
     } finally {
       setIsDeleting(null)
+      setModalConfig({ open: false, type: null, projectId: null })
     }
   }
 
@@ -199,7 +206,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
 
               {['REQUESTED', 'WORKER_REVIEW', 'PENDING_DP'].includes(project.status) && (
                 <button
-                  onClick={() => handleCancel(project.id)}
+                  onClick={() => setModalConfig({ open: true, type: 'cancel', projectId: project.id })}
                   disabled={isCancelling === project.id}
                   className="px-3 py-1.5 bg-red-50 text-red-600 hover:bg-red-100 dark:bg-red-900/30 dark:hover:bg-red-900/50 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
                   title="Batalkan Proyek"
@@ -215,7 +222,7 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
 
               {project.status === 'CANCELLED' && (
                 <button
-                  onClick={() => handleDelete(project.id)}
+                  onClick={() => setModalConfig({ open: true, type: 'delete', projectId: project.id })}
                   disabled={isDeleting === project.id}
                   className="px-3 py-1.5 bg-red-600 text-white hover:bg-red-700 text-sm font-medium rounded-lg transition-colors disabled:opacity-50 cursor-pointer shadow-sm flex items-center gap-1.5 whitespace-nowrap"
                   title="Hapus Permanen"
@@ -245,6 +252,25 @@ export function ClientProjectList({ projects, currentUserId }: ClientProjectList
           isCancelled={chatProject.status === "CANCELLED"}
         />
       )}
+
+      {/* Confirm Modal */}
+      <ConfirmModal 
+        open={modalConfig.open}
+        onCancel={() => setModalConfig({ open: false, type: null, projectId: null })}
+        onConfirm={() => {
+          if (modalConfig.type === 'cancel' && modalConfig.projectId) {
+            performCancel(modalConfig.projectId)
+          } else if (modalConfig.type === 'delete' && modalConfig.projectId) {
+            performDelete(modalConfig.projectId)
+          }
+        }}
+        title={modalConfig.type === 'cancel' ? (t('confirmCancel') || "Batalkan Proyek?") : (t('confirmDelete') || "Hapus Proyek?")}
+        description={modalConfig.type === 'cancel' ? "Apakah Anda yakin ingin membatalkan proyek ini? Tindakan ini tidak dapat dikembalikan." : "Apakah Anda yakin ingin menghapus proyek ini secara permanen? Seluruh data dan pesan akan hilang."}
+        confirmText={modalConfig.type === 'cancel' ? "Ya, Batalkan" : "Ya, Hapus"}
+        cancelText="Kembali"
+        variant="destructive"
+        isLoading={isCancelling === modalConfig.projectId || isDeleting === modalConfig.projectId}
+      />
     </div>
   )
 }
