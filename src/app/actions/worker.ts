@@ -63,13 +63,48 @@ export async function submitWorkerOffer(formData: FormData) {
         to: clientUser.email,
         subject: `Pekerja merespons proyek Anda: ${project.title}`,
         html: `
-          <h2>Halo ${clientUser.name},</h2>
-          <p>Pekerja <strong>${project.worker?.name}</strong> telah meninjau permintaan proyek Anda (<strong>${project.title}</strong>) dan memberikan penawaran harga.</p>
-          <ul>
-            <li><strong>Estimasi Harga:</strong> Rp ${parseFloat(offeredPrice).toLocaleString('id-ID')}</li>
-            <li><strong>Estimasi Durasi:</strong> ${offeredDuration} hari</li>
-          </ul>
-          <p>Silakan masuk ke aplikasi Crave untuk menyetujui penawaran ini, atau berdiskusi lebih lanjut dengan Admin.</p>
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333;">
+            <div style="text-align: center; margin-bottom: 20px;">
+              <img src="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/crave-banner.png" alt="Crave ITSM Banner" style="max-width: 100%; border-radius: 8px;" />
+            </div>
+            
+            <h2 style="color: #111;">Halo ${clientUser.name},</h2>
+            
+            <p style="font-size: 16px; line-height: 1.5;">
+              Kabar baik! Pekerja <strong>${project.worker?.name}</strong> telah selesai meninjau permintaan proyek Anda yang berjudul <strong>"${project.title}"</strong> dan telah mengirimkan penawaran detail untuk pekerjaan tersebut.
+            </p>
+            
+            <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; margin: 24px 0;">
+              <h3 style="margin-top: 0; color: #0f172a;">Rincian Penawaran</h3>
+              <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="margin-bottom: 12px;">
+                  <span style="color: #64748b; font-size: 14px;">Estimasi Harga:</span>
+                  <strong style="display: block; font-size: 18px; color: #0f172a;">Rp ${parseFloat(offeredPrice).toLocaleString('id-ID')}</strong>
+                </li>
+                <li>
+                  <span style="color: #64748b; font-size: 14px;">Estimasi Durasi Pekerjaan:</span>
+                  <strong style="display: block; font-size: 18px; color: #0f172a;">${offeredDuration} hari</strong>
+                </li>
+              </ul>
+            </div>
+            
+            <p style="font-size: 16px; line-height: 1.5;">
+              Langkah selanjutnya: Silakan masuk ke akun Anda di aplikasi Crave untuk meninjau dan <strong>menyetujui penawaran ini</strong>. Anda juga dapat menggunakan fitur chat (pesan) untuk berdiskusi lebih lanjut dengan kami jika ada penyesuaian yang diperlukan.
+            </p>
+            
+            <div style="text-align: center; margin: 32px 0;">
+              <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/id/client" style="background-color: #f59e0b; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 16px; display: inline-block; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.25);">
+                Lihat & Tindak Lanjuti Penawaran
+              </a>
+            </div>
+            
+            <hr style="border: none; border-top: 1px solid #e2e8f0; margin: 32px 0;" />
+            
+            <p style="font-size: 14px; color: #64748b; text-align: center;">
+              Terima kasih telah mempercayakan proyek Anda kepada kami.<br/>
+              <strong>Tim Crave ITSM</strong>
+            </p>
+          </div>
         `
       }).catch((emailErr) => console.error("Email send error:", emailErr))
     }
